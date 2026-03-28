@@ -1,9 +1,6 @@
 const nodemailer = require("nodemailer");
 const { smtpUserName, smtpPassword } = require("../secret");
 
-// console.log('hello!')
-// console.log(smtpUserName)
-// console.log(smtpPassword)
 
 // Create a transporter using SMTP
 const transporter = nodemailer.createTransport({
@@ -14,37 +11,29 @@ const transporter = nodemailer.createTransport({
     user: smtpUserName,
     pass: smtpPassword,
   },
-  // tls: {
-  //   rejectUnauthorized: false,
-  // },
+  tls: {
+    rejectUnauthorized: false,
+  }
 });
-
-// Production email transporter
-
-
-// const transporter = nodemailer.createTransport({
-//   service: "gmail",          // Gmail service, Nodemailer auto config
-//   auth: {
-//     user: smtpUserName,  // Gmail app password account
-//     pass: smtpPassword,  // App Password (no spaces!)
-//   },
-// });
 
 const emailWithNodeMailer = async (emailData) => {
     try {
         const mailOptions = {
-            from: `"Ecommerce App" <${smtpUserName}>`, // sender address
+            from: `"TRIVON FASHION" <${smtpUserName}>`, // sender address
             to: emailData.email, // list of recipients
             subject: emailData.subject, // subject line
             html: emailData.html, // HTML body
         };
-
         const info = await transporter.sendMail(mailOptions);
-        console.log('Message send: %s', info.response);
-    } catch (error) {
-        console.error('Error occured while sending email: ', error)
-        throw error;
+
+        console.log("Message sent: %s", info.messageId);
+        console.log("Message sent: %s", info.response);
+    } catch (err) {
+        console.error("Error while sending mail:", err);
+        throw err;
     }
 }
+
+
 
 module.exports = emailWithNodeMailer;

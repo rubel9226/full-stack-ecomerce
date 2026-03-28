@@ -137,21 +137,34 @@ const processRegister = async (req, res, next) => {
 const activateUserAccount = async (req, res, next) => {
     try {
         const token = req.body.token
-        if(!token) throw createError(404, 'token not found');
+        if(!token) throw createError(401, 'token not found');
 
-        const decoded = jwt.verify(token, jwtActivationKey);
+        try {
+            const decoded = jwt.verify(token, jwtActivationKey);
+            if(!decoded) throw createError(401, 'Unable to verify user');
 
-        // await User.create(decoded);
+            const userExists = await User.exists({email: decoded.email});
+            if(userExists){
+                throw createError(409, 'User with this email already exists')
+            };
+            await User.create(decoded);
 
-        console.log(decoded);
-        return successResponse(res, {
-            statusCode: 200, 
-            message: `user was registered successfully`,
-            payload: { token }
-        });
+            return successResponse(res, {
+                statusCode: 200, 
+                message: `user was registered successfully`,
+            });
+        } catch (error) {
+            if(error.name === 'TokenExpiredError'){
+                throw createError(401, 'Token has expired');
+            }else if (error.name === 'JsonWebTokenError'){
+               throw createError(401, "invalid Token");
+            }else{
+                throw error;
+            }
+        }
+        
     } catch (error) {
-        // next(error);
-        console.log('rumi ke bokachoda')
+        next(error);
        
     } 
 };

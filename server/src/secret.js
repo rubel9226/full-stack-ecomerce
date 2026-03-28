@@ -9,7 +9,7 @@ const jwtActivationKey = process.env.JWT_ACTIVATION_KEY || 'ahahihaighaigag_28y1
 // SMTP setup
 const smtpUserName = process.env.SMTP_USERNAME || '';
 const smtpPassword = process.env.SMTP_PASSWORD || '';
-const clientURL = process.env.CLIENT_URL
+const clientURL = process.env.CLIENT_URL || '';
 
 
 module.exports = { 
