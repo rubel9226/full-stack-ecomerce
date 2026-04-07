@@ -41,6 +41,14 @@ const data = {
             password: '123456',
             phone: '01566778899',
             address: 'dinajpur, rangpur, bangladesh'
+        },
+        {
+            name: 'Md Rubel Hossen',
+            email: 'mdrubelhossen92000@gmail.com',
+            password: '123456',
+            phone: '01307743888',
+            address: 'agran, baraigram, natore',
+            isAdmin: true
         }
     ]
 };

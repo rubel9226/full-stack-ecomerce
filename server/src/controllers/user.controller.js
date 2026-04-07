@@ -1,54 +1,36 @@
 const createError = require('http-errors'); 
 const jwt = require('jsonwebtoken');
+const mongoose = require('mongoose');
+const bcrypt = require('bcryptjs');
+
 
 const User = require('../models/user.model');
 const { successResponse } = require('./response.controller');
 const { findWithId } = require('../services/find.item');
 const deleteImage = require('../helper/delete.image');
 const { createJSONWebToken } = require('../helper/jsonwebtoken');
-const { jwtActivationKey, clientURL } = require('../secret');
+const { jwtActivationKey, clientURL, jwtResetPasswordKey } = require('../secret');
 const emailWithNodeMailer = require('../helper/email');
+const { handleUserAction, findUsers, findUserById, deleteUserById, updateUserById, updateUserPasswordById, forgetPasswordEmail, resetPassword } = require('../services/user.service');
+const checkUserExists = require('../helper/checkUserExists');
+const sendEmail = require('../helper/sendEmail');
 
 
-const getUsers = async (req, res, next) => {
+const handleGetUsers = async (req, res, next) => {
     try {
         const search = req.query.search || "";
         const page = Number(req.query.page) || 1;
-        const limit = Number(req.query.limit) || 5;
-
-        const searchRegExp = new RegExp('.*' + search + '.*', 'i')
-        const filter = {
-            isAdmin: {$ne: true},
-            $or: [
-                {name: {$regex: searchRegExp}},
-                {email: {$regex: searchRegExp}},
-                {phone: {$regex: searchRegExp}},
-            ]
-        };
-        const options = {password: 0};
+        const limit = Number(req.query.limit) || 15;
 
 
-        const users = await User.find(filter, options)
-            .limit(limit)
-            .skip((page - 1) * limit);
-
-        const count = await User.find(filter).countDocuments();
-
-
-        if(users.length === 0) throw createError(404, 'no Users found');
-
+        const { users, pagination } = await findUsers(search, limit, page)
 
         return successResponse(res, {
             statusCode: 200, 
             message: 'user profile is return successfully',
             payload: {
                 users,
-                pagination: {
-                    totalPages: Math.ceil(count / limit), 
-                    currentPage: page,
-                    previousPage: page - 1 > 0 ? page - 1 : null,
-                    nextPage: page + 1 <= Math.ceil(count / limit) ? page + 1 : null,
-                },
+                pagination,
             },
         })
     } catch (error) {
@@ -59,36 +41,58 @@ const getUsers = async (req, res, next) => {
 
 
 
-const getUserById = async (req, res, next) => {
+const handleGetUserById = async (req, res, next) => {
     try {
+
+        console.log('This is getUserById')
+        
         const id = req.params.id;
-        const options = {password: 0};
-        const user = await findWithId(User, id, options); // called find.user
+        const options = { password: 0 };
+        const user = await findUserById(id, options); // called find.user
+
 
         return successResponse(res, {
             statusCode: 200, 
             message: 'user was return successfully',
             payload: {user}
         });
+
     } catch (error) {
+        if(error instanceof mongoose.Error.CastError){
+            throw (createError(400, 'Invalid user id'));
+        }
         next(error);
+        
     } 
 };
 
 
 
-const processRegister = async (req, res, next) => {
+const handleProcessRegister = async (req, res, next) => {
     try {
         const {name, email, password, phone, address} = req.body;
         
-        const userExists = await User.exists({email: email});
+        // add new
+        const image = req.file?.path;
+        if(image && image.size > 1024 * 1024 * 2){
+            throw createError(400, 'File too large. It must be less then 2 MB')
+        }
+
+        const userExists = await checkUserExists(email);
         if(userExists){
+            deleteImage(image);
             throw createError(409, 'User with this email already exists')
+
         };
 
         // create jwt
+        const tokenPayload = { name, email, password, phone, address, } // added new
+
+        if(image){
+            tokenPayload.image = image
+        }
         const token =  createJSONWebToken(
-            {name, email, password, phone, address}, 
+            tokenPayload,
             jwtActivationKey, 
             '10m'
         );
@@ -105,22 +109,8 @@ const processRegister = async (req, res, next) => {
         }
 
         // send email with nodemailer
-        try {
-            await emailWithNodeMailer(emailData);
-        } catch (emailError) {
-            console.error('EMAIL ERROR: ', emailError)
-            next(emailError)
-            return;
-        }
+        await sendEmail(emailData);
         
-        const newUser = {
-            name, 
-            email, 
-            password, 
-            phone, 
-            address
-        }
-
         return successResponse(res, {
             statusCode: 200, 
             message: `Please go to your ${email} for completing your registration process`,
@@ -134,7 +124,7 @@ const processRegister = async (req, res, next) => {
 
 
 
-const activateUserAccount = async (req, res, next) => {
+const handleActivateUserAccount = async (req, res, next) => {
     try {
         const token = req.body.token
         if(!token) throw createError(401, 'token not found');
@@ -145,7 +135,7 @@ const activateUserAccount = async (req, res, next) => {
 
             const userExists = await User.exists({email: decoded.email});
             if(userExists){
-                throw createError(409, 'User with this email already exists')
+                throw createError(409, 'User with this email already exists. Please sign in.')
             };
             await User.create(decoded);
 
@@ -171,33 +161,174 @@ const activateUserAccount = async (req, res, next) => {
 
 
 
-const deleteUserById = async (req, res, next) => {
+const handleDeleteUserById = async (req, res, next) => {
     try {
         const id = req.params.id;
-        const options = {password: 0};
+        const options = { password: 0 };
+        await deleteUserById(id, options); // called find.user
 
-        const user = await findWithId(User, id, options); // called find.user
 
 
-        const userImagePath = user.image;
-        deleteImage(userImagePath); // called deleteImage function
+        // const userImagePath = user.image;
+        // deleteImage(userImagePath); // called deleteImage function
         
-        await User.findByIdAndDelete({_id: id, isAdmin: false})
-
+        
         
         return successResponse(res, {
             statusCode: 200, 
             message: 'user was deleted successfully',
         });
     } catch (error) {
-        next(error);
-       
+        if(error instanceof mongoose.Error.CastError){
+            throw (createError(400, 'Invalid user id'));
+        }
+        next(error); 
     } 
 };
 
-module.exports = { getUsers, 
-    getUserById, 
-    deleteUserById, 
-    processRegister, 
-    activateUserAccount 
-}
+
+
+const handleUpdateUserById = async (req, res, next) => {
+    try {
+        const userId = req.params.id;
+
+        const updatedUser = await updateUserById( userId, req );
+
+        console.log(updatedUser);
+        
+        return successResponse(res, {
+            statusCode: 200, 
+            message: 'user was updated successfully',
+            payload: {updatedUser},
+        });
+    } catch (error) {
+        if(error instanceof mongoose.Error.CastError){
+            throw (createError(400, 'Invalid user id'));
+        }
+        next(error); 
+    } 
+};
+
+
+
+const handleManageUserStatusById = async (req, res, next) => {
+    try {
+        const userId = req.params.id;
+        const action = req.body.action;
+        
+        
+        const successMessage = await handleUserAction(userId, action) ;  // called handle user action
+
+        // const userId = req.params.id;
+
+        // //  ! find the user 
+        // const user = await findWithId(User, userId);
+        // const isBanned = user.isBanned;
+        // const newUpdates = !isBanned;
+        // const updates = { isBanned: newUpdates };
+        // const updateOptions = {
+        //     new: true, 
+        //     runValidators: true, 
+        //     context: 'query' 
+        // };
+        
+        // const updatedUser = await User.findByIdAndUpdate(
+        //     userId, 
+        //     updates,
+        //     updateOptions
+        // ).select('-password');
+
+        // if(!updatedUser){
+        //     throw createError(400, `User was not ${user.isBanned ? 'Unbanned' : 'Banned'} successfully`);
+        // };
+        
+        
+
+
+
+        
+        return successResponse(res, {
+            statusCode: 200, 
+            // message: `user was ${user.isBanned ? 'Unbanned' : 'Banned'} successfully`,
+            message: successMessage,
+            payload: {},
+        });
+    } catch (error) {
+        if(error instanceof mongoose.Error.CastError){
+            throw (createError(400, 'Invalid user id'));
+        }
+        next(error);
+    } 
+};
+
+
+
+const handleUpdatePassword = async (req, res, next) => {
+    try {
+        // email, oldPassword, newPassword, confirmedPassword 
+        const { email, oldPassword, newPassword, confirmedPassword } = req.body;
+        const userId = req.params.id;
+
+        const updatedUser = await updateUserPasswordById(userId, email, oldPassword, newPassword, confirmedPassword)
+        
+
+        return successResponse(res, {
+            statusCode: 200, 
+            message: "User password was updated successfully",
+            payload: {updatedUser},
+        });
+    } catch (error) {
+        next(error);
+    } 
+};
+
+
+
+const handleForgetPassword = async (req, res, next) => {
+    try {
+        const email = req.body.email;
+        
+        const token = await forgetPasswordEmail(email);
+
+        return successResponse(res, {
+            statusCode: 200, 
+            message: `Please go to your ${email} for resetting the password`,
+            payload: { token }
+        });
+    } catch (error) {
+        next(error);
+    } 
+};
+
+
+
+const handleResetPassword = async (req, res, next) => {
+    try {
+        const { token, password } = req.body;
+        
+        const updatedUser = await resetPassword(token, password);
+
+        return successResponse(res, {
+            statusCode: 200, 
+            message: "User Reset successfully",
+            payload: {updatedUser},
+        });
+    } catch (error) {
+        next(error);
+    } 
+};
+
+
+
+module.exports = { 
+    handleGetUsers, 
+    handleGetUserById, 
+    handleDeleteUserById, 
+    handleProcessRegister, 
+    handleActivateUserAccount,
+    handleUpdateUserById,
+    handleManageUserStatusById,
+    handleUpdatePassword,
+    handleForgetPassword,
+    handleResetPassword
+};

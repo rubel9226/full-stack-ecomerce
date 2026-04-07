@@ -1,4 +1,5 @@
 const express = require('express');
+const cookieParser = require('cookie-parser');
 const app = express();
 const createError = require('http-errors'); 
 const helmet = require('helmet')
@@ -8,13 +9,15 @@ const morgan = require('morgan');
 
 const rateLimiter = rateLimit({
     windowMs: 1 * 60 * 1000, // 1 minute
-    max: 5, 
+    max: 10, 
     message: 'Too many requests form this IP. please try again later',
 });
 
 
-app.use(morgan('dev'));
+
+app.use(cookieParser());
 app.use(rateLimiter);
+app.use(morgan('dev'));
 app.use(helmet());
 app.use(express.urlencoded({ extended: true}));
 app.use(express.json());
@@ -22,12 +25,20 @@ app.use(express.json());
 
 
 
-const userRouter = require('./routes/user.route');
-const seedRouter = require('./routes/seed.router');
 const { errorResponse } = require('./controllers/response.controller');
-app.use("/api/users", userRouter);
-app.use("/api/seed", seedRouter);
 
+
+const userRouter = require('./routes/user.route');
+app.use("/api/users", userRouter);
+
+const categoryRouter = require('./routes/category.router');
+app.use("/api/categories", categoryRouter);
+
+const authRouter = require('./routes/authRouter');
+app.use("/api/auth", authRouter);
+
+const seedRouter = require('./routes/seed.router');
+app.use("/api/seed", seedRouter);
 
 
 
