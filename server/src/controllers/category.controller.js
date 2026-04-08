@@ -7,7 +7,8 @@ const {
     createCategory, 
     getCategories, 
     getCategory, 
-    updateCategory 
+    updateCategory, 
+    deleteCategory
 } = require("../services/category.service");
 
 const handleCreateCategory = async (req, res, next) => {
@@ -83,9 +84,31 @@ const handleUpdateCategory = async (req, res, next) => {
   }
 };
 
+
+
+const handleDeleteCategory = async (req, res, next) => {
+  try {
+    const { slug } = req.params;
+
+    const result = await deleteCategory(slug);
+    if(!result){
+        throw createError(404, 'No category found and delete.');
+    }
+
+    return successResponse(res, {
+        statusCode: 200,
+        message: 'category delete successfully',
+        payload: result
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = { 
     handleCreateCategory,
     handleGetCategories,
     handleGetCategory,
-    handleUpdateCategory
+    handleUpdateCategory,
+    handleDeleteCategory
  };
