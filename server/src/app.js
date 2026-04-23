@@ -5,16 +5,21 @@ const createError = require('http-errors');
 const helmet = require('helmet')
 const rateLimit = require('express-rate-limit');
 const morgan = require('morgan');
+const cors = require('cors');
 
 
 const rateLimiter = rateLimit({
     windowMs: 1 * 60 * 1000, // 1 minute
-    max: 10, 
+    max: 100, 
     message: 'Too many requests form this IP. please try again later',
 });
 
 
 
+app.use(cors({
+    origin: "http://localhost:5173",
+    credentials: true
+}));
 app.use(cookieParser());
 app.use(rateLimiter);
 app.use(morgan('dev'));
@@ -33,6 +38,9 @@ app.use("/api/users", userRouter);
 
 const categoryRouter = require('./routes/category.router');
 app.use("/api/categories", categoryRouter);
+
+const productRouter = require('./routes/product.router');
+app.use("/api/products", productRouter);
 
 const authRouter = require('./routes/authRouter');
 app.use("/api/auth", authRouter);

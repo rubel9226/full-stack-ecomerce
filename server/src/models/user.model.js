@@ -46,9 +46,9 @@ const userSchema = new Schema({
         type: String,
         required: [true, 'User phone is required'],
     },
-    isAdmin: {
-        type: Boolean,
-        default: false,
+    role: {
+        type: String,
+        default: 'user',
     },
     isBanned: {
         type: Boolean,

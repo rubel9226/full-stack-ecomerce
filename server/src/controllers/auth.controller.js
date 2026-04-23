@@ -62,6 +62,23 @@ const handleLogin = async (req, res, next) => {
 
 
 
+const handleLoginMe = async (req, res, next) => {
+    try {
+        const user = await User.findById(req.user._id).select('-password');
+
+        console.log(user);
+        return successResponse(res, {
+            statusCode: 200, 
+            message: 'User fetched successfully',
+            payload: {user},
+        })
+    } catch (error) {
+        next(error)
+    }
+}
+
+
+
 const handleLogout = async (req, res, next) => {
     try {
         res.clearCookie('accessToken');
@@ -141,5 +158,6 @@ module.exports = {
     handleLogin, 
     handleLogout, 
     handleRefreshToken,
-    handleProtectedRoute
+    handleProtectedRoute,
+    handleLoginMe
 }

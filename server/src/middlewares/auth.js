@@ -44,9 +44,26 @@ const isLoggedOut = async (req, res, next) => {
     }
 };
 
+const verifyToken = (req, res, next) => {
+    try {
+        const accessToken = req.cookies.accessToken // cookie name math korte  hobe.
+
+        if(!accessToken){
+            return res.status(401).json({message: "Unauthorized"})
+        }
+        const decoded = jwt.verify(accessToken, jwtAccessKey);
+        
+        req.user = decoded.user;
+        // console.log(decoded.user)
+        next();
+    } catch (error) {
+        return res.status(401).json({ message: 'Invalid token'})
+    }
+};
+
 const isAdmin = async (req, res, next) => {
     try {
-        if(!req.user.isAdmin){
+        if(req.user.role != 'admin'){
             throw createError(403, 'Forbidden. You must be an admin to access this resource');
         }
         next();
@@ -56,4 +73,4 @@ const isAdmin = async (req, res, next) => {
 };
 
 
-module.exports = { isLoggedIn, isLoggedOut, isAdmin }
+module.exports = { isLoggedIn, isLoggedOut, isAdmin, verifyToken }

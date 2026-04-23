@@ -11,6 +11,8 @@ const { createJSONWebToken } = require("../helper/jsonwebtoken");
 const { jwtResetPasswordKey, clientURL } = require("../secret");
 const emailWithNodeMailer = require("../helper/email");
 const sendEmail = require("../helper/sendEmail");
+const { publicIdWithoutExtensionFromUrl } = require("../helper/cloudinary.helper");
+const cloudinary = require("../config/cloudinary");
 
 
 
@@ -70,15 +72,25 @@ const findUserById = async(id ,options={}) => {
 
 const deleteUserById = async(id, options={}) => {
     try {
-        const user = await User.findByIdAndDelete({
+        console.log('this is deleteUserById route.')
+        const existingUser = await User.findOne({
             _id: id, 
-            isAdmin: false,
         });
-        console.log(user)
 
-        if( user && user.image){
-            await deleteImage(user.image);
+        if( existingUser && existingUser.image){
+            // await deleteImage(existingUser.image);
+            const publicId = await publicIdWithoutExtensionFromUrl(existingUser.image);
+            console.log('this is image delete route.')
+            const { result } = await cloudinary.uploader.destroy(`Trivon_fashion/users/${publicId}`);
+
+            if(result !== 'ok'){
+                throw createError(404, 'User image was not deleted successfully from cloudinary. Please try again');
+            }
         }
+        await User.findByIdAndDelete({
+            _id: id,
+            isAdmin: false
+        })
 
 
     } catch (error) {
@@ -95,8 +107,9 @@ const updateUserById = async( userId, req ) => {
 
         const options = { password: 0 };
         const user = await findUserById(userId, options);
+        console.log('user', user)
         
-        const updateOptions = { new: true, runValidators: true, context: 'query' };
+        const updateOptions = { returnDocument: 'after', runValidators: true, context: 'query' };
         let updates ={};
 
         // name, email, password, phone, image, address
@@ -113,14 +126,17 @@ const updateUserById = async( userId, req ) => {
         
         const image = req.file?.path;
         if(image){
-            if(image.size > 2097152){
+            if(image.size > 7152){
                 throw createError(400, 'File too large. it must be less than 2 MB');
             }
-            updates.image = image;
-            user.image !== 'default.png' && deleteImage(user.image);
+            const response = await cloudinary.uploader.upload(image, {
+                folder: 'Trivon_fashion/users'
+            });
+            updates.image = response.secure_url;
+            console.log('response: ', response.secure_url);
         }
 
-        // delete updates.email;
+        // // delete updates.email;
 
         const updatedUser = await User.findByIdAndUpdate(
             userId, 
@@ -131,7 +147,22 @@ const updateUserById = async( userId, req ) => {
         if(!updatedUser){
             throw createError(400, 'User with this ID does not exist');
         };
-        
+        console.log('image found ?')
+        console.log(image)
+        if(image){
+            console.log('image', image)
+            if(user.image){
+                // await deleteImage(existingUser.image);
+                const publicId = await publicIdWithoutExtensionFromUrl(user.image);
+                console.log('this is image delete route.')
+                const { result } = await cloudinary.uploader.destroy(`Trivon_fashion/users/${publicId}`);
+    
+                if(result !== 'ok'){
+                    throw createError(404, 'User image was not deleted successfully from cloudinary. Please try again');
+                }
+            }
+        }
+        console.log('image not found')
         return updatedUser;
     } catch (error) {
         throw (error);

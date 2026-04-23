@@ -14,7 +14,7 @@ const emailWithNodeMailer = require('../helper/email');
 const { handleUserAction, findUsers, findUserById, deleteUserById, updateUserById, updateUserPasswordById, forgetPasswordEmail, resetPassword } = require('../services/user.service');
 const checkUserExists = require('../helper/checkUserExists');
 const sendEmail = require('../helper/sendEmail');
-
+const cloudinary = require('../config/cloudinary');
 
 const handleGetUsers = async (req, res, next) => {
     try {
@@ -90,6 +90,7 @@ const handleProcessRegister = async (req, res, next) => {
 
         if(image){
             tokenPayload.image = image
+            console.log(image)
         }
         const token =  createJSONWebToken(
             tokenPayload,
@@ -137,6 +138,17 @@ const handleActivateUserAccount = async (req, res, next) => {
             if(userExists){
                 throw createError(409, 'User with this email already exists. Please sign in.')
             };
+
+            const image = decoded.image;
+            console.log('image is: ', image);
+            if(image){
+                const response = await cloudinary.uploader.upload(image, {
+                    folder: 'Trivon_fashion/users'
+                });
+                console.log('response: ', response);
+                decoded.image = response.secure_url;
+            }
+
             await User.create(decoded);
 
             return successResponse(res, {
@@ -194,7 +206,7 @@ const handleUpdateUserById = async (req, res, next) => {
 
         const updatedUser = await updateUserById( userId, req );
 
-        console.log(updatedUser);
+        console.log('updated user', updatedUser);
         
         return successResponse(res, {
             statusCode: 200, 
