@@ -1,0 +1,46 @@
+@import url('https://fonts.googleapis.com/css2?family=Geist:wght@100..900&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Manrope:wght@200..800&family=Work+Sans:ital,wght@0,100..900;1,100..900&display=swap');
+
+
+
+* {
+  font-family: "Work Sans", sans-serif;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;  /* IE, Edge */
+  scrollbar-width: none;     /* Firefox */
+}
+
+.clamp-no-dots {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.discount-price {
+  position: relative;
+  display: inline-block;
+  color: gray;
+  /* font-size: 14px; */
+  /* font-weight: 600; */
+}
+
+.discount-price::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 100%;
+  height: 2px;
+  background: red;
+  transform: rotate(-10deg);
+}
+
+
+
+@import "tailwindcss";
+@plugin "daisyui";
