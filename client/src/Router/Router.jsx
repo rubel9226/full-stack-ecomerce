@@ -10,6 +10,14 @@ import ErrorPage from '../Pages/ErrorPage/ErrorPage';
 import CategoryPage from '../Pages/CategoryPage/CategoryPage';
 // import ProductDetails from '../Components/Category/ProductDetails/ProductDetails';
 import ProductDetails from '../Components/Seared/ProductDetails/ProductDetails';
+import Login from '../Pages/LoginAndRegister/LoginPage';
+import Register from '../Pages/LoginAndRegister/Register';
+import ProtectedRoute from './ProtectedRoute';
+import AdminDashboard from '../Pages/AdminDashboard/AdminDashboard';
+import VendorDashboard from '../Pages/VendorDashboard/VendorDashboard';
+import UserDashboard from '../Pages/UserDashboard/UserDashboard';
+import Unauthorized from '../Pages/Unauthorized/Unauthorized';
+import PublicRoute from './PublicRoute';
 
 const router = createBrowserRouter([
     {
@@ -22,17 +30,7 @@ const router = createBrowserRouter([
             },
             { 
                 path: 'catalog/:slug',
-                children: [
-                    {
-                        index: true,
-                        Component: CategoryPage,
-                    },
-                    // {
-                    //     path: ':productSlug',
-                    //     Component: ProductDetails
-                    // }
-
-                ]
+                Component: CategoryPage,
             },
             {
                 path: 'product/:slug',
@@ -47,11 +45,55 @@ const router = createBrowserRouter([
                 Component: CartPage
             },
             {
+                path: 'admin',
+                element: (
+                    <ProtectedRoute allowedRoles={['admin']}>
+                        <AdminDashboard />
+                    </ProtectedRoute>
+                )
+            },
+            {
+                path: 'vendor',
+                element: (
+                    <ProtectedRoute allowedRoles={['vendor']}>
+                        <VendorDashboard />
+                    </ProtectedRoute>
+                )
+            },
+            {
                 path: 'dashboard',
-                Component: AccountPage
-            }
+                element: (
+                    <ProtectedRoute allowedRoles={['user']} >
+                        <UserDashboard />
+                    </ProtectedRoute>
+                )
+            },
+            
         ],
         errorElement: <ErrorPage />
+    },
+    {
+        path: '/login',
+        element: (
+            <PublicRoute>
+                <Login />
+            </PublicRoute>
+        )
+    },
+    {
+        path: '/register',
+        element: (
+            <PublicRoute>
+                <Register />
+            </PublicRoute>
+        )
+    },
+    {
+        path: 'unauthorized',
+        element: (
+
+            <Unauthorized />
+        )
     }
 ])
 

@@ -1,4 +1,4 @@
-import React, { createContext, useState } from 'react';
+import React, { createContext, useEffect, useState } from 'react';
 import { addLocalStorageData, getLocalStorageData } from '../Utils/LocalStorage';
 import { toast } from 'react-toastify';
 
@@ -7,6 +7,7 @@ import { toast } from 'react-toastify';
 export const AddToCartContext = createContext();
 
 const AddToCartProvider = ({children }) => {
+    
     const [addToCart, setAddToCart] = useState(getLocalStorageData);
     
     
@@ -19,9 +20,8 @@ const AddToCartProvider = ({children }) => {
             totalDiscount: acc.totalDiscount + discount
         };
     }, {totalPrice: 0, totalDiscount: 0});
-    console.log(totalPriceAndDiscount)
     
-
+    
     
     const handleLocalStorageData = (product, cartQuantity) => {
         const { slug } = product;
@@ -59,7 +59,7 @@ const AddToCartProvider = ({children }) => {
         addToCart,
         setAddToCart,
         handleLocalStorageData,
-        totalPriceAndDiscount
+        totalPriceAndDiscount,
     }
 
     return (

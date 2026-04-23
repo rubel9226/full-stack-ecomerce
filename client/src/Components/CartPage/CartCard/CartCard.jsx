@@ -92,13 +92,13 @@ const CartCard = ({product}) => {
                     <div>
 
                         <div className='flex items-center gap-4 mt-3'>
-                            <div className='select-none px-4 py-1.5 rounded-full border-2 flex items-center gap-7 text-[#1F5DA0]'>
+                            <div className='select-none px-4 py-1 rounded-full border flex items-center gap-7 text-[#1F5DA0]'>
                                 <FaMinus className={`cursor-pointer ${cartQuantity <= 1 ? 'text-black/30' : '' }`} onClick={() => handleQuantity('-')} />
                                 <span className='font-bold text-[18px]'>{cartQuantity}</span>
                                 <FaPlus className={`cursor-pointer ${cartQuantity >= product?.quantity ? 'text-black/50' : '' }`} onClick={() => handleQuantity('+')} />
                             </div>
                             <div>
-                                <RiDeleteBinLine onClick={handleDelete} className='text-3xl text-red-600' />
+                                <RiDeleteBinLine onClick={handleDelete} className='text-2xl text-red-600' />
                             </div>
                         </div>
 

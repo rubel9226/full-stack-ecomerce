@@ -5,14 +5,18 @@ import { RouterProvider } from "react-router/dom";
 import router from './Router/Router'
 import AddToCartProvider from './Context/AddToCartContext';
 import { ToastContainer } from 'react-toastify';
+import AuthProvider from './Context/AuthProvider';
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
 
-    <AddToCartProvider>
-      <RouterProvider router={router} ></RouterProvider>
-      <ToastContainer />
-    </AddToCartProvider>
+    <AuthProvider>
+      <AddToCartProvider>
+        <RouterProvider router={router} ></RouterProvider>
+        <ToastContainer />
+      </AddToCartProvider>
+
+    </AuthProvider>
     
   </StrictMode>,
 )
