@@ -1,5 +1,6 @@
 import api from "../Axios/api";
 
+
 export const getMe = () => {
   return fetch("/api/me", {
     credentials: "include",
@@ -16,6 +17,8 @@ export const loginUser = async (data) => {
 };
 
 export const logoutUser = async () => {
+
   const res = await api.post('auth/logout');
   return res.data;
 };
+

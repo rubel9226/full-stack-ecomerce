@@ -4,7 +4,7 @@ import { Link } from 'react-router';
 const BestDeals = ({productPromise}) => {
     const data = use(productPromise);
     const products = data.payload.products; 
-    console.log(data);
+    console.log(products);
 
     const groupedProducts = products
 
@@ -32,7 +32,7 @@ const BestDeals = ({productPromise}) => {
                     </div>
                     <div className="flex gap-3  overflow-x-auto no-scrollbar p-1">
                         {groupedProducts[cat].map((product, index) => {
-                            return(<Link to={`/product/${product?.slug}`} key={index} className=" flex shrink-0 p-1 shadow-sm h-35 border border-transparent rounded-md hover:border hover:border-indigo-800 duration-200">
+                            return(<Link to={`/dashboard/product/${product?.slug}`} key={index} className=" flex shrink-0 p-1 shadow-sm h-35 border border-transparent rounded-md hover:border hover:border-indigo-800 duration-200">
                                     <div >
                                         <img className='aspect-square h-full' src={product.image} alt={product.name} />
                                     </div>

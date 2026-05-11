@@ -2,8 +2,11 @@
 
 
 
-* {
+body {
   font-family: "Work Sans", sans-serif;
+}
+.bangla-font {
+  font-family: "Tiro Bangla", serif !important
 }
 .no-scrollbar::-webkit-scrollbar {
   display: none;

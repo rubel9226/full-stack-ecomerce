@@ -1,21 +1,26 @@
 import React, { useContext } from 'react';
 import { AddToCartContext } from '../../Context/AddToCartContext';
-import CartCard from '../../Components/CartPage/CartCard/CartCard';
 import Footer from './../../Components/Seared/Footer/Footer';
 
 // Asset
 import emptyImg from './../../assets/empty-cart.gif';
+import CartCard from './../../Components/CartPage/CartCard';
+import { Link, useNavigate  } from 'react-router';
 
 const CartPage = () => {
     const { addToCart, setAddToCart, handleLocalStorageData, totalPriceAndDiscount } = useContext(AddToCartContext);
 
+    const navigate = useNavigate();
+
+
     const totalBill = totalPriceAndDiscount.totalPrice - totalPriceAndDiscount.totalDiscount;
 
-    console.log(totalBill)
     const products = [...addToCart];
-    // console.log(products);
 
-    // console.log(products.length)
+    const handleCheckout = () => {
+        navigate('/dashboard/checkout?cartType=cart')
+    }
+
     if(products.length == 0){
         return (
             <div>
@@ -38,14 +43,16 @@ const CartPage = () => {
 
     return (
         <div>
-            <div className='w-11/12 md:container mx-auto mb-5'>
+            <div className='w-11/12 md:container mx-auto mb-5 flex flex-col gap-4 mt-4'>
                 {
                     
                     products.map(product => <CartCard product={product} />)
                 }
             </div>
+            
             <div className='w-11/12 md:container mx-auto mb-5 shadow-md border-2 border-black/5 rounded-md py-2 text-sm'>
                 <p className='font-bold text-black/70 p-2'>Your Bill</p>
+
                 <div className='font-medium text-black/50'>
 
                     <div className='border-t border-black/15 py-2 px-2 flex justify-between'>
@@ -60,14 +67,17 @@ const CartPage = () => {
 
                     <div className=' p-2 flex justify-between'>
                         <p>Total</p>
-                        <span className='font-bold text-[15px] text-black font-serif '>৳ {totalBill}</span>
+                        <span className='font-bold text-[15px] text-black'><span className='font-serif'>৳</span> {totalBill}</span>
                     </div>
 
-                    <div className='m-2 text-center'>
-                        <button className=' py-2.75 w-full rounded-md duration-75 cursor-pointer active:translate-y-px hover:bg-[#209C60] bg-[#2BB673] font-bold text-[16px] text-white'>Go To Checkout</button>
+                    <div className='m-2 text-center w-full'>
+                        
+                        <button onClick={handleCheckout} className=' py-2.75 w-full rounded-md duration-75 cursor-pointer active:translate-y-px hover:bg-[#209C60] bg-[#2BB673] font-bold text-[16px] text-white'>Go To Checkout</button>
+                        {/* <Link to={'/dashboard/checkout?cartType=cart'} className=' py-2.75 w-full rounded-md duration-75 cursor-pointer active:translate-y-px hover:bg-[#209C60] bg-[#2BB673] font-bold text-[16px] text-white'>Go To Checkout</Link> */}
                     </div>
                 </div>
             </div>
+
             <div>
                 <Footer />
             </div>

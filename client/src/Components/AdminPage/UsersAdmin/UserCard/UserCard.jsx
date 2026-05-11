@@ -11,7 +11,7 @@ import { toast } from 'react-toastify';
 import {addLocalStorageData} from './../../../Utils/LocalStorage';
 
 
-const CartCard = ({product}) => {
+const UserCard = ({product}) => {
     const [cartQuantity, setCartQuantity] = useState(product.cartQuantity);
 
 
@@ -111,4 +111,4 @@ const CartCard = ({product}) => {
     );
 };
 
-export default CartCard;
+export default UserCard;

@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { useParams } from 'react-router';
+import { Link, useParams } from 'react-router';
 import Footer from '../../Seared/Footer/Footer';
 
 // all icons
@@ -7,6 +7,7 @@ import { FaPlus } from "react-icons/fa";
 import { FaMinus } from "react-icons/fa";
 
 import { AddToCartContext } from '../../../Context/AddToCartContext';
+import { AddToBuyContext } from '../../../Context/AddBuyProduct';
 
 
 const ProductDetails = () => {
@@ -29,8 +30,8 @@ const ProductDetails = () => {
 
 
     // add to cart data
-    const { addToCart, setAddToCart, handleLocalStorageData,} = useContext(AddToCartContext)
-    // console.log(setAddToCart)
+    const { handleLocalStorageData } = useContext(AddToCartContext)
+    const { handleSessionStorageData } = useContext(AddToBuyContext)
 
     
     const  url = `${import.meta.env.VITE_API_URL}/products/${slug}`;
@@ -45,12 +46,11 @@ const ProductDetails = () => {
     const handleSetAddToCart = () => {
         console.log(cartQuantity)
         handleLocalStorageData(product, cartQuantity);
-        
     }
-    console.log(addToCart)
-
-    // console.log(product);
-    // console.log(product)
+    
+    const handleSetAddBuyProduct = () => {
+        handleSessionStorageData(product, cartQuantity);
+    }
 
     return (
         <div className='w-11/12 md:container  mx-auto mt-5'>
@@ -87,8 +87,8 @@ const ProductDetails = () => {
                     </div>
 
                     <div className='flex w-full bg-green-50 gap-2 mt-2 mt-5'>
-                        <button onClick={() => handleSetAddToCart()} className="btn bg-[#7F7F7F] font-bold text-[16px] text-white flex-1 ">ADD TO CART</button>
-                        <button className='btn bg-[#1F5DA0] font-bold text-[16px] text-white flex-1 '>BUY NOW</button>
+                        <button onClick={handleSetAddToCart} className="btn bg-[#7F7F7F] font-bold text-[16px] text-white flex-1 ">ADD TO CART</button>
+                        <Link onClick={handleSetAddBuyProduct} to={'/dashboard/checkout?cartType=buy'} className='btn bg-[#1F5DA0] font-bold text-[16px] text-white flex-1 '>BUY NOW</Link>
                     </div>
 
                     <div className='mt-5 shadow-sm rounded-md'>

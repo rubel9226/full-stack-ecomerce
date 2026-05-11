@@ -7,12 +7,11 @@ import { toast } from 'react-toastify';
 export const AddToCartContext = createContext();
 
 const AddToCartProvider = ({children }) => {
-    
-    const [addToCart, setAddToCart] = useState(getLocalStorageData);
+    const [addToCart, setAddToCart] = useState(getLocalStorageData('cartData'));
     
     
     const totalPriceAndDiscount = addToCart.reduce((acc, item) => {
-        const price = item.cartQuantity * item.newPrice;
+        const price = item.cartQuantity * item.price;
         const discount = item.cartQuantity * item.discount;
 
         return {
@@ -39,16 +38,14 @@ const AddToCartProvider = ({children }) => {
                      : item
                 }
              );
-
-        
-        toast.success("Cart quantity updated successfully")
+            toast.success("Cart quantity updated successfully")
         }else{
             console.log(cartQuantity);
             cart.unshift({...product, cartQuantity});
             toast.success("Added to cart successfully")
         }
         
-        addLocalStorageData(cart);
+        addLocalStorageData('cartData', cart);
         setAddToCart(cart);
     }
 

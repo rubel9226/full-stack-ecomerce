@@ -6,18 +6,20 @@ import router from './Router/Router'
 import AddToCartProvider from './Context/AddToCartContext';
 import { ToastContainer } from 'react-toastify';
 import AuthProvider from './Context/AuthProvider';
+import AddToBuyProvider from './Context/AddBuyProduct';
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
 
     <AuthProvider>
       <AddToCartProvider>
-        <RouterProvider router={router} ></RouterProvider>
-        <ToastContainer />
-      </AddToCartProvider>
+        <AddToBuyProvider>
+          <RouterProvider router={router} ></RouterProvider>
+          <ToastContainer className='z-999999' />
+        </AddToBuyProvider>
 
+      </AddToCartProvider>
     </AuthProvider>
-    
   </StrictMode>,
 )
 

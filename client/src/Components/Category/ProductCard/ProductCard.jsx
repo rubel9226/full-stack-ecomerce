@@ -6,7 +6,7 @@ const ProductCard = ({product}) => {
     return (
         <div className='shadow-sm border border-transparent rounded-md hover:border-indigo-800 duration-200'>{
                 product?.discount !== 0 ? (
-                    <Link to={`/product/${product?.slug}`} className="">
+                    <Link to={`/dashboard/product/${product?.slug}`} className="">
                         <div >
                             <img className='aspect-square rounded-t-md' src={product.image} alt={product.name} />
                         </div>
@@ -22,11 +22,11 @@ const ProductCard = ({product}) => {
                             <div className=''>
                                 <p className='line-clamp-2 font-medium text-black/60 text-[12px] font-serif'>৳ {product.description}</p>
                             </div>
-        
+                        
                         </div>
                     </Link>
                 ) : (
-                    <Link to={`/product/${product.slug}`} className='rounded-md shadow-sm'>
+                    <Link to={`/dashboard/product/${product.slug}`} className='rounded-md shadow-sm'>
                         <div>
                             <img className='w-full rounded-t-md aspect-square' src={product.image} alt={product.name} />
                         </div>

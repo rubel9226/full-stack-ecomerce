@@ -4,19 +4,21 @@ import { BsFillGridFill } from "react-icons/bs";
 import { IoCartSharp } from "react-icons/io5";
 import { RiVerifiedBadgeFill } from "react-icons/ri";
 import { FaUser } from "react-icons/fa6";
-import { Link, NavLink } from 'react-router';
+import { Link, Navigate, NavLink, useNavigate } from 'react-router';
 
 import './FooterNav.css';
 import { AddToCartContext } from '../../../Context/AddToCartContext';
 import { AuthContext } from './../../../Context/AuthProvider';
+import { logoutUser } from './../../../API/authApi/authApi';
+import { toast } from 'react-toastify';
 
 
 
 const FooterNav = () => {
     const drawerRef = useRef(null);
     const [menuType, setMenuType] = useState('category');
-    const { user } = useContext(AuthContext);
-    console.log(user);
+    const { user, setUser } = useContext(AuthContext);
+    const navigate = useNavigate();
 
     const { addToCart } = useContext(AddToCartContext);
     // console.log(addToCart.length);
@@ -29,6 +31,17 @@ const FooterNav = () => {
         .then(data => setCategories(data.payload))
         .catch(err => console.log(err));
     }, []);
+
+    const handleLogout = async () => {
+        try {
+            await logoutUser();
+            setUser(null);
+            navigate('/', {replace: true});
+        } catch (error) {
+            console.log(error)    
+        }
+        
+    }
     
 
     return (
@@ -100,45 +113,71 @@ const FooterNav = () => {
 
                     <div className="drawer-side">
                         <label htmlFor="my-drawer-1" aria-label="close sidebar" className="drawer-overlay"></label>
-                        <ul className="menu bg-base-200 min-h-full w-80 p-0">
+                        <ul className=" menu bg-base-200 min-h-full w-80 p-0">
 
-                            {
-                                menuType === 'category' ?
-                                    <div className='flex flex-col'>
-                                        <h2 className='text-xl bg-[#1F5DA0] text-white font-semibold px-4 py-3 leading-8'>All Categories</h2>
+                            {menuType === 'category' ?
+                                <div className='flex flex-col'>
+                                    <h2 className='text-xl bg-[#1F5DA0] text-white font-semibold px-4 py-3 leading-8'>All Categories</h2>
 
-                                        {categories.map((category, index) => 
-                                            <Link 
-                                                key={index}  
-                                                to={`catalog/${category.slug}`} 
-                                                className='pl-6 py-2 text-[16px] capitalize text-black font-normal px-7 btn border-none w-full justify-start'
-                                                onClick={() => {
-                                                    setMenuType('category'); 
-                                                    drawerRef.current && (drawerRef.current.checked = false) }
-                                                }>{category.name}</Link>
+                                    {categories.map((category, index) => 
+                                        <Link 
+                                            key={index}  
+                                            to={`catalog/${category.slug}`} 
+                                            className='pl-6 py-2 text-[16px] capitalize text-black font-normal px-7 btn border-none w-full justify-start'
+                                            onClick={() => {
+                                                setMenuType('category'); 
+                                                drawerRef.current && (drawerRef.current.checked = false) }
+                                            }>{category.name}</Link>
     
-                                        )}
+                                    )}
 
-                                    </div>
-                                : menuType === 'account' ? <div>
+                                </div>
+                            : menuType === 'account' &&
+                                <div className=' '>
                                     <h2 className='text-xl bg-[#1F5DA0] text-white font-semibold px-4 py-3 leading-8'>My Account</h2>
-                                    <div className='text-center pt-4 pb-6 border-b'>
-                                        <div className='inline-block bg-green-300 h-15 w-15 rounded-full text-center'>
-                                            <img className='' src="https://res.cloudinary.com/dext9i4ab/image/upload/v1776981200/Trivon_fashion/products/jlssvfhorilpqzzmtkuh.avif" alt="" />
-                                        </div>
-                                        <div>
-                                            <h3 className='text-[15px] font-semibold'>User Account</h3>
-                                        </div>
-                                    </div>
+                                    { user 
+                                        ? <div className=''>
+                                            <div className='text-center pt-4 pb-6 border-b'>
+                                                <div className='inline-block p-0.5 border h-16 w-16 rounded-full text-center'>
+                                                    <img className='rounded-full' src={user.image} alt="" />
+                                                </div>
+                                                <div>
+                                                    <h3 className='text-[15px] font-semibold'>{user.name}</h3>
+                                                    <p>{user.phone}</p>
+                                                </div>
+                                            </div>
+                                            <div className='select-none min-h-[75vh] flex flex-col justify-between'>
+                                                <div className=' font-medium flex py-5 flex-col items-start'>
+                                                    <Link to={'/dashboard'} className='font-normal px-7 text-[15px] text-black/70 btn border-none w-full justify-start'>Dashboard</Link>
+                                                    <Link to={'/dashboard/my-orders'} className='font-normal px-7 text-[15px] text-black/70 btn border-none w-full justify-start'>My Order</Link>
+                                                    <Link to='dashboard/account' className='font-normal px-7 text-[15px] text-black/70 btn border-none w-full justify-start'>My Profile</Link>
+                                                    <Link to='order-tracking' className='font-normal px-7 text-[15px] text-black/70 btn border-none w-full justify-start'>Order Tracking</Link>
+                                                </div>
+                                                <div className='p-5 border-t border-black/10'>
+                                                    <div onClick={() => {
+                                                        handleLogout();
+                                                        drawerRef.current && (drawerRef.current.checked = false) }} className='active:translate-y-px cursor-pointer hover:bg-[#c01414] text-[18px] font-bold bg-[#D71110] text-white text-center inline-block w-full py-2.5 rounded-lg'>Logout</div>
+                                                </div>
 
-                                    <div className=' font-medium flex py-5 flex-col items-start'>
-                                        <Link to={'/login'} className='font-normal px-7 text-[15px] text-black/70 btn border-none w-full justify-start'>Login</Link>
-                                        <Link to={'/register'} className='font-normal px-7 text-[15px] text-black/70 btn border-none w-full justify-start'>Register</Link>
-                                        <button className='font-normal px-7 text-[15px] text-black/70 btn border-none w-full justify-start'>Order Tracking</button>
-                                    </div>
-                                </div> : ''
-                            }
-                            {/* Sidebar content here */}
+                                            </div>
+                                        </div>
+                                        : <div className='select-none'>
+                                            <div className='text-center pt-4 pb-6 border-b'>
+                                                <div className='inline-block p-0.5 border h-16 w-16 rounded-full text-center'>
+                                                    <img className='' src="https://res.cloudinary.com/dext9i4ab/image/upload/v1776982579/user-circles-set_78370-4704_kxxfvq.png" alt="" />
+                                                </div>
+                                                <div>
+                                                    <h3 className='text-[15px] font-semibold'>User Account</h3>
+                                                </div>
+                                            </div>
+
+                                            <div className=' font-medium flex py-5 flex-col items-start'>
+                                                <Link to={'/login'} className='font-normal px-7 text-[15px] text-black/70 btn border-none w-full justify-start'>Login</Link>
+                                                <Link to={'/register'} className='font-normal px-7 text-[15px] text-black/70 btn border-none w-full justify-start'>Register</Link>
+                                                <button className='font-normal px-7 text-[15px] text-black/70 btn border-none w-full justify-start'>Order Tracking</button>
+                                            </div>
+                                        </div> }
+                                </div>}
                             
                         </ul>
                     </div>

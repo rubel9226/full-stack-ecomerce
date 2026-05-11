@@ -1,16 +1,16 @@
 import React from 'react';
 
-const getLocalStorageData = () => {
-    const allData = localStorage.getItem('cartData');
+const getLocalStorageData = (name) => {
+    const allData = localStorage.getItem(name);
     if(allData) return JSON.parse(allData);
 
     return [];
 }
 
-const addLocalStorageData = (data) => {
+const addLocalStorageData = (name, data) => {
     // const allData = getLocalStorageData();
     // allData.push(data);
-    localStorage.setItem('cartData', JSON.stringify(data));
+    localStorage.setItem(name, JSON.stringify(data));
 }
 
 

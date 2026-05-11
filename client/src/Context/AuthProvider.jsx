@@ -8,19 +8,20 @@ const AuthProvider = ({children}) => {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
 
-
-    useEffect(() => {
+    const handleGetMe = () => {
         api.get('auth/me')
             .then(res => setUser(res.data.payload.user))
             .catch(() => setUser(null))
             .finally(() => setLoading(false));
-    }, []);
-    
+    }
 
-    console.log(user);
+
+    useEffect(() => {
+        handleGetMe();
+    }, []);
 
     const value = {
-        user, setUser, loading
+        user, setUser, loading, getMe: handleGetMe,
     }
 
     return (

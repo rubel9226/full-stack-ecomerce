@@ -1,17 +1,17 @@
 import React from 'react';
 import Header from '../Components/Seared/Header/Header';
 import { Outlet } from 'react-router';
-import FooterNav from '../Components/Seared/FooterNav/FooterNav';
 
-
-const MainLayout = () => {
+const PurchaseLayout = () => {
     return (
-        <div className='pb-20 md:pb-0'>
+        <div>
             <Header />
             <Outlet />
-            <FooterNav />
+
+            
         </div>
     );
 };
 
-export default MainLayout;
+
+export default PurchaseLayout;

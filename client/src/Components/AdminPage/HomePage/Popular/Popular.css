@@ -1,0 +1,9 @@
+
+.popular-slide {
+  height: 150px;
+  text-align: center;
+}
+.popular-slide img {
+
+  z-index: 0;
+}
