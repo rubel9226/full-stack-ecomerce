@@ -1,12 +1,14 @@
 import { useState } from "react";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 
 // icons
 import { MdArrowBackIos } from "react-icons/md";
+import api from './../../API/Axios/api';
 
 
 export default function Register() {
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -15,6 +17,7 @@ export default function Register() {
     confirm: "",
     image: null
   });
+  const navigate = useNavigate();
 
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -23,10 +26,37 @@ export default function Register() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(formData);
-    // এখানে API call করবে
+
+    try {
+      setLoading(true);
+
+      const data = new FormData();
+
+      data.append("name", formData.name);
+      data.append("email", formData.email);
+      data.append("phone", formData.phone);
+      data.append("password", formData.password);
+      data.append("confirm", formData.confirm);
+      data.append("image", formData.image); // 👈 IMPORTANT
+
+      const res = await api.post('/users/register', data, {
+        headers: {
+          "Content-Type": "multipart/form-data"
+        }
+      });
+
+      navigate('/verify-code', {
+        state: { email: formData.email }
+      });
+      console.log(res?.data?.payload);
+
+    } catch (error) {
+      console.log(error?.response?.data?.message);
+    }  finally{
+      setLoading(false);
+    }
   };
 
   return (
@@ -145,7 +175,7 @@ export default function Register() {
 
               {/* Button */}
               <button type="submit" className="w-full font-semibold bg-[#1F5DA0] text-white py-2 rounded-lg hover:bg-[#104278] transition">
-                Create Account
+                {loading ? 'Loading...' : ' Create Account'}
               </button>
 
             </form>

@@ -17,6 +17,9 @@ import PaymentPage from "../Components/UserPage/PaymentPage/PaymentPage";
 import AccountLayout from "../layout/AccountLayout";
 import AccountPage from "../Components/UserPage/AccountPage/Account/AccountPage";
 import MyOrders from "../Components/UserPage/AccountPage/MyOrders/MyOrders";
+import PaymentSuccess from "../Components/UserPage/PaymentPage/PaymentSuccess";
+import SearchPage from "../Pages/SearchPage/SearchPage";
+import BestDealsMorePage from "../Pages/BestDealsPageShowMore/BestDealsMorePage";
 
 
 // import CheckoutPage from "../Components/UserPage/CheckoutPage";
@@ -32,8 +35,16 @@ const userRoutes = [
     errorElement: <ErrorPage />,
     children: [
       { index: true, Component: HomePage },
-      { path: "best-deals", Component: BestDealsPage },
+      { 
+        path: "best-deals", 
+        children: [
+          {index: true, Component: BestDealsPage},
+          {path: ':category', Component: BestDealsMorePage}
+        ]
+        
+      },
       { path: "catalog/:slug", Component: CategoryPage },
+      { path: "search", Component: SearchPage },
       { path: "product/:slug", Component: ProductDetails },
       { path: "cart", Component: CartPage },
     ],
@@ -49,6 +60,7 @@ const userRoutes = [
     children: [
       { path: '/dashboard/checkout', Component: CheckoutPage },
       { path: '/dashboard/payment', Component: PaymentPage },
+      { path: '/dashboard/payment-success', Component: PaymentSuccess },
     ],
   },
   {

@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 import { BsArrowRight } from "react-icons/bs";
 
@@ -14,99 +14,198 @@ import './NewCollection.css';
 
 // import required modules
 import { FreeMode } from 'swiper/modules';
+import api from '../../../API/Axios/api';
+import { Link } from 'react-router';
 
 export default function NewCollection() {
-  const datas = [
-    { price: 100, img: 'https://saralifestyle.com/_next/image?url=https%3A%2F%2Fprod.saralifestyle.com%2FImages%2FProducts%2Fthumbnail%2Fthumbnail_two%2Ff2d75f96495c4422a51624083bc27f31.jpeg&w=384&q=75', description: 'this product is vary dengarus. and I also love this product and we go this product area.', Available: 10, save: 100 },
-    { price: 150, img: 'https://saralifestyle.com/_next/image?url=https%3A%2F%2Fprod.saralifestyle.com%2FImages%2FContent%2F0e5dfb4336d84024b6a48814d3ff0ccc.jpeg&w=750&q=75', description: 'Lorem ipsum 2this product is vary dengarus. and I also love this product and we go this product area.', Available: 15, save: 50 },
-    { price: 200, img: 'https://saralifestyle.com/_next/image?url=https%3A%2F%2Fprod.saralifestyle.com%2FImages%2FProducts%2Fthumbnail%2Fthumbnail_two%2Ff5c53b10e5fe47ff936c6bd05f887353.jpeg&w=384&q=75', description: 'Lorem ipsum 3this product is vary dengarus. and I also love this product and we go this product area.', Available: 5, save: 70 },
-    { price: 120, img: 'https://saralifestyle.com/_next/image?url=https%3A%2F%2Fprod.saralifestyle.com%2FImages%2FProducts%2Fthumbnail%2Fthumbnail_two%2Fdccbbbb21d9042449c39507f25708bb4.jpeg&w=384&q=75', description: 'Lorem ipsum 4this product is vary dengarus. and I also love this product and we go this product area.', Available: 12, save: 60 },
-    { price: 900, img: 'https://saralifestyle.com/_next/image?url=https%3A%2F%2Fprod.saralifestyle.com%2FImages%2FProducts%2Fthumbnail%2Fthumbnail_two%2F72e3ed84d48a42adb306e83d3eb3edee.jpeg&w=384&q=75', description: 'Lorem ipsum 5this product is vary dengarus. and I also love this product and we go this product area.', Available: 8, save: 30 },
-    { price: 300, img: 'https://saralifestyle.com/_next/image?url=https%3A%2F%2Fprod.saralifestyle.com%2FImages%2FProducts%2Fthumbnail%2Fthumbnail_two%2Fdccbbbb21d9042449c39507f25708bb4.jpeg&w=384&q=75', description: 'Lorem ipsum 6this product is vary dengarus. and I also love this product and we go this product area.', Available: 20, save: 150 },
-    { price: 250, img: 'https://saralifestyle.com/_next/image?url=https%3A%2F%2Fprod.saralifestyle.com%2FImages%2FProducts%2Fthumbnail%2Fthumbnail_two%2Ff5c53b10e5fe47ff936c6bd05f887353.jpeg&w=384&q=75', description: 'Lorem ipsum 7this product is vary dengarus. and I also love this product and we go this product area.', Available: 7, save: 80 },
-    { price: 180, img: 'https://saralifestyle.com/_next/image?url=https%3A%2F%2Fprod.saralifestyle.com%2FImages%2FProducts%2Fthumbnail%2Fthumbnail_two%2Fbcb992d86e2149b3ade268d050d1843a.jpeg&w=384&q=75', description: 'Lorem ipsum 8this product is vary dengarus. and I also love this product and we go this product area.', Available: 14, save: 60 },
-    { price: 750, img: 'https://saralifestyle.com/_next/image?url=https%3A%2F%2Fprod.saralifestyle.com%2FImages%2FProducts%2Fthumbnail%2Fthumbnail_two%2Ff2d75f96495c4422a51624083bc27f31.jpeg&w=384&q=75', description: 'Lorem ipsum 9this product is vary dengarus. and I also love this product and we go this product area.', Available: 5, save: 25 },
-    { price: 600, img: 'https://saralifestyle.com/_next/image?url=https%3A%2F%2Fprod.saralifestyle.com%2FImages%2FProducts%2Fthumbnail%2Fthumbnail_two%2Ff2d75f96495c4422a51624083bc27f31.jpeg&w=384&q=75', description: 'Lorem ipsum 1this product is vary dengarus. and I also love this product and we go this product area.0', Available: 10, save: 20 },
-  ];
+  const [products, setProducts] = useState([]);
+    const [loading, setLoading] = useState(true); 
+
+    const handleGetPopularSection =async () => {
+      setLoading(true);
+        try {
+            const res = await api.get('/products/home-sections/all-product?section=newCollection');            
+            setProducts(res?.data?.payload);
+            console.log(res)
+        } catch (error) {
+            // 
+            console.log(error?.response?.data?.message);
+        } finally{
+          setLoading(false);
+        }
+    }
+
+    useEffect(() => {
+        handleGetPopularSection();
+    }, []);  
 
 
   return (
-    <>
-      <section className="py-5 bg-[#F4F4FB] bg-cover bg-center w-full transform my-5 md:rounded-2xl">
-        <div className="px-5">
-            
-            <div className='text-black/90 font-semibold flex justify-between items-center'>
-              <h3 className="text-xl mb-2 mt-5">New Collection</h3>
-              <p className='text-sm flex items-center gap-1 text-blue-800/90'>See More <BsArrowRight className='text-xl' /> </p>
-            </div>
-            <div>
-              <Swiper
-                spaceBetween={8}
-                freeMode={true}
-                centeredSlides={false}
-                pagination={{
-                  clickable: true,
-                }}
-                breakpoints={{
-                  320: {
-                      slidesPerView: 2.1695,
-                  },
-                  640: {
-                      slidesPerView: 3.5,
-                  },
-                  768: {
-                      slidesPerView: 4.5,
-                  },
-                  1024: {
-                      slidesPerView: 5,
-                  },
-                  1280: {
-                      slidesPerView: 6,
-                  },
-                }}
-                modules={[FreeMode]}
-                className="mySwiper"
-              >
-                <div>
-                  {datas.map((d) => {
-                    return (
-                      <SwiperSlide className='rounded-md py-3 bg-white'>
-                      
-                            <div className="relative">
-                                <p className="absolute bg-red-600 text-white text-[12px] px-2 top-2 rounded-r-md">Save <span className='text-[16px] font-bold leading-0'>৳</span> <span className='font-bold'>400</span></p>
-                                <img className="rounded-t-md w-full aspect-square" src={d.img} alt=""></img>
-                            </div>
-                            <div className=" px-2 text-center">
-                              <div className='flex gap-2 mt-1 justify-center'>
-                                <p className='font-bold '><span className='leading-0 font-serif'>৳</span> {d.price}</p>
-                              </div>
-                               <div className="inline-block w-3 h-3 rounded-sm bg-[#5261AD]"></div>
-                                <p className='overflow-hidden h-8 text-[12px] leading-4 font-semibold text-black/60'>Description: {d.description}</p>
-                            </div>
-                      </SwiperSlide>
-                        
+<section className="py-5 bg-[#F4F4FB] w-full my-5 md:rounded-2xl">
 
-                    )
-                })}
+  <div className="px-4 sm:px-5 md:px-6 lg:px-8 xl:px-10">
+
+    {/* Header */}
+    <div className='text-black/90 font-semibold flex justify-between items-center mb-3'>
+
+      <h3 className="font-semibold text-lg sm:text-xl md:text-2xl xl:text-3xl 2xl:text-[32px] capitalize">
+        New Collection 
+      </h3>
+
+      <div className='text-blue-800/90'>
+        <Link to={'catalog/clothing-and-fashion'} className='text-sm font-semibold md:text-base xl:text-xl flex items-center gap-0.5 md:gap-1 cursor-pointer'> 
+          See More 
+          <BsArrowRight className='text-lg md:text-xl xl:text-3xl' /> 
+        </Link>
+      </div> 
+    </div>
+
+    {
+      loading ? <Swiper freeMode={true} centeredSlides={false} modules={[FreeMode]} className="mySwiper" breakpoints={{ 320: { slidesPerView: 2.15, spaceBetween: 8, }, 480: { slidesPerView: 2.3, spaceBetween: 8, }, 640: { slidesPerView: 3.2, spaceBetween: 8, }, 768: { slidesPerView: 4.2, spaceBetween: 12, }, 1024: { slidesPerView: 5, spaceBetween: 12, }, 1280: { slidesPerView: 6, spaceBetween: 16, }}} >
+        {
+          Array(8).fill().map((_, index) => (
+            <SwiperSlide key={index} className="rounded-md overflow-hidden bg-white h-auto animate-pulse" > 
+      
+              <div className="relative"> 
+                <div className="absolute top-2 sm:top-3 left-0 w-16 h-5 bg-gray-300 rounded-r-md z-10"></div> 
+                <div className="w-full aspect-square bg-gray-300"></div> 
+              </div> 
+      
+              <div className="px-2 py-2 sm:px-3 sm:py-3 text-center"> 
+                <div className="flex justify-center items-center gap-2 mt-2">
+                  <div className="h-4 w-16 bg-gray-300 rounded"></div>
+                  <div className="h-3 w-12 bg-gray-200 rounded"></div>
                 </div>
-                
-                {/* <SwiperSlide className='min-h-40 bg-indigo-200'>Slide 2</SwiperSlide> */}
-                {/* <SwiperSlide className='min-h-40 bg-indigo-200'>Slide 3</SwiperSlide> */}
-                {/* <SwiperSlide className='min-h-40 bg-indigo-200'>Slide 4</SwiperSlide> */}
-                {/* <SwiperSlide className='min-h-40 bg-indigo-200'>Slide 5</SwiperSlide> */}
-                {/* <SwiperSlide className='min-h-40 bg-indigo-200'>Slide 6</SwiperSlide> */}
-                {/* <SwiperSlide className='min-h-40 bg-indigo-200'>Slide 7</SwiperSlide> */}
-                {/* <SwiperSlide className='min-h-40 bg-indigo-200'>Slide 8</SwiperSlide> */}
-                {/* <SwiperSlide className='min-h-40 bg-indigo-200'>Slide 9</SwiperSlide> */}
-              </Swiper>
-            </div>
-            
-        </div>
-    </section>
+      
+                <div className="inline-block w-3 h-3 rounded-sm bg-gray-300 mt-2"></div>
+      
+                <div className="mt-2 space-y-2 flex flex-col items-center">
+                  <div className="h-3 w-full bg-gray-200 rounded"></div>
+                  <div className="h-3 w-4/5 bg-gray-200 rounded"></div>
+                </div>
+      
+                <div className="mt-3 pt-3 border-t border-gray-200 flex justify-center">
+                  <div className="h-3 w-24 bg-gray-300 rounded"></div>
+                </div>
+      
+              </div> 
+            </SwiperSlide>
+          ))
+        }
+        </Swiper> 
+        :
+        <Swiper
+          freeMode={true}
+          centeredSlides={false}
+          modules={[FreeMode]}
+          className="mySwiper"
+
+          breakpoints={{
+            320: {
+              slidesPerView: 2.15,
+              spaceBetween: 8,
+            }, 
+            480: {
+              slidesPerView: 2.3,
+              spaceBetween: 8,
+            }, 
+            640: {
+              slidesPerView: 3.2,
+              spaceBetween: 8,
+            }, 
+            768: {
+              slidesPerView: 4.2,
+              spaceBetween: 12,
+            }, 
+            1024: {
+              slidesPerView: 5,
+              spaceBetween: 12,
+            }, 
+            1280: {
+              slidesPerView: 6,
+              spaceBetween: 16,
+            },
+          }}
+        > 
+          {products.map((product, index) => { 
+            return ( 
+              <SwiperSlide
+                key={index}
+                className='rounded-md overflow-hidden bg-white pb-2 sm:pb-3'
+              >
+
+                <Link to={`product/${product.slug}`}>
+                  <div className="relative">
+                    {
+                      product?.discount 
+                      ?
+                      <p className="absolute bg-red-600 text-white text-[10px] sm:text-[12px] px-2 top-2 sm:top-3 rounded-r-md z-10">
+                        Save
+                        <span className=' text-[10px] sm:text-[12px] font-bold ml-1'>
+                          ৳
+                        </span>
+                        <span className='font-bold'>
+                          {product?.discount}
+                        </span>
+                      </p>
+                      : ''
+                    }
+
+                    <img
+                      className="rounded-t-md w-full aspect-square object-cover"
+                      src={product.image}
+                      alt=""
+                    />
+
+                  </div> 
+
+                  <div className="px-2 sm:px-3 text-center mt-2">
+
+                    {/* Price */}
+                      <div className='whitespace-nowrap flex gap-1 sm:gap-2 mt-1 justify-center items-center'>
+
+                        <p className='font-bold text-sm sm:text-base whitespace-nowrap'>
+                          <span className='font-serif'>
+                            ৳
+                          </span>
+                          {product.newPrice}
+                        </p>
+
+                        {
+                          product?.discount ? <p className='font-bold old-price text-xs sm:text-sm text-black/50 line-through'>
+                            <span className='font-serif'>
+                              ৳
+                            </span>
+                            {product.price}
+                          </p> : ''
+                        } 
+                      </div>
+
+                    { 
+                      product?.variants?.color &&
+                      <div style={{ backgroundColor: product?.variants?.color }} className={`inline-block w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-sm mt-1`} />
+                    }
+                    
+                    {/* Description */}
+                    <p className='line-clamp-2 min-h-8 text-[10px] sm:text-[12px] leading-4 font-semibold text-black/60 mt-1'>
+
+                      {product.description}
+
+                    </p>
+
+                  </div> 
+                </Link> 
+
+              </SwiperSlide>
+
+            )
+          })} 
+        </Swiper>
+    }
 
 
-    
+  </div>
 
-    </>
+</section>
   );
 }

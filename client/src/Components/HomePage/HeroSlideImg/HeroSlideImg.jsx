@@ -29,7 +29,7 @@ export default function HeroSlideImg() {
           clickable: true,
         }}
         modules={[Autoplay, Pagination, Navigation]}
-        className="mySwiper rounded-xl w-3/3"
+        className="mySwiper rounded-xl w-3/3 overflow-visible"
       >
         <SwiperSlide>
             <img src="https://saralifestyle.com/_next/image?url=https%3A%2F%2Fprod.saralifestyle.com%2FImages%2FContent%2Ff5ee353ee2b646b8a8efa2361f37565a.jpeg&w=1080&q=75" alt="" />

@@ -1,61 +1,114 @@
 import React, { useEffect, useState } from 'react';
 import api from '../../../API/Axios/api';
+import Pagination from '../../CategoryPage/CategoryPagination/Pagination';
+import { toast } from 'react-toastify';
+import LoadingOrder from '../../../Components/Loading/LoadingOrder';
+import Footer from '../../../Components/AdminPage/Seared/Footer/Footer';
 
 const OrdersPageAdmin = () => {
-
+    const [loading, setLoading] = useState(false);
     const [allOrders, setAllOrders] = useState([]);
     const [loadingId, setLoadingId] = useState("");
+    const [status, setStatus] = useState("all");
+    const [page, setPage] = useState(1);
+    const [pagination, setPagination] = useState({});
+    const [orderStatusLength, setOrderStatusLength] = useState({});
+
+    console.log(orderStatusLength);
 
     useEffect(() => {
 
-        const getAllOrders = async () => {
-
-            try {
-
-                const res = await api.get('/orders');
-
-                setAllOrders(res?.data?.payload);
-
+        const getAllOrders = async () => { 
+            try { 
+                setLoading(true);
+                const res = await api.get(
+                    `/orders?status=${status}&page=${page}`
+                ); 
+                setAllOrders(res?.data?.payload?.orders); 
+                setPagination(
+                    res?.data?.payload?.pagination
+                ); 
+                setOrderStatusLength(
+                    res?.data?.payload?.status
+                ); 
             } catch (error) {
-                console.log(error);
+                console.log(error?.response?.data?.message);
+            } finally {
+                setLoading(false);
             }
         };
 
         getAllOrders();
 
-    }, []);
+    }, [status, page]);
+
+    // delete order 
+    const handleDelete =async (id) => {
+        if(confirm('Are you sure, delete this order.')){
+            try {
+                await api.put(`/orders/delete/${id}`);
+
+                setAllOrders((prev) => prev.filter((item) => item._id !== id ))
+            } catch (error) {
+                console.log(error?.response?.data?.message);
+            }
+        }
+    }
 
     // status update
-    const handleStatusChange = async (id, status) => {
+    const handleStatusChange = async (order, status) => { 
+        try { 
+            setLoadingId(order._id); 
+            await api.put(`/orders/update-status/${order._id}`, {status});
 
-        try {
-
-            setLoadingId(id);
-
-            await api.put(`/orders/update-status/${id}`, {
-                orderStatus: status
-            });
+            toast.success('Order status update successfully.')
 
             setAllOrders((prev) =>
                 prev.map((item) =>
-                    item._id === id
+                    item._id === order._id
                         ? { ...item, orderStatus: status }
                         : item
                 )
             );
+            
+
+            const previousStatus = order.orderStatus;
+            // status length update
+            setOrderStatusLength((prev) => ({
+                ...prev,
+                [previousStatus]:
+                    prev[previousStatus] > 0
+                        ? prev[previousStatus] - 1
+                        : 0,
+
+                [status]: (prev[status] || 0) + 1,
+            }));
 
         } catch (error) {
-            console.log(error);
+            console.log(error?.response?.data?.message);
         } finally {
             setLoadingId("");
         }
     };
 
+
+    const statusOptions = {
+        pending: ["confirmed", "cancelled"],
+
+        confirmed: ["processing", "cancelled"],
+
+        processing: ["shipped"],
+
+        shipped: ["delivered"],
+
+        delivered: [],
+
+        cancelled: [],
+    };
+
     // status color
-    const getStatusColor = (status) => {
-
-        switch(status){
-
+    const getStatusColor = (status) => { 
+        switch(status){ 
             case 'pending':
                 return 'bg-yellow-100 text-yellow-700 border-yellow-200';
 
@@ -80,549 +133,224 @@ const OrdersPageAdmin = () => {
     };
 
     return (
+        <div>
+            <div className='p-3 md:p-5 min-h-[60vh]'>
+                
 
-        <div className='p-3 md:p-5 bg-[#f6f9fc] min-h-screen'>
-
-            {/* top section */}
-            <div className='flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-7'>
-
-                <div>
-
-                    <h2 className='text-2xl md:text-3xl font-bold text-black/80'>
-                        Orders Management
-                    </h2>
-
-                    <p className='text-sm text-black/50 mt-1'>
-                        Manage and track all customer orders
-                    </p>
+                <div className='flex text-sm gap-1 mb-3 flex-wrap'>
+                    <button
+                        onClick={() => {setStatus('all')}}
+                        className={`text-xs px-3 py-1 rounded-full border capitalize transition-all
+                        ${
+                            status === 'all'
+                                ? "bg-[#026EE2] text-white border-[#026EE2]"
+                                : "bg-white"
+                        }`}>
+                        All 
+                    </button>
+                    <button
+                        onClick={() => {setStatus('pending')}}
+                        className={`text-xs px-3 py-1 rounded-full border capitalize transition-all
+                        ${
+                            status === 'pending'
+                                ? "bg-[#026EE2] text-white border-[#026EE2]"
+                                : "bg-white"
+                        }`}>
+                        pending {orderStatusLength.pending}
+                    </button>
+                    <button
+                        onClick={() => {setStatus('confirmed')}}
+                        className={`text-xs px-3 py-1 rounded-full border capitalize transition-all
+                        ${
+                            status === 'confirmed'
+                                ? "bg-[#026EE2] text-white border-[#026EE2]"
+                                : "bg-white"
+                        }`}>
+                        confirmed {orderStatusLength.confirmed}
+                    </button>
+                    <button
+                        onClick={() => {setStatus('processing')}}
+                        className={`text-xs px-3 py-1 rounded-full border capitalize transition-all
+                        ${
+                            status === 'processing'
+                                ? "bg-[#026EE2] text-white border-[#026EE2]"
+                                : "bg-white"
+                        }`}>
+                        processing {orderStatusLength.processing}
+                    </button>
+                    <button
+                        onClick={() => {setStatus('shipped')}}
+                        className={`text-xs px-3 py-1 rounded-full border capitalize transition-all
+                        ${
+                            status === 'shipped'
+                                ? "bg-[#026EE2] text-white border-[#026EE2]"
+                                : "bg-white"
+                        }`}>
+                        shipped {orderStatusLength.shipped}
+                    </button>
+                    <button
+                        onClick={() => {setStatus('delivered')}}
+                        className={`text-xs px-3 py-1 rounded-full border capitalize transition-all
+                        ${
+                            status === 'delivered'
+                                ? "bg-[#026EE2] text-white border-[#026EE2]"
+                                : "bg-white"
+                        }`}>
+                        delivered {orderStatusLength.delivered}
+                    </button>
+                    <button
+                        onClick={() => {setStatus('cancelled')}}
+                        className={`text-xs px-3 py-1 rounded-full border capitalize transition-all
+                        ${
+                            status === 'cancelled'
+                                ? "bg-[#026EE2] text-white border-[#026EE2]"
+                                : "bg-white"
+                        }`}>
+                        cancelled
+                    </button>
 
                 </div>
-
-                {/* stats */}
-                <div className='flex flex-wrap gap-3'>
-
-                    <div className='bg-white px-5 py-4 rounded-2xl shadow-sm border min-w-[140px]'>
-
-                        <p className='text-sm text-black/50'>
-                            Total Orders
-                        </p>
-
-                        <h3 className='text-2xl font-bold mt-1'>
-                            {allOrders?.length}
-                        </h3>
-
-                    </div>
-
-                    <div className='bg-white px-5 py-4 rounded-2xl shadow-sm border min-w-[140px]'>
-
-                        <p className='text-sm text-black/50'>
-                            Delivered
-                        </p>
-
-                        <h3 className='text-2xl font-bold text-green-600 mt-1'>
-
-                            {
-                                allOrders?.filter(
-                                    item => item?.orderStatus === 'delivered'
-                                ).length
-                            }
-
-                        </h3>
-
-                    </div>
-
-                    <div className='bg-white px-5 py-4 rounded-2xl shadow-sm border min-w-[140px]'>
-
-                        <p className='text-sm text-black/50'>
-                            Pending
-                        </p>
-
-                        <h3 className='text-2xl font-bold text-yellow-600 mt-1'>
-
-                            {
-                                allOrders?.filter(
-                                    item => item?.orderStatus === 'pending'
-                                ).length
-                            }
-
-                        </h3>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-            {/* mobile cards */}
-            <div className='grid grid-cols-1 gap-5 lg:hidden'>
 
                 {
-                    allOrders?.map((order) => (
+                    loading? <LoadingOrder /> 
+                    :
+                    allOrders.length === 0 ? <div className='min-h-[40vh] flex flex-col justify-center items-center text-[16px] text-center px-4'>
+                        <h3 className='text-xl font-semibold text-black/60 mb-2'>
+                            No Orders Found
+                        </h3>
 
-                        <div
-                            key={order?._id}
-                            className='bg-white rounded-3xl border border-gray-200 shadow-sm overflow-hidden'
-                        >
+                        <p className='text-gray-500'>
+                            There are currently no orders available.
+                        </p>
+                    </div>
+                    :
+                    <div className='columns-1 sm:columns-2 md:columns-3 lg:columns-4 gap-5 space-y-5 sm:space-y-8 lg:gap-8'>
+                        {  
+                            allOrders?.map((order) => {
+                                console.log(order);
+                                return(      
+                                    <div key={order?._id} className='bg-white rounded-3xl border border-gray-200 shadow-sm overflow-hidden' >
+                                        {/* header */}
+                                        <div className='p-4 border-b bg-linear-to-r from-[#1F5DA0] to-[#2BB673] text-white'>
+                                            <div className='flex items-start justify-between gap-3'>
+                                                <div>
+                                                    <p className='text-lg font-bold'> {order?.orderId} </p>
+                                                    <p className='text-xs text-white/80 mt-1'> { new Date(order?.createdAt) .toLocaleDateString() } </p>
+                                                </div>
+                                                <span className={` text-xs px-3 py-1 rounded-full border capitalize backdrop-blur-md ${getStatusColor(order?.orderStatus)} `} >
+                                                    {order?.orderStatus}
+                                                </span>
+                                            </div>
+                                        </div>
 
-                            {/* header */}
-                            <div className='p-4 border-b bg-gradient-to-r from-[#026EE2] to-[#0a84ff] text-white'>
-
-                                <div className='flex items-start justify-between gap-3'>
-
-                                    <div>
-
-                                        <p className='text-lg font-bold'>
-                                            {order?.orderId}
-                                        </p>
-
-                                        <p className='text-xs text-white/80 mt-1'>
-                                            {
-                                                new Date(order?.createdAt)
-                                                .toLocaleDateString()
-                                            }
-                                        </p>
-
-                                    </div>
-
-                                    <span
-                                        className={`
-                                            text-xs
-                                            px-3
-                                            py-1
-                                            rounded-full
-                                            border
-                                            capitalize
-                                            backdrop-blur-md
-                                            ${getStatusColor(order?.orderStatus)}
-                                        `}
-                                    >
-                                        {order?.orderStatus}
-                                    </span>
-
-                                </div>
-
-                            </div>
-
-                            {/* body */}
-                            <div className='p-4'>
-
-                                {/* customer */}
-                                <div className='mb-5'>
-
-                                    <p className='text-xs text-black/50 uppercase tracking-wide'>
-                                        Customer
-                                    </p>
-
-                                    <h3 className='font-semibold text-lg capitalize mt-1'>
-                                        {order?.shippingAddress?.name}
-                                    </h3>
-
-                                    <p className='text-sm text-black/60 mt-1'>
-                                        {order?.shippingAddress?.phone}
-                                    </p>
-
-                                </div>
-
-                                {/* products */}
-                                <div className='space-y-4'>
-
-                                    {
-                                        order?.products?.map((item) => (
-
-                                            <div
-                                                key={item?._id}
-                                                className='flex gap-3 items-center'
-                                            >
-
-                                                <img
-                                                    src={item?.image}
-                                                    alt=""
-                                                    className='w-16 h-16 rounded-2xl object-cover border'
-                                                />
-
-                                                <div className='flex-1'>
-
-                                                    <p className='font-medium line-clamp-1'>
-                                                        {item?.name}
-                                                    </p>
-
-                                                    <div className='flex items-center justify-between mt-2'>
-
-                                                        <p className='text-sm text-black/50'>
-                                                            Qty: {item?.quantity}
-                                                        </p>
-
-                                                        <p className='font-semibold'>
-
-                                                            <span className='font-[Hind_Siliguri]'>
-                                                                ৳
-                                                            </span>
-
-                                                            {item?.newPrice}
-
-                                                        </p>
-
+                                        {/* body */}
+                                        <div className='p-4'> 
+                                            {/* customer */}
+                                            <div className='mb-5'> 
+                                                <p className='text-xs text-black/50 uppercase tracking-wide'> Customer</p> 
+                                                <h3 className='font-semibold text-lg capitalize mt-1'> {order?.shippingAddress?.name} </h3> 
+                                                <p className='text-sm text-black/60 mt-1'> {order?.shippingAddress?.phone} </p> 
+                                            </div> 
+                                            {/* products */}
+                                            <div className='space-y-4'> 
+                                                {order?.products?.map((item) => ( 
+                                                    <div key={item?._id} className='flex gap-3 items-center' > 
+                                                        <img src={item?.image} alt="" className='w-16 h-16 rounded-2xl object-cover border' /> 
+                                                        <div className='flex-1'> 
+                                                            <p className='font-medium line-clamp-1'> {item?.name} </p> 
+                                                            <div className='flex items-center justify-between mt-2'> 
+                                                                <p className='text-sm text-black/50'> Qty: {item?.quantity} </p> 
+                                                                <p className='font-semibold'><span className='font-[Hind_Siliguri]'> ৳ </span>{item?.newPrice}</p> 
+                                                            </div> 
+                                                        </div> 
                                                     </div>
+                                                ))}
+                                            </div> 
 
+                                            {/* bottom */}
+                                            <div className='mt-6 pt-5 border-t'> 
+                                                <div className='flex items-center justify-between mb-4'> 
+                                                    <div> 
+                                                        <p className='text-xs text-black/50'> Payment </p> 
+                                                        <span className={` inline-block mt-1 text-xs px-3 py-1 rounded-full capitalize
+                                                            ${order?.payment?.status === 'paid' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700' }`}
+                                                        >
+                                                            {order?.payment?.status}
+                                                        </span> 
+                                                    </div> 
+                                                    <div className='text-right'> 
+                                                        <p className='text-xs text-black/50'> Total </p> 
+                                                        <h3 className='text-2xl font-bold'> 
+                                                            <span className='font-[Hind_Siliguri]'> ৳ </span>
+                                                            {order?.pricing?.total}
+                                                        </h3>
+                                                    </div>
                                                 </div>
 
+                                                {/* update */}
+                                                {order?.orderStatus === 'initiated' 
+                                                    ? <button onClick={() => handleDelete(order?._id)} className='btn w-full bg-red-600 font-bold text-white'>Delete</button> 
+                                                    :<select
+                                                        value={order?.orderStatus}
+                                                        onChange={(e) =>handleStatusChange(order, e.target.value)}
+                                                        className='select select-bordered w-full rounded-xl' 
+                                                    >
+                                                        <option className='bg-black/5' value={order?.orderStatus}>
+                                                            {order?.orderStatus}
+                                                        </option>
+
+                                                        
+                                                        {
+                                                            statusOptions[order?.orderStatus]?.map(
+                                                                (status) => (
+                                                                    <option 
+                                                                        className=''
+                                                                        key={status}
+                                                                        value={status}
+                                                                    >
+                                                                        {status}
+                                                                    </option>
+                                                                )
+                                                            )
+                                                        }
+                                                        {/* <option value="pending"> Pending </option>
+                                                        <option value="confirmed"> Confirmed </option>
+                                                        <option value="processing"> Processing </option>
+                                                        <option value="shipped"> Shipped </option>
+                                                        <option value="delivered"> Delivered </option>
+                                                        <option value="cancelled"> Cancelled </option> */}
+                                                    </select>
+                                                }
+                                                
+
+                                                {loadingId === order?._id && (
+                                                <p className='text-xs text-blue-600 mt-2'>
+                                                    Updating...
+                                                </p>
+                                                )}
                                             </div>
-                                        ))
-                                    }
-
-                                </div>
-
-                                {/* bottom */}
-                                <div className='mt-6 pt-5 border-t'>
-
-                                    <div className='flex items-center justify-between mb-4'>
-
-                                        <div>
-
-                                            <p className='text-xs text-black/50'>
-                                                Payment
-                                            </p>
-
-                                            <span
-                                                className={`
-                                                    inline-block
-                                                    mt-1
-                                                    text-xs
-                                                    px-3
-                                                    py-1
-                                                    rounded-full
-                                                    capitalize
-                                                    ${
-                                                        order?.payment?.status === 'paid'
-                                                        ? 'bg-green-100 text-green-700'
-                                                        : 'bg-red-100 text-red-700'
-                                                    }
-                                                `}
-                                            >
-                                                {order?.payment?.status}
-                                            </span>
-
                                         </div>
-
-                                        <div className='text-right'>
-
-                                            <p className='text-xs text-black/50'>
-                                                Total
-                                            </p>
-
-                                            <h3 className='text-2xl font-bold'>
-
-                                                <span className='font-[Hind_Siliguri]'>
-                                                    ৳
-                                                </span>
-
-                                                {order?.pricing?.total}
-
-                                            </h3>
-
-                                        </div>
-
                                     </div>
-
-                                    {/* update */}
-                                    <select
-                                        value={order?.orderStatus}
-                                        onChange={(e) =>
-                                            handleStatusChange(
-                                                order?._id,
-                                                e.target.value
-                                            )
-                                        }
-                                        className='select select-bordered w-full rounded-xl'
-                                    >
-
-                                        <option value="pending">
-                                            Pending
-                                        </option>
-
-                                        <option value="confirmed">
-                                            Confirmed
-                                        </option>
-
-                                        <option value="processing">
-                                            Processing
-                                        </option>
-
-                                        <option value="shipped">
-                                            Shipped
-                                        </option>
-
-                                        <option value="delivered">
-                                            Delivered
-                                        </option>
-
-                                        <option value="cancelled">
-                                            Cancelled
-                                        </option>
-
-                                    </select>
-
-                                    {
-                                        loadingId === order?._id && (
-
-                                            <p className='text-xs text-blue-600 mt-2'>
-                                                Updating...
-                                            </p>
-                                        )
-                                    }
-
-                                </div>
-
-                            </div>
-
-                        </div>
-                    ))
+                            )})
+                        }
+                    </div>
                 }
 
-            </div>
-
-            {/* desktop table */}
-            <div className='hidden lg:block bg-white rounded-3xl shadow-sm border overflow-hidden'>
-
-                <div className='overflow-x-auto'>
-
-                    <table className='table'>
-
-                        <thead className='bg-[#f8fafc]'>
-
-                            <tr className='text-black/70'>
-
-                                <th>#</th>
-                                <th>Order</th>
-                                <th>Customer</th>
-                                <th>Products</th>
-                                <th>Total</th>
-                                <th>Payment</th>
-                                <th>Status</th>
-                                <th>Update</th>
-
-                            </tr>
-
-                        </thead>
-
-                        <tbody>
-
-                            {
-                                allOrders?.map((order, index) => (
-
-                                    <tr
-                                        key={order?._id}
-                                        className='hover'
-                                    >
-
-                                        <td className='font-medium'>
-                                            {index + 1}
-                                        </td>
-
-                                        {/* order */}
-                                        <td>
-
-                                            <h3 className='font-bold text-[#026EE2]'>
-                                                {order?.orderId}
-                                            </h3>
-
-                                            <p className='text-xs text-black/50 mt-1'>
-                                                {
-                                                    new Date(order?.createdAt)
-                                                    .toLocaleDateString()
-                                                }
-                                            </p>
-
-                                        </td>
-
-                                        {/* customer */}
-                                        <td>
-
-                                            <h3 className='font-semibold capitalize'>
-                                                {order?.shippingAddress?.name}
-                                            </h3>
-
-                                            <p className='text-sm text-black/50 mt-1'>
-                                                {order?.shippingAddress?.phone}
-                                            </p>
-
-                                        </td>
-
-                                        {/* products */}
-                                        <td className='min-w-[320px]'>
-
-                                            <div className='space-y-4'>
-
-                                                {
-                                                    order?.products?.map((item) => (
-
-                                                        <div
-                                                            key={item?._id}
-                                                            className='flex items-center gap-3'
-                                                        >
-
-                                                            <img
-                                                                src={item?.image}
-                                                                alt=""
-                                                                className='w-14 h-14 rounded-2xl object-cover border'
-                                                            />
-
-                                                            <div className='flex-1'>
-
-                                                                <p className='font-medium line-clamp-1'>
-                                                                    {item?.name}
-                                                                </p>
-
-                                                                <div className='flex items-center justify-between mt-2'>
-
-                                                                    <p className='text-sm text-black/50'>
-                                                                        Qty: {item?.quantity}
-                                                                    </p>
-
-                                                                    <p className='font-semibold'>
-
-                                                                        <span className='font-[Hind_Siliguri]'>
-                                                                            ৳
-                                                                        </span>
-
-                                                                        {item?.newPrice}
-
-                                                                    </p>
-
-                                                                </div>
-
-                                                            </div>
-
-                                                        </div>
-                                                    ))
-                                                }
-
-                                            </div>
-
-                                        </td>
-
-                                        {/* total */}
-                                        <td>
-
-                                            <h3 className='text-2xl font-bold whitespace-nowrap'>
-
-                                                <span className='font-[Hind_Siliguri]'>
-                                                    ৳
-                                                </span>
-
-                                                {order?.pricing?.total}
-
-                                            </h3>
-
-                                        </td>
-
-                                        {/* payment */}
-                                        <td>
-
-                                            <span
-                                                className={`
-                                                    text-xs
-                                                    px-3
-                                                    py-1
-                                                    rounded-full
-                                                    capitalize
-                                                    whitespace-nowrap
-                                                    ${
-                                                        order?.payment?.status === 'paid'
-                                                        ? 'bg-green-100 text-green-700'
-                                                        : 'bg-red-100 text-red-700'
-                                                    }
-                                                `}
-                                            >
-                                                {order?.payment?.status}
-                                            </span>
-
-                                        </td>
-
-                                        {/* status */}
-                                        <td>
-
-                                            <span
-                                                className={`
-                                                    text-xs
-                                                    px-3
-                                                    py-1
-                                                    rounded-full
-                                                    border
-                                                    capitalize
-                                                    whitespace-nowrap
-                                                    ${getStatusColor(order?.orderStatus)}
-                                                `}
-                                            >
-                                                {order?.orderStatus}
-                                            </span>
-
-                                        </td>
-
-                                        {/* update */}
-                                        <td>
-
-                                            <select
-                                                value={order?.orderStatus}
-                                                onChange={(e) =>
-                                                    handleStatusChange(
-                                                        order?._id,
-                                                        e.target.value
-                                                    )
-                                                }
-                                                className='select select-bordered rounded-xl w-[170px]'
-                                            >
-
-                                                <option value="pending">
-                                                    Pending
-                                                </option>
-
-                                                <option value="confirmed">
-                                                    Confirmed
-                                                </option>
-
-                                                <option value="processing">
-                                                    Processing
-                                                </option>
-
-                                                <option value="shipped">
-                                                    Shipped
-                                                </option>
-
-                                                <option value="delivered">
-                                                    Delivered
-                                                </option>
-
-                                                <option value="cancelled">
-                                                    Cancelled
-                                                </option>
-
-                                            </select>
-
-                                            {
-                                                loadingId === order?._id && (
-
-                                                    <p className='text-xs text-blue-600 mt-2'>
-                                                        Updating...
-                                                    </p>
-                                                )
-                                            }
-
-                                        </td>
-
-                                    </tr>
-                                ))
-                            }
-
-                        </tbody>
-
-                    </table>
-
+                <div className=''>
+                    {
+                        !loading && allOrders.length > 0 && (
+                            <Pagination
+                                pagination={pagination}
+                                onPageChange={(newPage) => setPage(newPage)}
+                            />
+                        )
+                    }
                 </div>
-
             </div>
 
+            <Footer />
         </div>
+
     );
 };
 

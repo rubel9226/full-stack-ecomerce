@@ -96,7 +96,8 @@ const MoreAddress = ({ allShipping, user, fetchAddress}) => {
                                             <div>
                                                 <div >
                                                     <p className=' line-clamp-2 mb-0.5'>Name: <span className='capitalize'>{userAddress.name}</span></p>
-                                                    <p className=' line-clamp-2 mb-0.5'>Phone: 01307743888</p>
+                                                    <p className=' line-clamp-2 mb-0.5'>Phone: {userAddress.phone}</p>
+                                                    <p className=' line-clamp-2 mb-0.5'>Email: {userAddress.email}</p>
                                                 </div>
                                                 <div>
                                                     <p className=' line-clamp-2 mb-0.5 capitalize'>{userAddress.address}</p>

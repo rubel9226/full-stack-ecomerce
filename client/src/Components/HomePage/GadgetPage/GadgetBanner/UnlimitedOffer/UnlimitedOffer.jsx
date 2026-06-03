@@ -16,12 +16,12 @@ export default function UnlimitedOffer() {
 
   return (
     <div className=''>
-        <h2 className='text-xl font-semibold py-2'>Unlimited Offer</h2>
-        <div className="flex gap-3  overflow-x-auto no-scrollbar">
+        <h2 className='font-semibold text-xl md:text-2xl xl:text-3xl 2xl:text-[32px] capitalize sm:my-4 md:my-5'>Unlimited Offer</h2>
+        <div className="no-scrollbar flex gap-2 overflow-auto lg:gap-4 mt-2.5">
             {datas.map((data, index) => (
-                <div key={index} className="w-37.5 text-center shrink-0">
-                    <img className="w-37.5 mx-auto rounded-xl" src={data.img} alt="" />
-                    <p className='w-full overflow-hidden capitalize h-[22.4px] truncate mt-1 font-semibold text-center'>{data.name}</p>
+                <div key={index} className="w-37.5 lg:w-[22vw] aspect-square mx-auto text-center shrink-0 cursor-pointer" >
+                    <img className="w-37.5 lg:w-[22vw] aspect-square mx-auto rounded-xl hover:shadow-xl shadow-blue-400/40 group" src={data.img} alt="" />
+                    <p className='w-full overflow-hidden capitalize truncate mt-1 sm:mt-2 mb-4 font-semibold text-center sm:text-lg group-hover:text-blue-500 hover:text-blue-500'>{data.name}</p>
                 </div>
             ))}       
         </div>

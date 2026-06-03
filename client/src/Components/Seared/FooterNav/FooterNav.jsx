@@ -21,7 +21,8 @@ const FooterNav = () => {
     const navigate = useNavigate();
 
     const { addToCart } = useContext(AddToCartContext);
-    // console.log(addToCart.length);
+    const isAccountActive = location.pathname.startsWith('/account');
+    const isAccountCategory = location.pathname.startsWith('/catalog');
 
     const [categories, setCategories] = useState([]);
 
@@ -62,7 +63,7 @@ const FooterNav = () => {
                             setMenuType('category'); 
                             drawerRef.current && (drawerRef.current.checked = true) }
                         }
-                        className={`hover:text-[#1F5DA0] cursor-pointer flex flex-col items-center gap-0.5 transition-all duration-100 ease-in-out  text-[#ABABAB] font-semibold `}>
+                        className={`hover:text-[#1F5DA0] cursor-pointer flex flex-col items-center gap-0.5 transition-all duration-100 ease-in-out  text-[#ABABAB] font-semibold ${isAccountCategory ? 'active': ''}`}>
                             <BsFillGridFill className='w-6 h-6' />
                             <p className='font-semibold text-[12px]'>Category</p>
                     </div>

@@ -18,19 +18,13 @@ import { MdGroups2 } from "react-icons/md";
 import './FooterNav.css';
 import { AddToCartContext } from '../../../../Context/AddToCartContext';
 import { AuthContext } from '../../../../Context/AuthProvider';
-import { logoutUser } from '../../../../API/authApi/authApi';
-import { toast } from 'react-toastify';
-
-
+import { logoutUser } from '../../../../API/authApi/authApi'; 
 
 const FooterNavAdmin = () => {
-    const drawerRef = useRef(null);
-    const [menuType, setMenuType] = useState('category');
+    const drawerRef = useRef(null); 
     const { user, setUser } = useContext(AuthContext);
-    const navigate = useNavigate();
-
-    const { addToCart } = useContext(AddToCartContext);
-    // console.log(addToCart.length);
+    const navigate = useNavigate(); 
+    const isAccountActive = location.pathname.startsWith('/admin/account');
 
     const [categories, setCategories] = useState([]);
 
@@ -54,7 +48,7 @@ const FooterNavAdmin = () => {
     
 
     return (
-        <div className='fixed w-full left-0 shadow-2xl border-t-2 border-gray-100 bottom-0 lg:hidden z-2'>
+        <div className='fixed w-full left-0 shadow-2xl border-t-2 border-gray-100 bottom-0 lg:hidden z-101'>
             <div className='bg-white shadow py-2'>
                 <div className='w-11/12 sm:w-8/12 mx-auto flex justify-between select-none'>
 
@@ -94,7 +88,7 @@ const FooterNavAdmin = () => {
                         <p className='font-semibold text-[12px]'>Users</p>
                     </NavLink>
 
-                    <div onClick={() => drawerRef.current && (drawerRef.current.checked = true)} className={`hover:text-[#1F5DA0] cursor-pointer flex flex-col items-center gap-0.5 transition-all duration-100 ease-in-out  text-[#ABABAB] ${({isActive}) => isActive ? 'active': ''}`}>
+                    <div onClick={() => drawerRef.current && (drawerRef.current.checked = true)} className={`hover:text-[#1F5DA0] cursor-pointer flex flex-col items-center gap-0.5 transition-all duration-100 ease-in-out  text-[#ABABAB] ${isAccountActive ? 'active': ''}`}>
                         <FaUser className='w-6 h-6' />
                         <p className='font-semibold text-[12px]'>Account</p>
                     </div>
@@ -112,7 +106,7 @@ const FooterNavAdmin = () => {
                         <div className=''>
                             <div className='text-center pt-4 pb-6 border-b'>
                                 <div className='inline-block p-0.5 border h-16 w-16 rounded-full text-center'>
-                                    <img className='rounded-full' src={user.image} alt="" />
+                                    <img className='rounded-full w-full h-full' src={user.image === '' ? 'https://res.cloudinary.com/dext9i4ab/image/upload/v1776982579/user-circles-set_78370-4704_kxxfvq.png' : user.image} alt="" />
                                 </div>
                                 <div>
                                     <h3 className='text-[15px] font-semibold'>{user.name}</h3>
@@ -122,8 +116,8 @@ const FooterNavAdmin = () => {
                             <div className='select-none min-h-[75vh] flex flex-col justify-between'>
                                 <div className=' font-medium flex py-5 flex-col items-start'>
                                     <Link to={'/dashboard'} className='font-normal px-7 text-[15px] text-black/70 btn border-none w-full justify-start'>Dashboard</Link>
-                                    <Link to={'/dashboard/my-orders'} className='font-normal px-7 text-[15px] text-black/70 btn border-none w-full justify-start'>Users Order</Link>
-                                    <Link to='dashboard/account' className='font-normal px-7 text-[15px] text-black/70 btn border-none w-full justify-start'>My Profile</Link>
+                                    <Link to={'/admin/orders'} className='font-normal px-7 text-[15px] text-black/70 btn border-none w-full justify-start'>Users Order</Link>
+                                    <Link to='/admin/account' className='font-normal px-7 text-[15px] text-black/70 btn border-none w-full justify-start'>My Profile</Link>
                                 </div>
                                 <div className='p-5 border-t border-black/10'>
                                     <div onClick={() => {

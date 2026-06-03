@@ -1,14 +1,16 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { Link } from 'react-router';
+import { AuthContext } from '../../../Context/AuthProvider';
 
 const ProductCard = ({product}) => {
-
+    const { user } = useContext(AuthContext);
+    
     return (
         <div className='shadow-sm border border-transparent rounded-md hover:border-indigo-800 duration-200'>{
                 product?.discount !== 0 ? (
-                    <Link to={`/dashboard/product/${product?.slug}`} className="">
+                    <Link to={ user ? `/dashboard/product/${product?.slug}` : `/product/${product?.slug}`} className="">
                         <div >
-                            <img className='aspect-square rounded-t-md' src={product.image} alt={product.name} />
+                            <img className='w-full aspect-square rounded-t-md' src={product.image} alt={product.name} />
                         </div>
                         
                         <div className='text-center space-y-1 p-1'>
@@ -26,7 +28,7 @@ const ProductCard = ({product}) => {
                         </div>
                     </Link>
                 ) : (
-                    <Link to={`/dashboard/product/${product.slug}`} className='rounded-md shadow-sm'>
+                    <Link  to={ user ? `/dashboard/product/${product?.slug}` : `/product/${product?.slug}`} className='rounded-md shadow-sm'>
                         <div>
                             <img className='w-full rounded-t-md aspect-square' src={product.image} alt={product.name} />
                         </div>

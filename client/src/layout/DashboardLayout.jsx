@@ -6,9 +6,11 @@ import FooterNavAdmin from '../Components/AdminPage/Sheared/FooterNavVendor/Foot
 
 const DashboardLayout = () => {
     return (
-        <div>
+        <div className='bg-[#f6f9fc]'>
             <Header />
-            <Outlet />
+            <div className='px-2 md:cntainer mx-auto !max-w-[1350px] mt-1'>
+                <Outlet />
+            </div>
             <FooterNavAdmin />
         </div>
     );

@@ -64,15 +64,7 @@ const UserCard = ({product}) => {
                         <div className={`${product.discount === 0 && 'hidden'}`}>
                             <p className={` font-bold discount-price text-sm`}><span className='leading-0 font-serif'>৳</span> {product.price}</p>
                         </div>
-                    </div>
-
-                    {/* <div className='flex gap-1 mt-1 font-medium text-black/40'>
-                        <p className='capitalize'>Delivery Charge: </p>
-                        {
-                            product.shipping === 0 ? <span>Free</span> : <p className='font-bold text-black text-sm'><span className='leading-0 font-serif '>৳ </span>{product.shipping} </p>
-                        }
-                        
-                    </div> */}
+                    </div> 
                     
                     <div className='flex items-center gap-1 mt-0.5 font-medium text-black/40'>
                         <p>Total Price: </p>

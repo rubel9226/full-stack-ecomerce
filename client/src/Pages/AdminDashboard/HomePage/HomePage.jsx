@@ -1,20 +1,11 @@
-import React from 'react';
-// import HeroSlideImg from '../../Components/HomePage/HeroSlideImg/HeroSlideImg';
-// import ColumnThreeImg from '../../Components/HomePage/ColumnThreeImg/ColumnThreeImg';
-// import Popular from '../../Components/HomePage/Popular/Popular';
-// import Offer24 from '../../Components/HomePage/Offer24/Offer24';
-// import MidAllBanner from '../../Components/HomePage/MidAllBanner/MidAllBanner';
-// import NewCollection from '../../Components/HomePage/NewCollection/NewCollection';
-// import Gadget from '../../Components/HomePage/GadgetPage/Gadget';
-// import HomeFooter from '../../Components/HomePage/HomeFooter/HomeFooter';
-import HeroSlideImg from './../../../Components/AdminPage/HomePage/HeroSlideImg/HeroSlideImg';
-import ColumnThreeImg from './../../../Components/AdminPage/HomePage/ColumnThreeImg/ColumnThreeImg';
-import Popular from './../../../Components/AdminPage/HomePage/Popular/Popular';
-import Offer24 from './../../../Components/AdminPage/HomePage/Offer24/Offer24';
-import MidAllBanner from './../../../Components/AdminPage/HomePage/MidAllBanner/MidAllBanner';
-import NewCollection from './../../../Components/AdminPage/HomePage/NewCollection/NewCollection';
-import Gadget from './../../../Components/AdminPage/HomePage/GadgetPage/Gadget';
-import HomeFooter from './../../../Components/AdminPage/HomePage/HomeFooter/HomeFooter';
+import ColumnThreeImg from "./Components/ColumnThreeImg";
+import HomeFooter from "./Components/FooterStats/HomeFooter";
+import Gadget from "./Components/GadgetPage/Gadget";
+import HeroSlideImg from "./Components/HeroSlideImg";
+import MidAllBanner from "./Components/MidAllBanner";
+import NewCollection from "./Components/NewCollection";
+import Offer24 from "./Components/Offer24";
+import Popular from "./Components/Popular";
 
 const HomePage = () => {
     return (

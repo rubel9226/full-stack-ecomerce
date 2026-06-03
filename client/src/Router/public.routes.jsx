@@ -7,6 +7,7 @@ import CartPage from "./../Pages/CartPage/CartPage";
 import ErrorPage from "./../Pages/ErrorPage/ErrorPage";
 import PublicLayout from "./../layout/PublicLayout";
 import PublicRoute from "../guards/PublicRoute";
+import SearchPage from "../Pages/SearchPage/SearchPage";
 
 const publicRoutes = [
   {
@@ -20,7 +21,8 @@ const publicRoutes = [
     children: [
       { index: true, Component: HomePage },
       { path: "best-deals", Component: BestDeals },
-      { path: "catalog/:slug", Component: CategoryPage },
+      { path: "/catalog/:slug", Component: CategoryPage },
+      { path: "/search", Component: SearchPage },
       { path: "product/:slug", Component: ProductDetails },
       { path: "cart", Component: CartPage },
     ],

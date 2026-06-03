@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import api from '../../../API/Axios/api';
 import { RxDotsVertical } from 'react-icons/rx';
+import { toast } from 'react-toastify';
 
 const UsersPageAdmin = () => {
   const [users, setUsers] = useState([]);
@@ -28,6 +29,18 @@ const UsersPageAdmin = () => {
     setModalOpen(false);
     setSelectedUser(null);
   };
+
+  const handleBan =async (e, user) => {
+    e.preventDefault();
+    
+    try {
+      const data = await api.put(`/users/manage-user/${user._id}`);
+      console.log(data?.data?.payload);
+      toast.success(user._id);
+    } catch (error) {
+      console.log(error?.response?.data?.message)
+    }
+  }
 
   return (
     <div className="p-5">
@@ -123,34 +136,36 @@ const UsersPageAdmin = () => {
               </button>
             </div>
 
+             {/* ================= MODAL ================= */}
+            {modalOpen && selectedUser && (
+              <div className="fixed inset-0 bg-black/5 flex justify-center items-center">
+                <div className="bg-white p-5 rounded-md w-72 text-center space-y-4">
+
+                  <h3 className="font-semibold">
+                    {selectedUser.name}
+                  </h3>
+
+                  <button onClick={(e) => handleBan(e, user)} className="btn btn-neutral w-full">
+                    {selectedUser.isBanned ? "Unban User" : "Ban User"}
+                  </button>
+
+                  <button className="btn btn-error w-full">
+                    Delete User
+                  </button>
+
+                  <button onClick={handleCloseModal} className="btn w-full">
+                    Cancel
+                  </button>
+
+                </div>
+              </div>
+            )}
+
           </div>
         ))}
       </div>
 
-      {/* ================= MODAL ================= */}
-      {modalOpen && selectedUser && (
-        <div className="fixed inset-0 bg-black/40 flex justify-center items-center">
-          <div className="bg-white p-5 rounded-md w-72 text-center space-y-4">
-
-            <h3 className="font-semibold">
-              {selectedUser.name}
-            </h3>
-
-            <button className="btn btn-neutral w-full">
-              {selectedUser.isBanned ? "Unban User" : "Ban User"}
-            </button>
-
-            <button className="btn btn-error w-full">
-              Delete User
-            </button>
-
-            <button onClick={handleCloseModal} className="btn w-full">
-              Cancel
-            </button>
-
-          </div>
-        </div>
-      )}
+     
 
       {users.length === 0 && (
         <p className="text-center mt-5 text-gray-500">

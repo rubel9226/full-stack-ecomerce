@@ -10,6 +10,7 @@ import './FooterNav.css';
 import { AddToCartContext } from '../../../Context/AddToCartContext';
 import { AuthContext } from './../../../Context/AuthProvider';
 import { logoutUser } from './../../../API/authApi/authApi';
+import api from './../../../API/Axios/api';
 
 
 
@@ -24,16 +25,21 @@ const FooterNavUser = () => {
     const isAccountActive = location.pathname.startsWith('/dashboard/account');
     const isAccountCategory = location.pathname.startsWith('/dashboard/catalog');
 
-    const { addToCart } = useContext(AddToCartContext);
-    // console.log(addToCart.length);
-
+    const { addToCart } = useContext(AddToCartContext); 
     const [categories, setCategories] = useState([]);
 
+
+    const handleGetCategory = async () => {
+        try {
+            const res = await api.get('/categories');
+            setCategories(res?.data?.payload)
+        } catch (error) {
+            // 
+        }
+    }
+
     useEffect(() => {
-        fetch('http://localhost:3001/api/categories/')
-        .then(res => res.json())
-        .then(data => setCategories(data.payload))
-        .catch(err => console.log(err));
+        handleGetCategory();
     }, []);
 
     const handleLogout = async () => {
@@ -43,8 +49,7 @@ const FooterNavUser = () => {
             navigate('/', {replace: true});
         } catch (error) {
             console.log(error)    
-        }
-        
+        }  
     }
     
 
@@ -143,7 +148,7 @@ const FooterNavUser = () => {
                                         && <div className=''>
                                             <div className='text-center pt-4 pb-6 border-b'>
                                                 <div className='inline-block p-0.5 border h-16 w-16 rounded-full text-center'>
-                                                    <img className='rounded-full' src={user.image} alt="" />
+                                                    <img className='rounded-full w-full h-full' src={user.image === '' ? 'https://res.cloudinary.com/dext9i4ab/image/upload/v1776982579/user-circles-set_78370-4704_kxxfvq.png' : user.image} alt="" />
                                                 </div>
                                                 <div>
                                                     <h3 className='text-[15px] font-semibold'>{user.name}</h3>

@@ -177,6 +177,7 @@ const ChangePassword = ({setChangePassword}) => {
                         confirmPassword: ""
                     })}
                     className='btn bg-gray-200 hover:bg-gray-300 text-black border-none flex-1'
+                    onClick={() => setChangePassword(false)}
                 >
                     Cancel
                 </button>

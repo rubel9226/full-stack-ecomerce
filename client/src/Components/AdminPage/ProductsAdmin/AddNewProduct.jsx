@@ -44,7 +44,7 @@ const AddNewProduct = ({modalId, cat, refetch }) => {
         setLoading(true);
         console.log(loading);
 
-        const category = await getSingleCategory(cat);
+        // const category = await getSingleCategory(cat);
 
         
         
@@ -55,7 +55,7 @@ const AddNewProduct = ({modalId, cat, refetch }) => {
         data.append('details', formData.details);
         data.append('description', formData.description);
         data.append('image', formData.image);
-        data.append('category', category._id);
+        data.append('category', cat._id);
 
         
         try {
@@ -69,7 +69,7 @@ const AddNewProduct = ({modalId, cat, refetch }) => {
                 refetch();
             }
             setErrorMessage('');
-            document.getElementById(modalId).checked = false;
+            document.getElementById('modal-1').checked = false;
             setFormData({
                 name: '',
                 price: '',
@@ -93,13 +93,13 @@ const AddNewProduct = ({modalId, cat, refetch }) => {
     return (
         <div>
             {/* Put this part before </body> tag */}
-            <input type="checkbox" id={modalId} className="modal-toggle" />
+            <input type="checkbox" id={'modal-1'} className="modal-toggle" />
             <div className="modal" role="dialog">
                 <div className="modal-box">
                     <div className='flex justify-between items-center'>
-                        <h2 className='text-sm'>Add New Product on {cat.replace(/-/g, " ")}</h2>
+                        <h2 className='text-sm'>Add New Product on {cat.slug}</h2>
                         <div className="modal-action">
-                            <label htmlFor={modalId} className="btn rounded-full m-0 w-10 h-10  p-0 border-none bg-black/20"><RxCross2 className='text-xl' /></label>
+                            <label htmlFor={'modal-1'} className="btn rounded-full m-0 w-10 h-10  p-0 border-none bg-black/20"><RxCross2 className='text-xl' /></label>
                         </div>
                     </div>
                     <form onSubmit={(e) => handleAddProduct(e, cat)} className="space-y-4">

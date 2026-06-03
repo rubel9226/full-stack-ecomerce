@@ -14,6 +14,7 @@ const UpdateShipping = ({ userAddress, user, fetchAddress }) => {
   const [formData, setFormData] = useState({
     name: "",
     phone: "",
+    email: '',
     postCode: '',
     address: "",
     location: "Home",
@@ -29,6 +30,7 @@ const UpdateShipping = ({ userAddress, user, fetchAddress }) => {
       setFormData({
         name: userAddress.name || "",
         phone: userAddress.phone || "",
+        email: userAddress.email || "",
         country: userAddress.country || "Bangladesh",
         postCode: userAddress.postCode || "",
         address: userAddress.address || "",
@@ -89,23 +91,19 @@ const UpdateShipping = ({ userAddress, user, fetchAddress }) => {
 
   const isChange = () => {
     if (
-      formData.name !== userAddress.name ||
-      formData.phone !== userAddress.phone ||
-      district !== userAddress.district ||
-      upazila !== userAddress.area ||
-      formData.postCode !== userAddress.postCode ||
-      formData.address !== userAddress.address ||
-      formData.location !== userAddress.location
+      formData.name !== userAddress?.name ||
+      formData.phone !== userAddress?.phone ||
+      district !== userAddress?.district ||
+      upazila !== userAddress?.area ||
+      formData.postCode !== userAddress?.postCode ||
+      formData.address !== userAddress?.address ||
+      formData.location !== userAddress?.location ||
+      formData.email !== userAddress?.email
     ) {
       return true;
     }
     return false;
   };
-
-
-  // console.log( userAddress.name, userAddress.phone, userAddress.district, userAddress.area, userAddress.postCode, userAddress.address, userAddress.location, );
-
-  // console.log( formData.name, formData.phone, district, upazila, formData.postCode, formData.address, formData.location, );
 
   return (
     <div className="select-none">
@@ -180,6 +178,23 @@ const UpdateShipping = ({ userAddress, user, fetchAddress }) => {
                           type="text"
                           placeholder="Mobile Number"
                           className="input w-full"
+                        />
+                      </div>
+
+                      {/* email */}
+                      <div className="text-[15px]">
+                        <label className="flex items-start gap-1">
+                          Email{" "}
+                          <IoStar className="text-[10px] text-red-700" />
+                        </label>
+                        <input
+                          name="email"
+                          value={formData.email}
+                          onChange={handleChange}
+                          type="email"
+                          placeholder="Email"
+                          className="input w-full"
+                          required
                         />
                       </div>
 

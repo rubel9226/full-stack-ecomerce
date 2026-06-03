@@ -98,7 +98,7 @@ const UpdateProfile = ({setEditProfile}) => {
                     <div className='border-[6px] border-gray-400 rounded-full w-[150px] h-[150px] bg-blue-300 overflow-hidden'>
                         <img
                             className='rounded-full w-full h-full object-cover'
-                            src={value?.image}
+                            src={value?.image === '' ? 'https://res.cloudinary.com/dext9i4ab/image/upload/v1776982579/user-circles-set_78370-4704_kxxfvq.png' : value?.image}
                             alt="user image"
                         />
                     </div>
@@ -112,57 +112,60 @@ const UpdateProfile = ({setEditProfile}) => {
                 </div>
         
                 {/* form */}
-                <div className='px-8 mt-10 pb-10'>
+                <div className='px-8 mt-10 pb-10 flex justify-center'>
+
+                    <div className='flex flex-col w-full sm:w-[80%] md:w-[60%] lg:w-[50%]'>
+                        <div className='w-full'>
+                            <label className='text-black/80 font-medium'> Full Name <span className='text-red-600'> *</span> </label>
+            
+                            <input
+                                type="text"
+                                name='name'
+                                value={value.name}
+                                onChange={handleChange}
+                                className='w-full border border-black/40 rounded-sm py-2 px-3 outline-none mt-1 capitalize'
+                            />
+                        </div>
+            
+                        <div className='mt-4 lg:mt-6 w-full'>
+            
+                            <label className='flex items-center gap-1 text-black/80 font-medium'>
+                                Contact Number
+                                <span className='text-red-600'> *</span>
+                            </label>
+            
+                            <input
+                                type="tel"
+                                name='phone'
+                                value={value.phone}
+                                onChange={handleChange}
+                                className='w-full border border-black/40 rounded-sm py-2 px-3 outline-none mt-1'
+                            />
+                        </div>
+
+                        {/* buttons */}
+                        <div className='flex gap-3 mt-8'>
+            
+                            <button
+                                onClick={handleSaveProfile}
+                                className='btn bg-[#026EE2] hover:bg-[#0257b3] text-white border-none flex-1'
+                            >
+                                {
+                                    loading ? 'Loading ...' : 'Save Changes'
+                                }
+                                
+                            </button>
+            
+                            <button
+                                onClick={() => setEditProfile(false)}
+                                className='btn bg-gray-200 hover:bg-gray-300 text-black border-none flex-1'
+                            >
+                                Cancel
+                            </button>
+                            {/* error message */}
+                        </div>
+                    </div>        
         
-                    <div>
-                        <label className='text-black/80 font-medium'> Full Name <span className='text-red-600'> *</span> </label>
-        
-                        <input
-                            type="text"
-                            name='name'
-                            value={value.name}
-                            onChange={handleChange}
-                            className='w-full border border-black/40 rounded-sm py-2 px-3 outline-none mt-1 capitalize'
-                        />
-                    </div>
-        
-                    <div className='mt-4'>
-        
-                        <label className='flex items-center gap-1 text-black/80 font-medium'>
-                            Contact Number
-                            <span className='text-red-600'> *</span>
-                        </label>
-        
-                        <input
-                            type="tel"
-                            name='phone'
-                            value={value.phone}
-                            onChange={handleChange}
-                            className='w-full border border-black/40 rounded-sm py-2 px-3 outline-none mt-1'
-                        />
-                    </div>
-        
-                    {/* buttons */}
-                    <div className='flex gap-3 mt-8'>
-        
-                        <button
-                            onClick={handleSaveProfile}
-                            className='btn bg-[#026EE2] hover:bg-[#0257b3] text-white border-none flex-1'
-                        >
-                            {
-                                loading ? 'Loading ...' : 'Save Changes'
-                            }
-                            
-                        </button>
-        
-                        <button
-                            onClick={() => setEditProfile(false)}
-                            className='btn bg-gray-200 hover:bg-gray-300 text-black border-none flex-1'
-                        >
-                            Cancel
-                        </button>
-                        {/* error message */}
-                    </div>
         
                     <div className={`mt-3 font-medium text-red-600 ${errorMessage === '' ? 'hidden' : 'block'}`}>
                         <p>{errorMessage}</p>

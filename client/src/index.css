@@ -17,6 +17,8 @@ body {
   scrollbar-width: none;     /* Firefox */
 }
 
+
+
 .clamp-no-dots {
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -43,6 +45,43 @@ body {
   transform: rotate(-10deg);
 }
 
+.text-stroke{
+  -webkit-text-stroke: 0.5px white; 
+}
+
+@media (min-width: 640px){
+  .text-stroke{
+    -webkit-text-stroke: 1px white; 
+  }
+}
+
+.outer-stroke{
+  text-shadow:
+   -1.5px -1.5px 0 white,
+    1.5px -1.5px 0 white,
+   -1.5px  1.5px 0 white,
+    1.5px  1.5px 0 white;
+}
+
+@media (min-width: 640px){
+  .outer-stroke{
+    text-shadow:
+     -2.5px -2.5px 0 white,
+      2.5px -2.5px 0 white,
+     -2.5px  2.5px 0 white,
+      2.5px  2.5px 0 white;
+  }
+}
+
+@media (min-width: 768px){
+  .outer-stroke{
+    text-shadow:
+     -4px -4px 0 white,
+      4px -4px 0 white,
+     -4px  4px 0 white,
+      4px  4px 0 white;      
+  }
+}
 
 
 @import "tailwindcss";

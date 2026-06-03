@@ -1,61 +1,127 @@
-import React from "react";
+import React, { useContext } from "react";
+import { AddToCartContext } from "../../../../Context/AddToCartContext";
+import { Link, useNavigate } from "react-router";
+import { AuthContext } from "../../../../Context/AuthProvider";
+import { logoutUser } from "../../../../API/authApi/authApi";
+import { FaSearch, FaShoppingCart } from "react-icons/fa";
+import { ImCross } from "react-icons/im";
+import SearchSuggestion from "./search";
+import { RiVerifiedBadgeFill } from 'react-icons/ri';
 
 const HeaderTop = () => {
+    const { addToCart } = useContext(AddToCartContext);
+    console.log(addToCart);
+    
+    const subtotal = addToCart.reduce(
+        (total, item) => total + (item.newPrice * item.cartQuantity), 0 );
+
+    
+    const { user, setUser } = useContext(AuthContext);
+    const navigate = useNavigate();
+    
+
+    const handleLogout = async () => {
+        try {
+            await logoutUser();
+            setUser(null);
+            navigate('/', {replace: true});
+        } catch (error) {
+            console.log(error)    
+        }  
+    }
+
+    console.log(user);
+        
   return (
     <div className=" bg-base-200 shadow-sm">
-
-        <div className="px-2 md:container mx-auto max-lg:collapse rounded-md">
+        <div className=" md:container mx-auto max-lg:collapse xl:!max-w-[1600px] rounded-md  overflow-visible">
             <input id="navbar-1-toggle" className="peer hidden" type="checkbox" />
             <label htmlFor="navbar-1-toggle" className="fixed inset-0 hidden max-lg:peer-checked:block" ></label>
             
-            <div className="collapse-title navbar min-h-9 py-0 ">
+            <div className="collapse-title navbar min-h-9 px-5 md:px-7 md:py-4 ">
                 <div className="navbar-start ">
-                    <button className="text-[18px] font-extrabold cursor-pointer transform duration-75 active:translate-y-px text-[#135194]">Trivon Fashion</button>
+                    <Link to={user ? '/dashboard': '/'} className="text-[18px] md:text-xl lg:text-2xl font-extrabold cursor-pointer transform duration-75 active:translate-y-px text-[#135194]">Trivon Fashion</Link>
                 </div>
 
+                {/* search */}
                 <div className="hidden md:flex navbar-end lg:navbar-center lg:w-6/12">
-                    <input type="text" placeholder="Search" className="input input-bordered w-64 md:w-full" />
+                    
+
+                    <div className="">
+                        <SearchSuggestion user={user} />
+                    </div>
+                    {/* <input type="text" placeholder="Search" className="input input-bordered w-64 md:w-full" /> */}
                 </div>
             
-                <div className="navbar-end hidden lg:flex">
+                <div className="navbar-end hidden lg:flex items-center gap-4">
+                    
                     <div className="dropdown dropdown-end">
-                    <div tabIndex={0} role="button" className="btn btn-ghost btn-circle">
-                        <div className="indicator">
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"> <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" /> </svg>
-                        <span className="badge badge-sm indicator-item">8</span>
+                        <div tabIndex={0} role="button" title="Cart Page" className="btn btn-ghost btn-circle">
+                            <div className="indicator">
+                                <FaShoppingCart className="text-[28px] text-[#1F5DA0]" /> 
+                                <span className={`text-[9px] font-bold text-white bg-red-600 h-4 w-4 text-center content-center rounded-full absolute -top-2 -right-1 ${addToCart.length === 0 && 'hidden'}`}>{addToCart.length}</span>
+                            </div>
                         </div>
-                    </div>
-                    <div
-                        tabIndex={0}
-                        className="card card-compact dropdown-content bg-base-100 z-1 mt-3 w-52 shadow">
-                        <div className="card-body">
-                            <span className="text-lg font-bold">8 Items</span>
-                            <span className="text-info">Subtotal: $999</span>
-                            <div className="card-actions">
-                                <button className="btn btn-primary btn-block">View cart</button>
+                        <div
+                            tabIndex={0}
+                            className="card card-compact dropdown-content bg-base-100 z-1 mt-3 w-52 shadow">
+                            <div className="card-body">
+                                <span className="text-lg font-bold">{addToCart.length} Items</span>
+                                <span className="text-info">Subtotal: ৳{subtotal}</span>
+                                <div className="card-actions">
+                                    <Link to={user ? '/dashboard/cart' : '/login'} className="btn btn-primary btn-block">View cart</Link>
+                                </div>
                             </div>
                         </div>
                     </div>
-                    </div>
-                    <div className="dropdown dropdown-end">
+                    {
+                    user?<div className={`dropdown dropdown-end`}>
+                        <div tabIndex={0} title="Account" role="button" className="btn btn-ghost btn-circle avatar">
+                            <div className="w-10 rounded-full">
+                                <img className='rounded-full w-full h-full' 
+                                    src={!user? 'https://res.cloudinary.com/dext9i4ab/image/upload/v1776982579/user-circles-set_78370-4704_kxxfvq.png' : user.image === '' ? 'https://res.cloudinary.com/dext9i4ab/image/upload/v1776982579/user-circles-set_78370-4704_kxxfvq.png' : user.image}
+                                    alt={user ? user.name : 'user image'}
+                                /> 
+                            </div>
+                        </div>
+                        <ul tabIndex="-1" className="select-none bg-base-200 py-3 font-bold text-black/50 menu menu-sm dropdown-content rounded-box z-1 mt-3 w-52 shadow" >
+                            
+                            <Link to={'/dashboard'} className="justify-between hover:bg-black/15 px-4 rounded-xs py-2 bg-black/3 mt-1">
+                                Dashboard
+                            </Link>
+                            
+                            <Link to={'/dashboard/account'} className="justify-between hover:bg-black/15 px-4 rounded-xs py-2 bg-black/3 mt-1">
+                                My Profile
+                            </Link>
+
+                            <Link to={'/dashboard/account/my-orders'} className="justify-between hover:bg-black/15 px-4 rounded-xs py-2 bg-black/3 mt-1">
+                                My Order
+                            </Link>
+                            
+                            <button onClick={handleLogout} className="active:translate-y-px cursor-pointer hover:bg-[#c01414] bg-[#D71110] text-white text-center justify-between px-4 rounded py-2 mt-1">
+                                <a>Logout</a>
+                            </button>
+                        </ul>
+                    </div> 
+                    : <div className="flex items-center gap-4">
                         <div tabIndex={0} role="button" className="btn btn-ghost btn-circle avatar">
                             <div className="w-10 rounded-full">
-                            <img
-                                alt="Tailwind CSS Navbar component"
-                                src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp" />
+                                <img className='rounded-full w-full h-full'
+                                    src={'https://res.cloudinary.com/dext9i4ab/image/upload/v1776982579/user-circles-set_78370-4704_kxxfvq.png'}
+                                    alt={'user image'}
+                                /> 
                             </div>
                         </div>
-                        <ul tabIndex="-1" className="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow">
-                            <li>
-                                <a className="justify-between">
-                                    Profile
-                                    <span className="badge">New</span>
-                                </a>
-                            </li>
-                            <li><a>Settings</a></li>
-                            <li><a>Logout</a></li>
-                        </ul>
+
+                        <Link to={'/login'} className={`bg-red-600 text-white font-bold btn px-3 h-8`}>
+                            Login
+                        </Link>
                     </div>
+                    }
+                    
+
+                    
+
                 </div>
             </div>
         </div>

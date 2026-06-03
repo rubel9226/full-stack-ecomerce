@@ -15,6 +15,7 @@ const AddMoreShipping = ({ user, fetchAddress, fetchAllAddress }) => {
   const [formData, setFormData] = useState({
     name: "",
     phone: "",
+    email: '',
     postCode: '',
     address: "",
     location: "Home",
@@ -156,6 +157,22 @@ const AddMoreShipping = ({ user, fetchAddress, fetchAllAddress }) => {
                           onChange={handleChange}
                           type="text"
                           placeholder="Mobile Number"
+                          className="input w-full"
+                        />
+                      </div>
+
+                      {/* Phone */}
+                      <div className="text-[15px]">
+                        <label className="flex items-start gap-1">
+                          Email{" "}
+                          <IoStar className="text-[10px] text-red-700" />
+                        </label>
+                        <input
+                          name="email"
+                          value={formData.email}
+                          onChange={handleChange}
+                          type="email"
+                          placeholder="Email Address"
                           className="input w-full"
                         />
                       </div>
