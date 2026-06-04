@@ -1,5 +1,5 @@
 // routes/user.routes.jsx
-import ProtectedRoute from "./../Guards/ProtectedRoute";
+import TempRoute from "./../Guards/TempRoute";
 import UserDashboard from "./../Pages/UserDashboard/UserDashboard";
 import PublicLayout from "../layout/PublicLayout";
 import HomePage from './../Pages/HomePage/HomePage';
@@ -28,9 +28,9 @@ const userRoutes = [
   {
     path: "/dashboard",
     element: (
-      <ProtectedRoute allowedRoles={["user"]}>
+      <TempRoute allowedRoles={["user"]}>
         <UserLayout />
-      </ProtectedRoute>
+      </TempRoute>
     ),
     errorElement: <ErrorPage />,
     children: [
@@ -52,9 +52,9 @@ const userRoutes = [
   {
     path: "/",
     element: (
-      <ProtectedRoute allowedRoles={["user"]}>
+      <TempRoute allowedRoles={["user"]}>
         <PurchaseLayout />
-      </ProtectedRoute>
+      </TempRoute>
     ),
     errorElement: <ErrorPage />,
     children: [
@@ -66,9 +66,9 @@ const userRoutes = [
   {
     path: "/dashboard/account/",
     element: (
-      <ProtectedRoute allowedRoles={["user"]}>
+      <TempRoute allowedRoles={["user"]}>
         <AccountLayout />
-      </ProtectedRoute>
+      </TempRoute>
     ),
     errorElement: <ErrorPage />,
     children: [

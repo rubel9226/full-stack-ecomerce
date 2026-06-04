@@ -8,9 +8,7 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 
 // Import Swiper styles
 import 'swiper/css';
-import 'swiper/css/free-mode';
-
-// import './Offer.css';
+import 'swiper/css/free-mode'; 
 
 // import required modules
 import { FreeMode } from 'swiper/modules';
@@ -19,8 +17,9 @@ import { toast } from 'react-toastify';
 import { MdOutlineAdd } from 'react-icons/md';
 import { RiDeleteBin2Line } from 'react-icons/ri';
 
+
+
 export default function Offer24() {
-   
   const [products, setProducts] = useState([]);
     const [loadingId, setLoadingId] = useState(null);
 
