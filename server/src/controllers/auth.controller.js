@@ -84,13 +84,13 @@ const handleLogout = async (req, res, next) => {
         // res.clearCookie('accessToken');
         // res.clearCookie('refreshToken');
         
-        res.clearCookie('accessToken', accessToken, { 
+        res.clearCookie('accessToken',{ 
             httpOnly: true,
             secure: true,
             sameSite: 'none'
         });
         
-        res.clearCookie('refreshToken', refreshToken, { 
+        res.clearCookie('refreshToken', { 
             httpOnly: true,
             secure: true,
             sameSite: 'none'
