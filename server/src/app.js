@@ -22,7 +22,7 @@ const rateLimiter = rateLimit({
 app.use(helmet());
 
 app.use(cors({
-    origin: clientURL,
+    origin: [clientURL, 'https://thrivon-fashion.netlify.app', 'http://localhost:5173'],
     credentials: true
 }));
 
