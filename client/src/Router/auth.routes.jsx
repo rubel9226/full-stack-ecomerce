@@ -5,6 +5,7 @@ import Register from "./../Pages/LoginAndRegister/Register";
 import TempRoute from "./../guards/TempRoute";
 import VerifyCode from "../Pages/LoginAndRegister/VerifyCode";
 import ForgetPassword from "../Pages/LoginAndRegister/ForgetPassword";
+import PublicRoute from "../guards/PublicRoute";
 
 const authRoutes = [
   {
@@ -14,17 +15,17 @@ const authRoutes = [
       {
         path: "login",
         element: (
-          <TempRoute>
+          <PublicRoute>
             <Login />
-          </TempRoute>
+          </PublicRoute>
         ),
       },
       {
         path: "register",
         element: (
-          <TempRoute>
+          <PublicRoute>
             <Register />
-          </TempRoute>
+          </PublicRoute>
         ),
       },
       {
@@ -36,9 +37,9 @@ const authRoutes = [
       },
       {
         path: "forgot-password",
-        element: ( <TempRoute> 
+        element: ( <PublicRoute> 
             <ForgetPassword /> 
-          </TempRoute>
+          </PublicRoute>
         ),
       },
     ],

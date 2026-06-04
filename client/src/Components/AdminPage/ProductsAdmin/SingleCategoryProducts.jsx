@@ -55,11 +55,7 @@ const SingleCategoryProducts = ({category, setCategories}) => {
         } finally {
             setLoadingCategory(false);
         }
-    }
-
-
-    
-
+    } 
 
     return (
         <div>
@@ -190,7 +186,8 @@ const SingleCategoryProducts = ({category, setCategories}) => {
 
 
             </div>
-            <div className={products.length <= 8 ? 'hidden' : 'block'}>
+            {/* <div > */}
+            <div className={loading || pagination.totalNumberOfProducts <= 8 ? 'hidden' : 'block'}>
                 <Pagination
                     pagination={pagination}
                     onPageChange={(newPage) => setPage(newPage)} />

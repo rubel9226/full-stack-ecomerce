@@ -3,6 +3,7 @@ import { MdArrowBackIos } from "react-icons/md";
 import { Link, useNavigate } from "react-router";
 import { AuthContext } from "../../Context/AuthProvider";
 import { loginUser } from "../../API/authApi/authApi";
+import { toast } from "react-toastify";
 
 export default function Login()  {
 
@@ -26,8 +27,7 @@ export default function Login()  {
 
     try {
       console.log('ami user')
-      const user = await loginUser(formData);
-      console.log('tumi ke')
+      const user = await loginUser(formData); 
       setUser(user);
   
       // redirect
@@ -35,8 +35,9 @@ export default function Login()  {
       else if(user.role === 'vendor') navigate('/vendor');
       else navigate('/user');
     } catch (error) {
+      console.log(error?.response?.data?.message);
       console.log(error)
-      alert("Login failed.")  
+      toast.error(error?.response?.data?.message);
     }
   };
 

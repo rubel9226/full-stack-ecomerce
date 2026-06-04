@@ -44,11 +44,12 @@ const FooterNavUser = () => {
 
     const handleLogout = async () => {
         try {
-            await logoutUser();
+            await api.post('/auth/logout');
             setUser(null);
             navigate('/', {replace: true});
         } catch (error) {
-            console.log(error)    
+            console.log(error);
+            console.log(error?.response?.data?.message);    
         }  
     }
     
