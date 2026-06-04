@@ -32,7 +32,7 @@ export default function Offer24() {
 
   return (
     <>
-      <section className="bg-[url('./images/offer-bg.webp')] py-6 bg-cover bg-center w-full transform mt-5 md:rounded-2xl">
+      <section className="bg-[url('https://res.cloudinary.com/dext9i4ab/image/upload/v1780523844/offer-bg_fhhz3p.webp')] py-6 bg-cover bg-center w-full transform mt-5 md:rounded-2xl">
         <div className="px-5">
 
             <div className="text-white font-bold uppercase flex gap-3">
