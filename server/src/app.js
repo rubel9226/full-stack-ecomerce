@@ -61,8 +61,8 @@ app.use("/api/shipping", shippingRouter);
 const authRouter = require('./routes/authRouter');
 app.use("/api/auth", authRouter);
 
-const seedRouter = require('./routes/seed.router'); 
-app.use("/api/seed", seedRouter); 
+// const seedRouter = require('./routes/seed.router'); 
+// app.use("/api/seed", seedRouter); 
 
 
 const ImageRouter = require('./routes/images.route');

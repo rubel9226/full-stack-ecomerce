@@ -46,8 +46,8 @@ const paymentSLCZ = async (req, res, next) => {
             tran_id: orderId, // use unique tran_id for each api call
             success_url: `${process.env.BACKEND_URL}/api/orders/payment-sslcommerz/success/${orderId}`,
             fail_url: `${process.env.BACKEND_URL}/api/orders/payment-sslcommerz/fail/${orderId}`,
-            cancel_url: 'http://localhost:3030/cancel',
-            ipn_url: 'http://localhost:3030/ipn',
+            cancel_url: `${process.env.BACKEND_URL}/api/orders/payment-sslcommerz/cancel/${orderId}`,
+            ipn_url: `${process.env.BACKEND_URL}/api/orders/payment-sslcommerz/ipn`,
             shipping_method: 'Courier',
             product_name: 'Computer.',
             product_category: 'Electronic',
@@ -106,7 +106,7 @@ const handlePaymentSuccessSSLCZ = async (req, res, next) => {
                     status: 'paid',
 
                 },
-                orderStatus: 'pending',
+                orderStatus: 'confirmed',
             },
             { new: true }
         );
@@ -287,86 +287,112 @@ const handleCashOnDelivery = async (req, res, next) => {
             );
         }
 
-                // ==== Email Send ====
+        // ==== Email Send ====
         const emailData = {
             email: order?.shippingAddress?.email,
-            subject: `🎉 Order Confirmed - ${order?.orderId}`,
+            subject: `🛒 Cash on Delivery Order Confirmed - ${order?.orderId}`,
 
             html: `
-            <div style="font-family: Arial, sans-serif; background:#f6f8fb; padding:30px;">
-                
-                <div style="max-width:600px; margin:auto; background:#ffffff; padding:25px; border-radius:10px; box-shadow:0 5px 20px rgba(0,0,0,0.08);">
+                <div style="font-family: Arial, sans-serif; background:#f6f8fb; padding:30px;">
 
-                    <h2 style="color:#2c3e50; margin-bottom:5px;">
-                        Hello ${order?.shippingAddress?.name || "Customer"} 👋
-                    </h2>
+                    <div style="max-width:600px; margin:auto; background:#ffffff; padding:25px; border-radius:10px; box-shadow:0 5px 20px rgba(0,0,0,0.08);">
 
-                    <p style="color:#555;">
-                        Thank you for your order! Your payment has been successfully received.
-                    </p>
+                        <h2 style="color:#2c3e50; margin-bottom:5px;">
+                            Hello ${order?.shippingAddress?.name || "Customer"} 👋
+                        </h2>
 
-                    <div style="background:#e8f5e9; padding:10px 15px; border-radius:8px; margin:15px 0;">
-                        <strong style="color:green; text-align: center;">✅ Order Pending</strong>
-                    </div>
-
-                    <hr style="border:none; border-top:1px solid #eee;" />
-
-                    <h3 style="color:#333;">🧾 Order Summary</h3>
-
-                    <p><b>Order ID:</b> ${order?.orderId}</p>
-                    <p><b>Status:</b> ${order?.orderStatus}</p>
-                    <p><b>Payment Method:</b> SSLCommerz</p>
-
-                    <h3 style="margin-top:20px;">📦 Product Details</h3>
-
-                    ${order?.products?.map(p => `
-                        <div style="display:flex; gap:10px; margin-bottom:15px; border:1px solid #eee; padding:10px; border-radius:8px;">
-                            <img src="${p.image}" width="70" height="70" style="border-radius:8px; object-fit:cover;" />
-
-                            <div>
-                                <p style="margin:0; font-weight:bold;">${p.name}</p>
-                                <p style="margin:2px 0; color:#777;">Qty: ${p.quantity}</p>
-                                <p style="margin:2px 0; color:#2c3e50;">Price: ৳${p.price}</p>
-                            </div>
-                        </div>
-                    `).join("")}
-
-                    <hr style="border:none; border-top:1px solid #eee;" />
-
-                    <h3>💰 Payment Summary</h3>
-
-                    <p>Subtotal: ৳${order?.pricing?.subtotal}</p>
-                    <p>Shipping Fee: ৳${order?.pricing?.shippingFee}</p>
-                    <p>Discount: -৳${order?.pricing?.discount}</p>
-
-                    <h2 style="color:green;">
-                        Total: ৳${order?.pricing?.total}
-                    </h2>
-
-                    <hr style="border:none; border-top:1px solid #eee;" />
-
-                    <h3>🚚 Shipping Address</h3>
-
-                    <p>
-                        ${order?.shippingAddress?.address},<br/>
-                        ${order?.shippingAddress?.district}, ${order?.shippingAddress?.country}<br/>
-                        📞 ${order?.shippingAddress?.phone}
-                    </p>
-
-                    <div style="margin-top:20px; padding:10px; background:#f1f1f1; border-radius:8px;">
-                        <p style="margin:0; color:#666;">
-                            💡 Your order is being processed. You will get another update once it is shipped.
+                        <p style="color:#555;">
+                            Thank you for your order! Your Cash on Delivery order has been placed successfully.
                         </p>
+
+                        <div style="background:#fff3cd; padding:12px 15px; border-radius:8px; margin:15px 0;">
+                            <strong style="color:#856404;">
+                                💵 Payment Method: Cash on Delivery
+                            </strong>
+                        </div>
+
+                        <div style="background:#e8f5e9; padding:10px 15px; border-radius:8px; margin:15px 0;">
+                            <strong style="color:green;">
+                                ✅ Order Pending
+                            </strong>
+                        </div>
+
+                        <hr style="border:none; border-top:1px solid #eee;" />
+
+                        <h3 style="color:#333;">🧾 Order Summary</h3>
+
+                        <p><b>Order ID:</b> ${order?.orderId}</p>
+                        <p><b>Status:</b> ${updatedOrder?.orderStatus}</p>
+                        <p><b>Payment Method:</b> Cash on Delivery</p>
+
+                        <h3 style="margin-top:20px;">📦 Product Details</h3>
+
+                        ${order?.products?.map(p => `
+                            <div style="display:flex; gap:10px; margin-bottom:15px; border:1px solid #eee; padding:10px; border-radius:8px;">
+
+                                <img 
+                                    src="${p.image}" 
+                                    width="70" 
+                                    height="70" 
+                                    style="border-radius:8px; object-fit:cover;" 
+                                />
+
+                                <div>
+                                    <p style="margin:0; font-weight:bold;">
+                                        ${p.name}
+                                    </p>
+
+                                    <p style="margin:2px 0; color:#777;">
+                                        Qty: ${p.quantity}
+                                    </p>
+
+                                    <p style="margin:2px 0; color:#2c3e50;">
+                                        Price: ৳${p.price}
+                                    </p>
+                                </div>
+
+                            </div>
+                        `).join("")}
+
+                        <hr style="border:none; border-top:1px solid #eee;" />
+
+                        <h3>💰 Payment Summary</h3>
+
+                        <p>Subtotal: ৳${order?.pricing?.subtotal}</p>
+
+                        <p>Shipping Fee: ৳${order?.pricing?.shippingFee}</p>
+
+                        <p>Discount: -৳${order?.pricing?.discount}</p>
+
+                        <h2 style="color:green;">
+                            Total: ৳${order?.pricing?.total}
+                        </h2>
+
+                        <hr style="border:none; border-top:1px solid #eee;" />
+
+                        <h3>🚚 Shipping Address</h3>
+
+                        <p>
+                            ${order?.shippingAddress?.address},<br/>
+                            ${order?.shippingAddress?.district}, 
+                            ${order?.shippingAddress?.country}<br/>
+                            📞 ${order?.shippingAddress?.phone}
+                        </p>
+
+                        <div style="margin-top:20px; padding:12px; background:#f1f1f1; border-radius:8px;">
+                            <p style="margin:0; color:#666;">
+                                💡 Please keep the payment amount ready during delivery.
+                            </p>
+                        </div>
+
+                        <p style="margin-top:25px; color:#888; font-size:12px;">
+                            If you have any questions, contact our support team anytime.
+                        </p>
+
                     </div>
+                </div>`
+            };
 
-                    <p style="margin-top:25px; color:#888; font-size:12px;">
-                        If you have any questions, contact our support team anytime.
-                    </p>
-
-                </div>
-            </div>
-            `
-        };
 
         await sendEmail(emailData); 
         
