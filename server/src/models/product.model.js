@@ -29,12 +29,11 @@ const productSchema = new Schema(
             type: String,
             required: [true, 'Product Details is required'],
             trim: true,
-            minlength: [3, 'Product description can be minimum 3 characters'],
+            minlength: [3, 'Product details can be minimum 3 characters'],
         },
         price: {
             type: Number,
-            required: [true, ' price is required'],
-            trim: true,
+            required: [true, ' price is required'], 
             validate: {
                 validator: (v) => ( v > 0 ),
                 message: (props) => 
@@ -43,20 +42,51 @@ const productSchema = new Schema(
         },
         discount: {
             type: Number,
-            default: 0
+            default: 0,
+            min: [0, 'Discount cannot be negative'],
         },
         newPrice: {
             type: Number,
-            default: 0
+            default: 0,
+            immutable: true
         },
         quantity: {
             type: Number,
-            required: [true, 'Product quantity is required'],
-            trim: true,
-            validate: {
-                validator: (v) => ( v > 0 ),
-                message: (props) => 
-                    `${props.value} is not a valid quantity! Quantity must be greater than 0.`
+            required: [true, 'Product quantity is required'], 
+            min: [0, 'Quantity cannot be negative'],
+        },
+        variants:{
+                color: String,
+                size: [String],
+            },
+        homeSections: {
+            popular: {
+                type: Boolean,
+                default: false,
+            },
+            dailyOffer: {
+                type: Boolean,
+                default: false,
+            },
+            newCollection: {
+                type: Boolean,
+                default: false,
+            },
+            bagsLuggage: {
+                type: Boolean,
+                default: false,
+            },
+            watch: {
+                type: Boolean,
+                default: false,
+            },
+            shavingTrimming: {
+                type: Boolean,
+                default: false,
+            },
+            headphones: {
+                type: Boolean,
+                default: false,
             },
         },
         sold: {
@@ -71,7 +101,6 @@ const productSchema = new Schema(
         image: {
             type: String,
             default: defaultImagePath,
-            required: true,
         },
         category: {
             type: Schema.Types.ObjectId,

@@ -10,7 +10,7 @@ const cloudinary = require("../config/cloudinary");
 
 
 const createProduct = async (productData) => {
-  const { description, details, price, discount, quantity, shipping, category, image } = productData;
+  const { description, details, price, discount, quantity, shipping, category, image, variants } = productData;
   let { name } = productData;
   name= name.toLowerCase();
 
@@ -43,7 +43,8 @@ const createProduct = async (productData) => {
     quantity: quantity,
     shipping: shipping,
     category: category,
-    image: newImage
+    image: newImage, 
+    variants
   });
 
   
@@ -60,20 +61,11 @@ const getProducts = async (page, limit, filter ={}) => {
   .populate('category')
   .sort({createdAt: -1});
    
-  console.log(limit)
 
   if(limit) {
     query = query.skip((page - 1) * limit).limit(limit);
   }
-  const products = await query;
-
-
-
-  // const products = await Product.find(filter)
-  //     .populate('category')
-  //     .skip(page-1)
-  //     .limit(limit)
-  //     .sort({createdAt: -1});
+  const products = await query; 
 
   if(!products){
       throw createError(404, 'no products found');
@@ -82,10 +74,6 @@ const getProducts = async (page, limit, filter ={}) => {
   const count = await Product.countDocuments(filter);
   // const productData = [products, count]
   const productData = {products: products, count: count}
-
-  // const {products2, count2} = productData;
-
-  // console.log('productData', products2, 'and', count2)
 
   return productData;
 };

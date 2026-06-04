@@ -9,12 +9,22 @@ const { successResponse } = require('./response.controller');
 const { findWithId } = require('../services/find.item');
 const deleteImage = require('../helper/delete.image');
 const { createJSONWebToken } = require('../helper/jsonwebtoken');
-const { jwtActivationKey, clientURL, jwtResetPasswordKey } = require('../secret');
+const { jwtActivationKey, clientURL, jwtResetPasswordKey, jwtAccessKey, jwtRefreshKey } = require('../secret');
 const emailWithNodeMailer = require('../helper/email');
-const { handleUserAction, findUsers, findUserById, deleteUserById, updateUserById, updateUserPasswordById, forgetPasswordEmail, resetPassword } = require('../services/user.service');
+const { 
+    handleUserAction, 
+    findUsers, 
+    findUserById, 
+    deleteUserById, 
+    updateUserById, 
+    updateUserPasswordById, 
+    s, 
+    resetPassword 
+} = require('../services/user.service');
 const checkUserExists = require('../helper/checkUserExists');
 const sendEmail = require('../helper/sendEmail');
 const cloudinary = require('../config/cloudinary');
+const { setRefreshTokenCookie, setAccessTokenCookie } = require('../helper/cookie');
 
 const handleGetUsers = async (req, res, next) => {
     try {
@@ -23,7 +33,7 @@ const handleGetUsers = async (req, res, next) => {
         const limit = Number(req.query.limit) || 15;
 
 
-        const { users, pagination } = await findUsers(search, limit, page)
+        const { users, pagination } = await findUsers(search, limit, page);
 
         return successResponse(res, {
             statusCode: 200, 
@@ -77,6 +87,7 @@ const handleProcessRegister = async (req, res, next) => {
         if(image && image.size > 1024 * 1024 * 2){
             throw createError(400, 'File too large. It must be less then 2 MB')
         }
+        console.log({name, email, password, phone, image});
 
         const userExists = await checkUserExists(email);
         if(userExists){
@@ -171,6 +182,154 @@ const handleActivateUserAccount = async (req, res, next) => {
     } 
 };
 
+const pendingUsers = new Map();
+
+const handleProcessRegisterCode = async (req, res, next) => {
+    try {
+        console.log('hi all');
+        const { name, email, image: userImage, password, confirm, phone, address } = req.body;
+        console.log(userImage, 'user image');
+
+        
+        const image = req.file?.path;
+
+        console.log({
+            name, 
+            email, 
+            image,
+            password,
+            confirm, 
+            phone,
+        })
+
+        const userExists = await checkUserExists(email);
+
+        if (userExists) {
+            if (image) {
+                deleteImage(image);
+            }
+
+            throw createError(409, "User already exists");
+        }
+
+        const generateOTP = () => {
+            return Math.floor(100000 + Math.random() * 900000).toString();
+        };
+
+        // generate otp
+        const otp = generateOTP();
+
+        // store temporarily
+        pendingUsers.set(email, {
+            name,
+            email,
+            password,
+            phone,
+            address,
+            image,
+            otp,
+            createdAt: Date.now(),
+        });
+
+        // send email
+        const emailData = {
+            email,
+            subject: "Verify Your Account",
+            html: `
+                <h2>Hello ${name}</h2>
+                <p>Your verification code is:</p>
+
+                <h1>${otp}</h1>
+
+                <p>This code will expire in 10 minutes.</p>
+            `,
+        };
+
+        await sendEmail(emailData);
+
+        return successResponse(res, {
+            statusCode: 200,
+            message: "Verification code sent to your email",
+            payload: {
+                name: name,
+                email: email,
+                otp: otp
+            }
+        });
+
+    } catch (error) {
+        next(error);
+    }
+};
+
+const handleVerifyOTP = async (req, res, next) => {
+    try {
+
+        const { email, otp } = req.body;
+
+        const pendingUser = pendingUsers.get(email);
+
+        console.log(pendingUser);
+        console.log(email);
+
+        if (!pendingUser) {
+            throw createError(404, "No pending registration found");
+        }
+
+        // check otp
+        if (pendingUser.otp !== otp) {
+            throw createError(400, "Invalid OTP");
+        }
+
+        // check expire time (10 min)
+        const isExpired =
+            Date.now() - pendingUser.createdAt > 10 * 60 * 1000;
+
+        if (isExpired) {
+            pendingUsers.delete(email);
+            throw createError(400, "OTP expired");
+        }
+
+        let uploadedImage = "";
+
+        if (pendingUser.image) {
+
+            const response = await cloudinary.uploader.upload(
+                pendingUser.image,
+                {
+                    folder: "Trivon_fashion/users",
+                }
+            );
+
+            uploadedImage = response.secure_url;
+        }
+        
+
+
+        // create user
+        const newUser = await User.create({
+            name: pendingUser.name,
+            email: pendingUser.email,
+            password: pendingUser.password,
+            phone: pendingUser.phone,
+            address: pendingUser.address,
+            image: uploadedImage,
+        });
+
+        // remove temp data
+        pendingUsers.delete(email);
+
+        return successResponse(res, {
+            statusCode: 201,
+            message: "Registration successful",
+            payload: newUser
+        });
+
+    } catch (error) {
+        next(error);
+    }
+};
+
 
 
 const handleDeleteUserById = async (req, res, next) => {
@@ -203,15 +362,34 @@ const handleDeleteUserById = async (req, res, next) => {
 const handleUpdateUserById = async (req, res, next) => {
     try {
         const userId = req.params.id;
+        console.log('before')
+        console.log(req.body);
+        console.log('after')
+        console.log(req.file?.path)
 
         const updatedUser = await updateUserById( userId, req );
 
-        console.log('updated user', updatedUser);
+        // new access token
+        const accessToken = createJSONWebToken(
+            {user: updatedUser},
+            jwtAccessKey,
+            '15m'
+        );
+        setAccessTokenCookie(res, accessToken);
+
+        // new refresh token
+        const refreshToken = createJSONWebToken(
+            { user: updatedUser },
+            jwtRefreshKey,
+            '7d'
+        )
         
+        setRefreshTokenCookie(res, refreshToken);
+
         return successResponse(res, {
             statusCode: 200, 
             message: 'user was updated successfully',
-            payload: {updatedUser},
+            payload: updatedUser,
         });
     } catch (error) {
         if(error instanceof mongoose.Error.CastError){
@@ -226,49 +404,33 @@ const handleUpdateUserById = async (req, res, next) => {
 const handleManageUserStatusById = async (req, res, next) => {
     try {
         const userId = req.params.id;
-        const action = req.body.action;
-        
-        
-        const successMessage = await handleUserAction(userId, action) ;  // called handle user action
-
-        // const userId = req.params.id;
-
-        // //  ! find the user 
-        // const user = await findWithId(User, userId);
-        // const isBanned = user.isBanned;
-        // const newUpdates = !isBanned;
-        // const updates = { isBanned: newUpdates };
-        // const updateOptions = {
-        //     new: true, 
-        //     runValidators: true, 
-        //     context: 'query' 
-        // };
-        
-        // const updatedUser = await User.findByIdAndUpdate(
-        //     userId, 
-        //     updates,
-        //     updateOptions
-        // ).select('-password');
-
-        // if(!updatedUser){
-        //     throw createError(400, `User was not ${user.isBanned ? 'Unbanned' : 'Banned'} successfully`);
-        // };
-        
+        let successMessage = '';
         
 
+        const user = await User.findOne({_id: userId});
+        if(!user){
+            throw createError('user not found.');
+        }
 
+        const action = user.isBanned;
+        if(action){
+            successMessage = 'User was banned successfully.'
+        }else{ 
+            successMessage = 'User was unbanned successfully';
+        }
 
+        
+        const updatedUser = await handleUserAction(userId, action) ;  // called handle user action
+        if(!updatedUser){
+            throw createError(400, `User was not banned successfully`);
+        };
         
         return successResponse(res, {
             statusCode: 200, 
-            // message: `user was ${user.isBanned ? 'Unbanned' : 'Banned'} successfully`,
             message: successMessage,
-            payload: {},
+            payload: updatedUser,
         });
-    } catch (error) {
-        if(error instanceof mongoose.Error.CastError){
-            throw (createError(400, 'Invalid user id'));
-        }
+    } catch (error) { 
         next(error);
     } 
 };
@@ -278,10 +440,10 @@ const handleManageUserStatusById = async (req, res, next) => {
 const handleUpdatePassword = async (req, res, next) => {
     try {
         // email, oldPassword, newPassword, confirmedPassword 
-        const { email, oldPassword, newPassword, confirmedPassword } = req.body;
-        const userId = req.params.id;
+        const userId = req.user._id;
+        const { oldPassword, newPassword, confirmedPassword } = req.body;
 
-        const updatedUser = await updateUserPasswordById(userId, email, oldPassword, newPassword, confirmedPassword)
+        const updatedUser = await updateUserPasswordById(userId, oldPassword, newPassword, confirmedPassword)
         
 
         return successResponse(res, {
@@ -294,22 +456,109 @@ const handleUpdatePassword = async (req, res, next) => {
     } 
 };
 
+const forgotPasswordStore = new Map();
 
-
-const handleForgetPassword = async (req, res, next) => {
+const sendForgotPasswordOTP = async (req, res, next) => {
     try {
-        const email = req.body.email;
-        
-        const token = await forgetPasswordEmail(email);
+        // console.log('welcome here.')
+        const {email} = req.body;
+        console.log(email);
+
+        const user = await User.findOne({ email });
+
+        if (!user) {
+            throw createError(404, "User not found");
+        }
+
+        // generate 6 digit OTP
+        const otp = Math.floor(100000 + Math.random() * 900000).toString();
+
+        // store in memory (production: Redis use better)
+        forgotPasswordStore.set(email, {
+            otp,
+            createdAt: Date.now(),
+        });
+
+        // email send
+        const emailData = {
+            email,
+            subject: "Forgot Password OTP",
+            html: `
+                <div>
+                    <h2>Hello ${user?.name}</h2>
+                    <p>Your password reset code is:</p>
+
+                    <h1 style="color:#1F5DA0">${otp}</h1>
+
+                    <p>This code will expire in 10 minutes.</p>
+                </div>
+            `,
+        };
+
+        await sendEmail(emailData);
 
         return successResponse(res, {
             statusCode: 200, 
-            message: `Please go to your ${email} for resetting the password`,
-            payload: { token }
+            message: "OTP sent to email",
+            payload: otp
         });
+
     } catch (error) {
         next(error);
-    } 
+    }
+};
+
+const verifyForgotPasswordOTP = async (req, res, next) => {
+    try {
+        const {email, otp, password, confirm} = req.body;
+        const record = forgotPasswordStore.get(email);
+
+        console.log(email, '= email', otp, '= otp', password, '= password', confirm,'= confirm password');
+        console.log(record);
+
+        if (!record) {
+            throw createError(400, "OTP not found or expired");
+        }
+
+        // check expire (10 min)
+        const isExpired = Date.now() - record.createdAt > 10 * 60 * 1000;
+
+        if (isExpired) {
+            forgotPasswordStore.delete(email);
+            throw createError(400, "OTP expired");
+        }
+
+        if (record.otp !== otp) {
+            throw createError(400, "Invalid OTP");
+        }
+
+        if (password !== confirm) {
+            throw createError(400, "Password and confirm password does not match.");
+        }
+
+        const filter = { email: email };
+        const update = { password: password };
+        const options = { new: true };
+        const updatedUser = await User.findOneAndUpdate(
+            filter,
+            update,
+            options
+        ).select('-password');
+
+        // mark verified (allow password reset)
+        // forgotPasswordStore.set(email, {
+        //     verified: true,
+        // });
+
+        return successResponse(res, {
+            statusCode: 200, 
+            message: "User Reset successfully",
+            payload: {updatedUser},
+        });
+
+    } catch (error) {
+        throw error;
+    }
 };
 
 
@@ -341,6 +590,11 @@ module.exports = {
     handleUpdateUserById,
     handleManageUserStatusById,
     handleUpdatePassword,
-    handleForgetPassword,
-    handleResetPassword
+    sendForgotPasswordOTP,
+    verifyForgotPasswordOTP, 
+    handleResetPassword,
+
+    handleProcessRegisterCode, 
+    handleVerifyOTP
+
 };

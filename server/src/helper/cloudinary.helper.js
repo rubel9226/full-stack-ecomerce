@@ -1,13 +1,13 @@
 
-const publicIdWithoutExtensionFromUrl = async (imageUrl) => {
-  const pathSegments = imageUrl.split("/");
+const publicIdWithoutExtensionFromUrl = (url) => {
 
-  // get the last segment - g5tytdi3ojfrp5nr3ppb.jpg
-  const lastSegment = pathSegments[pathSegments.length - 1];
+    const parts = url.split('/');
 
-  const valueWithoutExtension = lastSegment.replace(".jpg", "");
+    const filename = parts[parts.length - 1];
 
-  return valueWithoutExtension;
-};
+    const publicId = filename.split('.')[0];
+
+    return publicId;
+}
 
 module.exports = { publicIdWithoutExtensionFromUrl };

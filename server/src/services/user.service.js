@@ -154,9 +154,10 @@ const updateUserById = async( userId, req ) => {
             if(user.image){
                 // await deleteImage(existingUser.image);
                 const publicId = await publicIdWithoutExtensionFromUrl(user.image);
-                console.log('this is image delete route.')
+
                 const { result } = await cloudinary.uploader.destroy(`Trivon_fashion/users/${publicId}`);
-    
+                console.log(publicId, 'public id');
+                console.log(result, 'result');
                 if(result !== 'ok'){
                     throw createError(404, 'User image was not deleted successfully from cloudinary. Please try again');
                 }
@@ -170,14 +171,17 @@ const updateUserById = async( userId, req ) => {
 }
 
 
-const updateUserPasswordById = async( userId, email, oldPassword, newPassword, confirmedPassword ) => {
+const updateUserPasswordById = async( userId, oldPassword, newPassword, confirmedPassword ) => {
     try {
 
-        const user = await User.findOne({email: email});
+        const user = await User.findById({_id: userId});
+
 
         if(!user){
-            throw createError(400, 'User was not found this email.');
+            throw createError(400, 'User was not found.');
         }
+        console.log('new password = ', newPassword, 'confirm password =', confirmedPassword, ' old password=', oldPassword);
+        console.log(newPassword !== confirmedPassword)
 
         if(newPassword !== confirmedPassword ){
             throw createError(400, 'new password and confirmed did not match');
@@ -213,45 +217,6 @@ const updateUserPasswordById = async( userId, email, oldPassword, newPassword, c
 }
 
 
-const forgetPasswordEmail = async( email ) => {
-    
-    try {
-
-        const user = await User.findOne({email: email});
-        if(!user){
-            throw createError(404, 'Email is incorrect or you have not verified your email address. Please register yourself first');
-        }
-
-        // create jwt
-        const token =  createJSONWebToken(
-            { email },
-            jwtResetPasswordKey, 
-            '10m'
-        );
-
-        // prepare email
-        const emailData = {
-            email, 
-            subject: 'Reset password Email',
-            html: `
-                <h2> Hello ${user.name} !</h2>
-                <p>Please click hera to link 
-                    <a href="${clientURL}/api/users/reset-password/${token}" 
-                        target="_blank"> 
-                        Reset your password
-                    </a>
-                </p>
-            `
-        }
-        // send email with nodemailer
-        await sendEmail(emailData);
-
-        return token;
-    } catch (error) {
-        throw (error);
-    } 
-}
-
 
 const resetPassword = async( token, password ) => {
     
@@ -283,17 +248,9 @@ const resetPassword = async( token, password ) => {
 
 const handleUserAction = async (userId, action) => {
     try {
-        let update;
-        let successMessage;
-        if(action === 'ban'){
-            update = { isBanned: true };
-            successMessage = 'User was banned successfully.'
-        }else if(action === 'unban'){
-            update = { isBanned: false };
-            successMessage = 'User was unbanned successfully';
-        }else{
-            throw createError(400, 'Invalid action. Use "ban" or "unban" ');
-        }
+        console.log(action);
+        const  update = { isBanned: !action };
+        console.log(update);
         
         const updateOptions = {
             new: true, 
@@ -307,11 +264,7 @@ const handleUserAction = async (userId, action) => {
             updateOptions
         ).select('-password');
 
-        if(!updatedUser){
-            throw createError(400, `User was not banned successfully`);
-        };
-
-        return successMessage;
+        return updatedUser;
     } catch (error) {
         if(error instanceof mongoose.Error.CastError){
             throw (createError(400, 'Invalid user id'));
@@ -333,6 +286,5 @@ module.exports = {
     updateUserById,
     updateUserPasswordById,
     handleUserAction, 
-    forgetPasswordEmail,
     resetPassword
 }

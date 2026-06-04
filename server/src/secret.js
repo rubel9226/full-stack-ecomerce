@@ -12,7 +12,7 @@ const jwtResetPasswordKey = process.env.JWT_RESET_PASSWORD_KEY || 'ahahihaighaig
 // SMTP setup
 const smtpUserName = process.env.SMTP_USERNAME || '';
 const smtpPassword = process.env.SMTP_PASSWORD || '';
-const clientURL = process.env.CLIENT_URL || '';
+const clientURL = process.env.CLIENT_URL || 'http://localhost:5173';
 
 
 module.exports = { 

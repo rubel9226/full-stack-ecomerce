@@ -5,6 +5,7 @@ const logger = require('../controllers/logger.controller');
 
 // option 1
 const connectDatabase = async (options = {}) => {
+    console.log(mongodbURL);
     try {
         await mongoose.connect(mongodbURL, options)
         logger.info( 'Connection to DB is successfully.');
@@ -13,6 +14,7 @@ const connectDatabase = async (options = {}) => {
             logger.error("DB Connection error: ", error);
         })
     } catch (error) {
+        console.log(error);
         logger.log('error', 'Cold not connect to DB: ', error.toString());
     };
 };

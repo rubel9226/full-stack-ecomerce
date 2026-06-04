@@ -16,14 +16,24 @@ const createCategory = async (name) => {
 
 
 const getCategories = async () => {
-  const category = await Category.find({}).select('name slug').lean();
-  return category;
+  const categories = await Category
+    .find({}) 
+    .select('name slug section')
+    .lean();
+
+    categories.sort((a, b) => {
+      if (a.slug === 'clothing-and-fashion') return -1;
+      if (b.slug === 'clothing-and-fashion') return 1;
+
+      return new Date(b.createdAt) - new Date(a.createdAt);
+    });
+  return categories;
 };
 
 
 
 const getCategory = async (slug='') => {
-  const category = await Category.find({slug}).select('name slug').lean();
+  const category = await Category.find({slug}).select('name slug section').lean();
   return category;
 };
 

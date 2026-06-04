@@ -1,8 +1,7 @@
 const express = require("express");
 const categoryRouter = express.Router();
 
-const runValidation = require("../validators");
-const uploadUserImage = require("../middlewares/upload");
+const runValidation = require("../validators"); 
 const { isLoggedIn, isLoggedOut, isAdmin } = require("../middlewares/auth");
 const {
   handleCreateCategory,
@@ -10,12 +9,17 @@ const {
   handleGetCategory,
   handleUpdateCategory,
   handleDeleteCategory,
+  handleAddPopular,
+  handleDeletePopular,
+  handleGetPopular,
 } = require("../controllers/category.controller");
 const { validateCategory } = require("../validators/category");
+const { uploadProductImage } = require("../middlewares/upload");
 
 // POST /api/categories
 categoryRouter.post(
   "/",
+  uploadProductImage.single('image'),
   validateCategory,
   runValidation,
   isLoggedIn,
@@ -26,6 +30,7 @@ categoryRouter.post(
 // GET /api/categories
 categoryRouter.get("/", handleGetCategories);
 
+// get single category
 categoryRouter.get("/:slug", handleGetCategory);
 
 categoryRouter.put(
@@ -36,6 +41,31 @@ categoryRouter.put(
   isAdmin,
   handleUpdateCategory,
 );
+
+
+
+// add popular category PUT /api/categories/add-popular/?slug
+categoryRouter.get(
+  "/popular/get-popular",
+  handleGetPopular,
+);
+
+// add popular category PUT /api/categories/add-popular/?slug
+categoryRouter.put(
+  "/popular/add-popular/:slug", 
+  isLoggedIn,
+  isAdmin,
+  handleAddPopular,
+);
+
+// add popular category PUT /api/categories/add-popular/?slug
+categoryRouter.put(
+  "/popular/delete-popular/:slug", 
+  isLoggedIn,
+  isAdmin,
+  handleDeletePopular,
+);
+
 
 categoryRouter.delete( "/:slug", isLoggedIn, isAdmin, handleDeleteCategory, );
 

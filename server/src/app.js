@@ -1,11 +1,14 @@
 const express = require('express');
-const cookieParser = require('cookie-parser');
 const app = express();
+const cookieParser = require('cookie-parser');
 const createError = require('http-errors'); 
 const helmet = require('helmet')
 const rateLimit = require('express-rate-limit');
 const morgan = require('morgan');
 const cors = require('cors');
+
+
+const { clientURL } = require('./secret');
 
 
 const rateLimiter = rateLimit({
@@ -16,16 +19,23 @@ const rateLimiter = rateLimit({
 
 
 
+app.use(helmet());
+
 app.use(cors({
-    origin: "http://localhost:5173",
+    origin: clientURL,
     credentials: true
 }));
+
 app.use(cookieParser());
+
 app.use(rateLimiter);
-app.use(morgan('dev'));
-app.use(helmet());
+
+if(process.env.NODE_ENV === 'development'){
+    app.use(morgan('dev'));
+}
+
 app.use(express.urlencoded({ extended: true}));
-app.use(express.json());
+app.use(express.json({ limit: '5mbn' }));
 
 
 
@@ -42,11 +52,22 @@ app.use("/api/categories", categoryRouter);
 const productRouter = require('./routes/product.router');
 app.use("/api/products", productRouter);
 
+const orderRouter = require('./routes/order.route');
+app.use("/api/orders", orderRouter);
+
+const shippingRouter = require('./routes/shipping.route');
+app.use("/api/shipping", shippingRouter);
+
 const authRouter = require('./routes/authRouter');
 app.use("/api/auth", authRouter);
 
-const seedRouter = require('./routes/seed.router');
-app.use("/api/seed", seedRouter);
+const seedRouter = require('./routes/seed.router'); 
+app.use("/api/seed", seedRouter); 
+
+
+const ImageRouter = require('./routes/images.route');
+app.use("/api/images", ImageRouter); 
+
 
 
 
@@ -60,7 +81,7 @@ app.use((req, res, next) => {
 app.use((err, req, res, next) => {
     return errorResponse(res, {
         statusCode: err.status,
-        message: err.message
+        message: err.message,
     })
 });
 

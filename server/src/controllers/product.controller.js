@@ -17,37 +17,58 @@ const Category = require('../models/category.model');
 const handleCreateProduct = async (req, res, next) => {
     try {
         const {
-            name, 
+            name,
             description,
             details,
             price,
             discount,
-            quantity, 
+            quantity,
             shipping,
-            category
+            category,
+            color,
+            sizes
         } = req.body;
-        
-        // add new image
+
+        // image
         const image = req.file?.path;
-        if(image && image.size > 1024 * 1024 * 2){
-            throw createError(400, 'File too large. It must be less then 2 MB')
+        if(!image){
+            throw createError(400, 'image not found.')
         }
 
+        // variants create
+        const variants = {
+                color,
+                size: sizes
+                    .split(',')
+                    .map(size => size.trim())
+                    .filter(Boolean)
+            } ;
+        
 
-        const productData = { name, description, details, price, discount, quantity, shipping, category, image }
+        const productData = {
+            name,
+            description,
+            details,
+            price,
+            discount,
+            quantity,
+            shipping,
+            category,
+            image,
+            variants
+        }; 
 
-        const product = await createProduct(productData)
-
+        const product = await createProduct(productData);
 
         return successResponse(res, {
-            statusCode: 200, 
+            statusCode: 200,
             message: 'Product was created successfully.',
             payload: product
         });
+
     } catch (error) {
         next(error);
-       
-    } 
+    }
 };
 
 
@@ -60,15 +81,16 @@ const handleGetProducts = async (req, res, next) => {
         const limit = parseInt(req.query.limit) ? parseInt(req.query.limit) : null;
 
         const searchRegExp = new RegExp('.*' + search + '.*', 'i')
+
         const filter = {
-            isAdmin: {$ne: true},
             $or: [
                 {name: {$regex: searchRegExp}},
+                {slug: {$regex: searchRegExp}},
+                {price: Number(search) || 0},
                 // {email: {$regex: searchRegExp}},
             ]
         };
-        console.log(categorySlug);
-        console.log(page);
+        
 
         if (categorySlug) {
             const categoryDoc = await Category.findOne({ slug: categorySlug});
@@ -79,6 +101,8 @@ const handleGetProducts = async (req, res, next) => {
         }
 
         const {products, count} = await getProducts(page, limit, filter);
+
+        console.log(page, 'limit');
         
         return successResponse(res, {
             statusCode: 200,
@@ -98,6 +122,64 @@ const handleGetProducts = async (req, res, next) => {
         next(error);
        
     } 
+};
+
+
+// GET -> /api/products/discount/:category
+const handleGetDiscountProducts = async (req, res, next) => {
+    try {
+        const categorySlug = req.params.category;
+        const page = parseInt(req.query.page) || 1;
+        const limit = req.query.limit
+            ? parseInt(req.query.limit)
+            : 10;
+
+        console.log(limit);
+
+        // Find Category
+        const category = await Category.findOne({
+            slug: categorySlug
+        });
+
+        // Category not found
+        if (!category) {
+            throw createError(404, 'category not found.')
+
+        }
+
+        // Filter
+        const filter = {
+            category: category._id,
+            discount: { $gt: 0 }
+        };
+
+        // Count Total Products
+        const count = await Product.countDocuments(filter);
+        // Pagination
+        const skip = (page - 1) * limit;
+        // Products
+        const products = await Product.find(filter)
+            .populate('category')
+            .sort({ createdAt: -1 })
+            .skip(skip)
+            .limit(limit);
+        return successResponse(res, {
+            statusCode: 200,
+            message: 'Discount products returned successfully',
+            payload: {
+                products: products,
+                pagination: {
+                    totalPages: Math.ceil(count/limit),
+                    currentPage: page,
+                    previousPage: page-1,
+                    nextPage: page+1,
+                    totalProducts: count,
+                }
+             }
+        }); 
+    } catch (error) { 
+        next(error);
+    }
 };
 
 
@@ -139,7 +221,7 @@ const handleDeleteProduct = async (req, res, next) => {
             const publicId = await publicIdWithoutExtensionFromUrl(product.image);
             const { result } = await cloudinary.uploader.destroy(`Trivon_fashion/products/${publicId}`);
 
-            if(result !== 'ok'){
+            if(result !== 'ok' && result !== 'not found' ){
                 throw createError(404, 'product image was not deleted successfully from cloudinary. Please try again');
             }
         }
@@ -159,19 +241,237 @@ const handleDeleteProduct = async (req, res, next) => {
 
 
 // GET -> /api/products/:slug -> update single product
+const handleUpdateProductHomeSection = async (req, res, next) => {
+    try {
+        const { slug } = req.params;
+        const { section } = req.query; 
+
+        const product = Product.findOne({slug});
+        if(!product){
+            throw createError(400, 'Product not found.');
+        }
+
+        let updates = {}
+
+        if(section === 'dailyOffer'){
+            updates = 
+                {
+                    $set: {
+                       "homeSections.dailyOffer": true
+                   }
+                }
+        } else if(section === 'newCollection'){
+            updates = 
+                {
+                    $set: {
+                       "homeSections.newCollection": true
+                   }
+                }
+        } else if(section === 'bagsLuggage'){
+            updates = 
+                {
+                    $set: {
+                       "homeSections.bagsLuggage": true
+                   }
+                }
+        } else if(section === 'watch'){
+            updates = 
+                {
+                    $set: {
+                       "homeSections.watch": true
+                   }
+                }
+        } else if(section === 'shavingTrimming'){
+            updates = 
+                {
+                    $set: {
+                       "homeSections.shavingTrimming": true
+                   }
+                }
+        } else if(section === 'headphones'){
+            updates = 
+                {
+                    $set: {
+                       "homeSections.headphones": true
+                   }
+                }
+        }else{
+            throw createError(400, 'Section not match.')
+        } 
+
+        const updatedProduct = await Product.findOneAndUpdate(
+            {slug},
+            updates,
+            {returnDocument: 'after'}
+        )
+        
+        if(!updatedProduct){
+            throw createError(400, 'Adding Field!')
+        } 
+
+        return successResponse(res, {
+            statusCode: 200,
+            message: 'products featured update successfully.',
+            payload: updatedProduct
+        });
+    } catch (error) {
+        next(error);
+       
+    } 
+};
+
+
+// GET -> /api/products/:slug -> update single product
+const handleDeleteProductHomeSection = async (req, res, next) => {
+    try {
+        const { slug } = req.params;
+        const { section } = req.query; 
+        console.log('slug=' + slug, 'section=' + section);
+
+        const product = Product.findOne({slug});
+        if(!product){
+            throw createError(400, 'Product not found.');
+        }
+
+        let updates = {}
+
+        if(section === 'dailyOffer'){
+            updates = 
+                {
+                    $set: {
+                       "homeSections.dailyOffer": false
+                   }
+                }
+        } else if(section === 'newCollection'){
+            updates = 
+                {
+                    $set: {
+                       "homeSections.newCollection": false
+                   }
+                }
+        } else if(section === 'bagsLuggage'){
+            updates = 
+                {
+                    $set: {
+                       "homeSections.bagsLuggage": false
+                   }
+                }
+        } else if(section === 'watch'){
+            updates = 
+                {
+                    $set: {
+                       "homeSections.watch": false
+                   }
+                }
+        } else if(section === 'shavingTrimming'){
+            updates = 
+                {
+                    $set: {
+                       "homeSections.shavingTrimming": false
+                   }
+                }
+        } else if(section === 'headphones'){
+            updates = 
+                {
+                    $set: {
+                       "homeSections.headphones": false
+                   }
+                }
+        }else {
+            throw createError(400, 'section not match.')
+        }
+        console.log(updates);
+
+        const updatedProduct = await Product.findOneAndUpdate(
+            {slug},
+            updates,
+            {returnDocument: 'after'}
+        )
+        
+        if(!updatedProduct){
+            throw createError(400, 'Adding Field!')
+        } 
+
+        return successResponse(res, {
+            statusCode: 200,
+            message: 'products featured update successfully.',
+            payload: updatedProduct
+        });
+    } catch (error) {
+        next(error);
+       
+    } 
+};
+
+
+// GET -> /api/products/:slug -> update single product
+const handleGetProductHomeSection = async (req, res, next) => {
+    try { 
+        const { section } = req.query;
+        if(!section){
+            throw createError(400, 'Enter section.')
+        }
+        
+        let find = {}
+
+        if(section === 'dailyOffer'){
+            find = {"homeSections.dailyOffer": true}
+        } else if(section === 'newCollection'){
+            find = {"homeSections.newCollection": true}
+        } else if(section === 'bagsLuggage'){
+            find = {"homeSections.bagsLuggage": true}
+        } else if(section === 'watch'){
+            find = {"homeSections.watch": true}
+        } else if(section === 'shavingTrimming'){
+            find = {"homeSections.shavingTrimming": true}
+        } else if(section === 'headphones'){
+            find = {"homeSections.headphones": true}
+        } else{
+            throw createError(400, 'section not match.')
+        }
+
+        const products = await Product.find(find).sort({updatedAt: -1})
+
+        return successResponse(res, {
+            statusCode: 200,
+            message: 'products return successfully.',
+            payload: products
+        });
+    } catch (error) {
+        next(error);
+       
+    } 
+};
+
+
+// GET -> /api/products/:slug -> update single product
 const handleUpdateProduct = async (req, res, next) => {
     try {
         const {slug} = req.params;
         const {name, description, price, discount, quantity, sold, shipping, category} = req.body
-
+        
+        
         const product = await Product.findOne({slug});
+        
+        if(name){
+            const nameSlug = slugify(name);
+            const nameProduct = await Product.findOne({slug: nameSlug});
+            
+            if(nameProduct){
+                throw createError('This name product already exist.')
+            }
+        }
+        
         if(!product){
             throw createError('This Product not found.')
         }
+        
+        console.log(product.price)
 
-        if(product.price < discount){
+        if(price < discount){
             throw new Error("Discount not be greater than price")
         }
+        
 
         const updateOptions = { returnDocument: 'after', runValidators: true, context: 'query'};
         const updates = {};
@@ -200,8 +500,9 @@ const handleUpdateProduct = async (req, res, next) => {
         }
         
         
-
         const image = req.file?.path;
+        console.log({image, name,description, price, discount, quantity, sold, shipping, category});
+
         if(image){
             if(image.size > 2097152){
                 throw createError(400, 'File too large. it must be less than 2 MB');
@@ -233,13 +534,13 @@ const handleUpdateProduct = async (req, res, next) => {
                 console.log(`Trivon_fashion/products/${publicId}`);
                 const { result } = await cloudinary.uploader.destroy(`Trivon_fashion/products/${publicId}`);
                 
-                if(result !== 'ok'){
-                    throw createError(404, 'product image was not deleted successfully from cloudinary. Please try again');
+                if(result !== 'ok' && result !== 'not found' ){
+                    throw createError(500, 'product image was not deleted successfully from cloudinary. Please try again');
                 }
             }
         }
 
-        
+        console.log('product update end')
 
         return successResponse(res, {
             statusCode: 200,
@@ -257,7 +558,11 @@ const handleUpdateProduct = async (req, res, next) => {
 module.exports = { 
     handleCreateProduct,
     handleGetProducts,
+    handleGetDiscountProducts,
     handleGetProduct,
     handleDeleteProduct,
-    handleUpdateProduct
+    handleUpdateProductHomeSection,
+    handleDeleteProductHomeSection,
+    handleGetProductHomeSection,
+    handleUpdateProduct,
 };

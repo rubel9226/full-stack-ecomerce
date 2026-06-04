@@ -3,7 +3,7 @@ const connectDatabase = require("./config/db");
 const logger = require("./controllers/logger.controller");
 const { serverPort } = require('./secret')
 
-app.listen(serverPort, async () => {
+app.listen(serverPort, '0.0.0.0', async () => {
     logger.log('info', `server is running http://localhost:${serverPort}`);
     await connectDatabase();
 });

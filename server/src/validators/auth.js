@@ -1,6 +1,4 @@
-const {
-    body
-} = require('express-validator');
+const { body } = require('express-validator');
 
 // registration validation
 const validateUserRegistration = [
@@ -22,20 +20,14 @@ const validateUserRegistration = [
         .withMessage('Password is required. Enter your password')
         .isLength({min: 6})
         .withMessage('password should be at lest 6 characters long'),
-    body('address')
-        .trim()
-        .notEmpty()
-        .withMessage('Address is required. Enter your address')
-        .isLength({min: 3})
-        .withMessage('address should be at lest 6 characters long'),
     body('phone')
         .trim()
         .notEmpty()
         .withMessage('Phone number is required. Enter your phone number'),
-    body('image')
-        .optional()
-        .isString()
-        .withMessage('User image is optional'),
+    // body('image')
+    //     .optional()
+    //     .isString()
+    //     .withMessage('image is optional.')
     // body('image')
     //     .custom((value, {req}) => {
     //         if(!req.file || !req.file.buffer){
@@ -95,18 +87,24 @@ const validateUserResetPassword = [
 
 // update password password validation
 const validateUserPasswordUpdate = [
-    // body('email')
-    //     .trim()
-    //     .notEmpty()
-    //     .withMessage('Email is required, Enter your email address.')
-    //     .isEmail()
-    //     .withMessage('Invalid email address'),
+    body('oldPassword')
+        .trim()
+        .notEmpty()
+        .withMessage('old Password is required. Enter your password')
+        .isLength({min: 6})
+        .withMessage('old Password should be at lest 6 characters long'),
     body('newPassword')
         .trim()
         .notEmpty()
         .withMessage('new Password is required. Enter your password')
         .isLength({min: 6})
         .withMessage('new Password should be at lest 6 characters long'),
+    body('confirmedPassword')
+        .trim()
+        .notEmpty()
+        .withMessage('confirm Password is required. Enter your password')
+        .isLength({min: 6})
+        .withMessage('confirm Password should be at lest 6 characters long'),
     body('confirmedPassword').custom((value, {req}) => {
          if(value !== req.body.newPassword){
              throw new Error('password did not match')

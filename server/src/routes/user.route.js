@@ -10,8 +10,11 @@ const {
     handleManageUserStatusById, 
     handleDeleteUserById,
     handleUpdatePassword,
-    handleForgetPassword,
-    handleResetPassword
+    sendForgotPasswordOTP,
+    handleResetPassword,
+    handleVerifyOTP,
+    handleProcessRegisterCode,
+    verifyForgotPasswordOTP
 } = require('../controllers/user.controller');
 const { validateUserRegistration, validateUserPasswordUpdate, validateUserForgetPassword, validateUserResetPassword } = require('../validators/auth');
 const runValidation = require('../validators');
@@ -31,19 +34,39 @@ userRouter.post(
     handleProcessRegister
 );
 
+
+
+
+// post api/users
+userRouter.post(
+    '/register', 
+    uploadUserImage.single('image'), 
+    isLoggedOut, 
+    validateUserRegistration,
+    runValidation, 
+    handleProcessRegisterCode
+);
+
+// get api/users/activate
+userRouter.post('/verify-otp', isLoggedOut, handleVerifyOTP);
+
 // get api/users/activate
 userRouter.post('/activate', isLoggedOut, handleActivateUserAccount);
 
 // get api/users
 userRouter.get('/', isLoggedIn, isAdmin, handleGetUsers);
 
-// post api/users/forget-password
+// post api/users/forget-password-sendEmail
 userRouter.post( 
-    '/forget-password', 
+    '/forget-password-sendEmail', 
     validateUserForgetPassword, 
     runValidation, 
-    handleForgetPassword 
+    sendForgotPasswordOTP 
 );
+
+
+// post api/users/forget-password
+userRouter.post( '/forget-password-verify', isLoggedOut, verifyForgotPasswordOTP );
 
 // put api/users/reset-password
 userRouter.put( 
@@ -54,17 +77,19 @@ userRouter.put(
 );
 
 
+
 // get api/users/:id
 userRouter.get('/:id', isLoggedIn, handleGetUserById);
 
 // delete api/users/:id
 userRouter.delete('/:id', isLoggedIn, isAdmin, handleDeleteUserById);
 
+// put api/users/manage-user/:id
+userRouter.put('/manage-user/:id', isLoggedIn, isAdmin, handleManageUserStatusById);
+
 // put api/users/:id
 userRouter.put('/:id',uploadUserImage.single('image'), isLoggedIn, handleUpdateUserById);
 
-// put api/users/manage-user/:id
-userRouter.put('/manage-user/:id', isLoggedIn, isAdmin, handleManageUserStatusById);
 
 // get api/users/update-password/:id
 userRouter.put(
