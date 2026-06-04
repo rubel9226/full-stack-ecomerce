@@ -1,6 +1,6 @@
 // routes/admin.routes.jsx
 import DashboardLayout from "./../layout/DashboardLayout";
-import ProtectedRoute from "../Guards/TempRoute";
+import TempRoute from "../Guards/TempRoute";
 
 import HomePage from './../Pages/AdminDashboard/HomePage/HomePage';
 import ProductsPageAdmin from "../Pages/AdminDashboard/ProductsPageAdmin/ProductsPageAdmin";
@@ -14,9 +14,9 @@ const adminRoutes = [
   {
     path: "/admin",
     element: (
-      <ProtectedRoute allowedRoles={["admin"]}>
+      <TempRoute allowedRoles={["admin"]}>
         <DashboardLayout />
-      </ProtectedRoute>
+      </TempRoute>
     ),
     children: [
       { index: true, element: <HomePage /> },

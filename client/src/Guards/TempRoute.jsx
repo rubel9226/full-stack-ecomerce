@@ -3,7 +3,7 @@ import { AuthContext } from '../Context/AuthProvider';
 import { Navigate, useLocation } from 'react-router';
 import Loading from '../Utils/UI/Loading/Loading';
 
-const ProtectedRoute =({ children, allowedRoles }) => {
+const TempRoute =({ children, allowedRoles }) => {
     const { user, loading } = useContext(AuthContext);
     const location = useLocation();
 
@@ -28,4 +28,4 @@ const ProtectedRoute =({ children, allowedRoles }) => {
     return children;
 };
 
-export default ProtectedRoute;
+export default TempRoute;
