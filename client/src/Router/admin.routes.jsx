@@ -1,6 +1,6 @@
 // routes/admin.routes.jsx
 import DashboardLayout from "./../layout/DashboardLayout";
-import ProtectedRoute from "./../guards/ProtectedRoute";
+import ProtectedRoute from "../Guards/TempRoute";
 
 import HomePage from './../Pages/AdminDashboard/HomePage/HomePage';
 import ProductsPageAdmin from "../Pages/AdminDashboard/ProductsPageAdmin/ProductsPageAdmin";

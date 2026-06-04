@@ -13,7 +13,6 @@ const ProtectedRoute =({ children, allowedRoles }) => {
             </div>
     }
 
-
     if(!user){
         return <Navigate to={'/'} state={{from: location}} replace />
     }
@@ -26,12 +25,6 @@ const ProtectedRoute =({ children, allowedRoles }) => {
 
         return <Navigate to={'/unauthorized'} replace />;
     }
-
-
-    // if(!allowedRoles.includes(user.role)) {
-    //     return <Navigate to={'/unauthorized'} />
-    // }
-
     return children;
 };
 
