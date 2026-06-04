@@ -81,8 +81,21 @@ const handleLoginMe = async (req, res, next) => {
 
 const handleLogout = async (req, res, next) => {
     try {
-        res.clearCookie('accessToken');
-        res.clearCookie('refreshToken')
+        // res.clearCookie('accessToken');
+        // res.clearCookie('refreshToken');
+        
+        res.clearCookie('accessToken', accessToken, { 
+            httpOnly: true,
+            secure: true,
+            sameSite: 'none'
+        });
+        
+        res.clearCookie('refreshToken', refreshToken, { 
+            httpOnly: true,
+            secure: true,
+            sameSite: 'none'
+        });
+    
 
         // success response
         return successResponse(res, {
