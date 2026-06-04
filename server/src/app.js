@@ -35,7 +35,7 @@ if(process.env.NODE_ENV === 'development'){
 }
 
 app.use(express.urlencoded({ extended: true}));
-app.use(express.json({ limit: '5mbn' }));
+app.use(express.json({ limit: '5mb' }));
 
 
 
