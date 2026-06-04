@@ -13,7 +13,7 @@ const HomePage = () => {
     return (
         <div className=''>
 
-            <div className='w-11/12 md:container  mx-auto mt-3 flex flex-col md:flex-row gap-3 xl:!max-w-[1350px]'>
+            <div className='w-11/12 md:container  mx-auto mt-3 flex flex-col md:flex-row gap-3 xl:!max-w-[1350px] '>
                 <HeroSlideImg />
                 <ColumnThreeImg />
             </div>
@@ -30,11 +30,11 @@ const HomePage = () => {
                 <MidAllBanner />
             </div>
 
-            <div className='w-11/12 md:container  mx-auto mt-3 xl:!max-w-[1350px]'>
+            <div className=' md:container  mx-auto mt-3 xl:!max-w-[1350px]'>
                 <NewCollection />
             </div>
             
-            <div className='w-11/12 md:container mx-auto xl:!max-w-[1350px]'>
+            <div className=' md:container mx-auto xl:!max-w-[1350px]'>
                 <Gadget />
             </div>
 

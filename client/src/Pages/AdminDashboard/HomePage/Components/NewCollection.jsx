@@ -17,6 +17,7 @@ import { FreeMode } from 'swiper/modules';
 import { toast } from 'react-toastify';
 import api from '../../../../API/Axios/api';
 import { RiDeleteBin2Line } from 'react-icons/ri';
+import { Link } from 'react-router';
 
 export default function NewCollection() { 
 
@@ -38,136 +39,126 @@ export default function NewCollection() {
 
 
   return (
-<section className="py-5 bg-[#F4F4FB] w-full my-5 md:rounded-2xl">
+    <section className="py-5 bg-[#F4F4FB] w-full my-5 md:rounded-2xl">
+        <div className="">
+            {/* Header */}
+            <div className='text-black/90 font-semibold flex justify-between items-center mb-3'>
+            <h3 className="font-semibold text-lg sm:text-xl md:text-2xl xl:text-3xl 2xl:text-[32px] capitalize">
+                New Collection
+            </h3>
+            <Link to={'products'} className='text-xs sm:text-sm flex items-center gap-1 text-blue-800/90 cursor-pointer'>
+                Add More
+                <BsArrowRight className='text-base sm:text-lg md:text-xl' />
+            </Link>
+            </div>
 
-  <div className="px-4 sm:px-5 md:px-6 lg:px-8 xl:px-10">
+            <div className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4 md:gap-5'>
+                    {
+                        products.map((product, index) => {
 
-    {/* Header */}
-    <div className='text-black/90 font-semibold flex justify-between items-center mb-3'>
+                            const handleAddHomeSection = async () => {
+                                if(!confirm('are your sure?')) return ;
+                                setLoadingId(product._id);
 
-      <h3 className="font-semibold text-lg sm:text-xl md:text-2xl xl:text-3xl 2xl:text-[32px] capitalize">
+                                try { 
+                                    await api.put(`/products/home-sections/delete/${product?.slug}?section=newCollection`); 
+                                    toast.success(<span className="capitalize">{`${product.name} delete to new collection section successfully.`}</span>)
+                                    handleGetPopularSection();
+                                } catch (error) {
+                                    toast.error(error?.response?.data?.message);
+                                }finally{
+                                    setLoadingId(null)
+                                }
+                            }
+                            return (
+                                <div
+                                    key={index}
+                                    className='bg-white rounded-xl border border-gray-200 hover:border-indigo-400 hover:shadow-lg duration-300 overflow-hidden'
+                                >
 
-        New Collection
+                                    {/* Product Image */}
+                                    <div className='relative bg-gray-100'>
 
-      </h3>
+                                        <img
+                                            src={product.image}
+                                            alt={product.name}
+                                            className='w-full aspect-square object-cover'
+                                        />
 
-      <p className='text-xs sm:text-sm flex items-center gap-1 text-blue-800/90 cursor-pointer'>
+                                        {/* Section Badge */}
+                                        <div className='absolute top-2 left-2'>
+                                            <span className='bg-indigo-600 text-white text-[10px] sm:text-xs px-2 py-1 rounded-md font-medium shadow'>
+                                                New Collection
+                                            </span>
+                                        </div>
 
-        See More
+                                    </div>
 
-        <BsArrowRight className='text-base sm:text-lg md:text-xl' />
+                                    {/* Content */}
+                                    <div className='p-3'>
 
-      </p>
+                                        {/* Product Name */}
+                                        <h3 className='font-semibold text-sm sm:text-base line-clamp-1 text-black/85'>
+                                            {product.name}
+                                        </h3>
 
-    </div>
+                                        {/* Price */}
+                                        <div className='flex items-center justify-center gap-2 mt-2'>
 
-      <div className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4 md:gap-5'>
-            {
-                products.map((product, index) => {
+                                            <p className='font-bold text-indigo-700 text-sm sm:text-base'>
+                                                ৳ {product.newPrice}
+                                            </p>
 
-                    const handleAddHomeSection = async () => {
-                        if(!confirm('are your sure?')) return ;
-                        setLoadingId(product._id);
+                                            {
+                                                product.discount > 0 &&
+                                                <p className='text-xs sm:text-sm text-gray-400 line-through'>
+                                                    ৳ {product.price}
+                                                </p>
+                                            }
 
-                        try { 
-                            await api.put(`/products/home-sections/delete/${product?.slug}?section=newCollection`); 
-                            toast.success(<span className="capitalize">{`${product.name} delete to new collection section successfully.`}</span>)
-                            handleGetPopularSection();
-                        } catch (error) {
-                            toast.error(error?.response?.data?.message);
-                        }finally{
-                            setLoadingId(null)
-                        }
-                    }
-                    return (
-                        <div
-                            key={index}
-                            className='bg-white rounded-xl border border-gray-200 hover:border-indigo-400 hover:shadow-lg duration-300 overflow-hidden'
-                        >
+                                        </div>
 
-                            {/* Product Image */}
-                            <div className='relative bg-gray-100'>
+                                        {/* Info */}
+                                        <div className='mt-3 space-y-1 text-xs sm:text-sm text-black/60'>
 
-                                <img
-                                    src={product.image}
-                                    alt={product.name}
-                                    className='w-full aspect-square object-cover'
-                                />
+                                            <p>
+                                                Stock :
+                                                <span className='font-medium text-black/80 ml-1'>
+                                                    {product.quantity}
+                                                </span>
+                                            </p>
 
-                                {/* Section Badge */}
-                                <div className='absolute top-2 left-2'>
-                                    <span className='bg-indigo-600 text-white text-[10px] sm:text-xs px-2 py-1 rounded-md font-medium shadow'>
-                                        New Collection
-                                    </span>
-                                </div>
+                                            <p>
+                                                Sold :
+                                                <span className='font-medium text-black/80 ml-1'>
+                                                    {product.sold}
+                                                </span>
+                                            </p>
 
-                            </div>
+                                        </div>
 
-                            {/* Content */}
-                            <div className='p-3'>
+                                        {/* Action */}
+                                        <div className='mt-4 flex justify-end'>
 
-                                {/* Product Name */}
-                                <h3 className='font-semibold text-sm sm:text-base line-clamp-1 text-black/85'>
-                                    {product.name}
-                                </h3>
+                                            <div className="flex justify-center items-center">
+                                                <button onClick={handleAddHomeSection} className="font-semibold text-[12px] btn btn-sm btn-error flex transform transition-all hover:scale-105 duration-200 hover:cursor-pointer">
+                                                    <RiDeleteBin2Line className="text-[18px]" /> 
+                                                    {loadingId === product._id ? 'loading...' : 'Delete Popular Section'}
+                                                </button>
+                                            </div>
 
-                                {/* Price */}
-                                <div className='flex items-center justify-center gap-2 mt-2'>
+                                        </div>
 
-                                    <p className='font-bold text-indigo-700 text-sm sm:text-base'>
-                                        ৳ {product.newPrice}
-                                    </p>
-
-                                    {
-                                        product.discount > 0 &&
-                                        <p className='text-xs sm:text-sm text-gray-400 line-through'>
-                                            ৳ {product.price}
-                                        </p>
-                                    }
-
-                                </div>
-
-                                {/* Info */}
-                                <div className='mt-3 space-y-1 text-xs sm:text-sm text-black/60'>
-
-                                    <p>
-                                        Stock :
-                                        <span className='font-medium text-black/80 ml-1'>
-                                            {product.quantity}
-                                        </span>
-                                    </p>
-
-                                    <p>
-                                        Sold :
-                                        <span className='font-medium text-black/80 ml-1'>
-                                            {product.sold}
-                                        </span>
-                                    </p>
-
-                                </div>
-
-                                {/* Action */}
-                                <div className='mt-4 flex justify-end'>
-
-                                    <div className="flex justify-center items-center">
-                                        <button onClick={handleAddHomeSection} className="font-semibold text-[12px] btn btn-sm btn-error flex transform transition-all hover:scale-105 duration-200 hover:cursor-pointer">
-                                            <RiDeleteBin2Line className="text-[18px]" /> 
-                                            {loadingId === product._id ? 'loading...' : 'Delete Popular Section'}
-                                        </button>
                                     </div>
 
                                 </div>
+                            )
+                        })
+                    }
+            </div>
 
-                            </div>
+        </div>
 
-                        </div>
-                    )
-                })
-            }
-      </div>
-
-  </div>
-
-</section>
+    </section>
   );
 }

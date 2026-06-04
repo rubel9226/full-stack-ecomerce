@@ -1,6 +1,21 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import api from '../../../API/Axios/api';
 
 const MidAllBanner = () => {
+    const [images, setImages] = useState([]);
+    
+    
+    const handleGetImage = async () => {
+        try {
+            const res = await api.get('/images/get/videoBottom');
+            setImages(res?.data?.payload);
+        } catch (error) {
+            console.log(error);
+        }
+    };
+    useEffect(() => {
+        handleGetImage();
+    }, []);
     return (
         <div className='outer-stroke font-bold text-xl sm:text-2xl md:text-4xl'>
 
@@ -46,74 +61,30 @@ const MidAllBanner = () => {
             </section>
 
             <section className=' cursor-pointer  mt-3 grid grid-cols-2 gap-2.5 md:gap-3.5 lg:grid-cols-4 lg:gap-4'>
+                {
+                    images.map((image, index) => {
+                        return (
+                            <div key={index} className='group relative w-full aspect-[0.666]  text-center'>
+                                <img 
+                                    className='w-full h-full rounded-md md:rounded-xl' 
+                                    src={image?.image} 
+                                    alt="" 
+                                />
 
-                <div className='group relative w-full aspect-[0.666]  text-center'>
-                    <img 
-                        className='w-full h-full rounded-md md:rounded-xl' 
-                        src="/src/assets/men.avif" alt="" />
+                                <div className='lg:p-5 lg:hidden group-hover:flex duration-500 cursor-pointer absolute top-0 right-0 z-100 w-full h-full rounded-md md:rounded-xl flex justify-center items-center'>
+                                    <div className='lg:hidden lg:border-2 border-[#1F5DA0] group-hover:flex duration-500 cursor-pointer bg-[#1F5DA0]/35 z-100 w-full h-full rounded-md md:rounded-xl flex justify-center items-center'>
+                                        <span className='text-white'>
+                                                <h1 class="outer-stroke text-[#1F5DA0] uppercase">
+                                                    {image?.name}
+                                                </h1>
+                                        </span>
+                                    </div> 
+                                </div> 
+                            </div> 
 
-                    <div className='lg:p-5 lg:hidden group-hover:flex duration-500 cursor-pointer absolute top-0 right-0 z-100 w-full h-full rounded-md md:rounded-xl flex justify-center items-center'>
-                        <div className='lg:hidden lg:border-2 border-[#1F5DA0] group-hover:flex duration-500 cursor-pointer bg-[#1F5DA0]/35 z-100 w-full h-full rounded-md md:rounded-xl flex justify-center items-center'>
-                            <span className='text-white'>
-                                    <h1 class="outer-stroke text-[#1F5DA0] uppercase">
-                                        Women
-                                    </h1>
-                            </span>
-                        </div> 
-                    </div> 
-                </div> 
-
-                <div className='group relative w-full aspect-[0.666]  text-center'>
-                    <img 
-                        className='w-full h-full rounded-md md:rounded-xl' 
-                        src="/src/assets/men.avif" alt="" />
-
-                    <div className='lg:p-5 lg:hidden group-hover:flex duration-500 cursor-pointer absolute top-0 right-0 z-100 w-full h-full rounded-md md:rounded-xl flex justify-center items-center'>
-                        <div className='lg:hidden lg:border-2 border-[#1F5DA0] group-hover:flex duration-500 cursor-pointer bg-[#1F5DA0]/35 z-100 w-full h-full rounded-md md:rounded-xl flex justify-center items-center'>
-                            <span className='text-white'>
-                                    <h1 class="outer-stroke text-[#1F5DA0] uppercase">
-                                        Women
-                                    </h1>
-                            </span>
-                        </div> 
-                    </div>
-                    
-                </div> 
-
-                <div className='group relative w-full aspect-[0.666]  text-center'>
-                    <img 
-                        className='w-full h-full rounded-md md:rounded-xl' 
-                        src="/src/assets/men.avif" alt="" />
-
-                    <div className='lg:p-5 lg:hidden group-hover:flex duration-500 cursor-pointer absolute top-0 right-0 z-100 w-full h-full rounded-md md:rounded-xl flex justify-center items-center'>
-                        <div className='lg:hidden lg:border-2 border-[#1F5DA0] group-hover:flex duration-500 cursor-pointer bg-[#1F5DA0]/35 z-100 w-full h-full rounded-md md:rounded-xl flex justify-center items-center'>
-                            <span className='text-white'>
-                                    <h1 class="outer-stroke text-[#1F5DA0] uppercase">
-                                        Women
-                                    </h1>
-                            </span>
-                        </div> 
-                    </div>
-                    
-                </div> 
-
-                <div className='group relative w-full aspect-[0.666]  text-center'>
-                    <img 
-                        className='w-full h-full rounded-md md:rounded-xl' 
-                        src="/src/assets/men.avif" alt="" />
-
-                    <div className='lg:p-5 lg:hidden group-hover:flex duration-500 cursor-pointer absolute top-0 right-0 z-100 w-full h-full rounded-md md:rounded-xl flex justify-center items-center'>
-                        <div className='lg:hidden lg:border-2 border-[#1F5DA0] group-hover:flex duration-500 cursor-pointer bg-[#1F5DA0]/35 z-100 w-full h-full rounded-md md:rounded-xl flex justify-center items-center'>
-                            <span className='text-white'>
-                                    <h1 class="outer-stroke text-[#1F5DA0] uppercase">
-                                        Women
-                                    </h1>
-                            </span>
-                        </div> 
-                    </div>
-                    
-                </div> 
-
+                        )
+                    })
+                }
             </section>
         </div>
     );

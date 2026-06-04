@@ -95,7 +95,7 @@ const SearchPage = () => {
 
                 </div>
 
-                <div className={products.length === 0 ? 'hidden' : 'block'}>
+                <div className={products.length < 20 ? 'hidden' : 'block'}>
                     <Pagination
                         pagination={pagination}
                         onPageChange={(newPage) => setPage(newPage)} />

@@ -1,93 +1,131 @@
 import React, { useEffect, useState } from 'react';
-import api from '../../../API/Axios/api';
-import AddNewProduct from './addNewProduct';
-import UpdateProduct from './UpdateProduct';
-import DeleteProduct from './DeleteProduct';
-import Pagination from '../../../Pages/CategoryPage/CategoryPagination/Pagination';
-import AddNew from './AddNew';
-import LoadingProduct from '../../Loading/LoadingProduct';
-import AddHomeSection from './AddHomeSection';
+// import api from '../../../API/Axios/api';
+// import AddNewProduct from './addNewProduct';
+// import UpdateProduct from './UpdateProduct';
+// import DeleteProduct from './DeleteProduct';
+// import Pagination from '../../../Pages/CategoryPage/CategoryPagination/Pagination';
+// import AddNew from './AddNew';
+// import LoadingProduct from '../../Loading/LoadingProduct';
+// import AddHomeSection from './AddHomeSection';
 import { toast } from 'react-toastify';
-import AddHomeCategory from './AddHomeCategory';
+import api from '../../../API/Axios/api';
+import { useSearchParams } from 'react-router';
+import LoadingProduct from '../../../Components/Loading/LoadingProduct';
+import DeleteProduct from '../../../Components/AdminPage/ProductsAdmin/DeleteProduct';
+import AddHomeSection from '../../../Components/AdminPage/ProductsAdmin/AddHomeSection';
+import Pagination from '../../CategoryPage/CategoryPagination/Pagination';
+import UpdateProduct from '../../../Components/AdminPage/ProductsAdmin/UpdateProduct';
+import Footer from '../../../Components/AdminPage/Seared/Footer/Footer';
 
-const SingleCategoryProducts = ({category, setCategories}) => {
+const SearchPage = () => {
     const [products, setProducts] = useState([]);
     const [pagination, setPagination] = useState({});
     const [loading, setLoading] = useState(true);
     const [deleteLoading, setDeleteLoading] = useState(false);
     const [loadingCategory, setLoadingCategory] = useState(false);
+    const [loadingPopular, setLoadingPopular] = useState(false);
     const [page, setPage] = useState(1);
+    
+    const [searchParams] = useSearchParams();
+    const keywords = searchParams.get("keywords");  
+    
 
-    const modalId = `my_modal_${category.slug}`;
+    // const modalId = `my_modal_${category.slug}`;
+
 
 
     const fetchProducts = async () => {
-        setLoading(true); 
         try {
-            const res = await api.get(`/products?category=${category.slug}&limit=8&page=${page}`);
-            setProducts(res?.data?.payload?.products);
-            setPagination(res?.data?.payload?.pagination);
+            setLoading(true)
+            const res = await api.get(`/products?search=${keywords}&limit=20&page=${page}`);
+            console.log(res, 'res')
+            const data = res?.data?.payload; 
+            setProducts(data.products);
+            setPagination(data.pagination);
         } catch (error) {
-            setProducts([]);
-        } finally{
+            console.log(error);
+        } finally {
             setLoading(false);
         }
     };
 
     useEffect(() => {
         fetchProducts();
-    }, [page, category._id]);
+    }, [page, keywords]); 
 
-    const handleDeleteCategory =async () => {
-        setLoadingCategory(true); 
-        try {
-            const res = await api.delete(`/categories/${category.slug}`);
-            console.log(res?.data?.payload);
-            const newCategory = res?.data?.payload;
+    // const handleDeleteCategory =async () => {
+    //     setLoadingCategory(true); 
+    //     try {
+    //         const res = await api.delete(`/categories/${category.slug}`);
+    //         console.log(res?.data?.payload);
+    //         const newCategory = res?.data?.payload;
 
-            setCategories(prev => 
-                prev.filter(category => category._id !== newCategory._id)
-            );
+    //         setCategories(prev => 
+    //             prev.filter(category => category._id !== newCategory._id)
+    //         );
             
-        } catch (error) {
-            console.log(error?.response?.data?.message);
-            throw new error;
-        } finally {
-            setLoadingCategory(false);
-        }
-    }
+    //     } catch (error) {
+    //         console.log(error?.response?.data?.message);
+    //         throw new error;
+    //     } finally {
+    //         setLoadingCategory(false);
+    //     }
+    // }
 
 
-    
+    // const handleAddPopular = async () => {
+    //     setLoadingPopular(true); 
+    //     try {
+    //         const res = await api.put(`/categories/popular/add-popular/${category.slug}`);
+    //         console.log(res?.data?.payload);
+    //         const newCategory = res?.data?.payload;
+
+    //         setCategories(prev => 
+    //             prev.map(category => category._id === newCategory._id ? {...category, isPopular: true} : category)
+    //         );
+
+    //         toast.success(<span className='capitalize'>{category.slug.replace(/-/g, " "), 'category added to popular section'}</span>)            
+    //     } catch (error) {
+    //         // console.log(error?.response?.data?.message); 
+    //         console.log(error); 
+    //     } finally {
+    //         setLoadingPopular(false);
+    //     }
+    // } 
+
+
+    // const handleDeletePopular = async () => {
+    //     setLoadingPopular(true); 
+    //     try {
+    //         const res = await api.put(`/categories/popular/delete-popular/${category.slug}`);
+    //         console.log(res?.data?.payload);
+    //         const newCategory = res?.data?.payload;
+
+    //         setCategories(prev => 
+    //             prev.map(category => category._id === newCategory._id ? {...category, isPopular: false} : category)
+    //         );
+
+    //         toast.success(<span className='capitalize'>{category.slug.replace(/-/g, " "), 'category added to popular section'}</span>)            
+    //     } catch (error) {
+    //         // console.log(error?.response?.data?.message); 
+    //         console.log(error); 
+    //     } finally {
+    //         setLoadingPopular(false);
+    //     }
+    // } 
 
 
     return (
         <div>
-            <div className='mt-5'>
+            
+            <div className='mt-5 min-h-[40vh]'>
                 <div className=''> 
                     <div className='flex justify-between items-center'>
                         <div>
-                            <h2 className="font-semibold text-xl md:text-2xl xl:text-3xl 2xl:text-[32px] capitalize">{loading ? 'Loading...' : category.name.replace(/-/g, " ")}</h2>
+                            <h2 className="font-semibold text-xl md:text-2xl xl:text-3xl 2xl:text-[32px] capitalize">{loading ? 'Loading...' : keywords}</h2>
                             <p className='font-semibold text-sm md:text-lg xl:text-xl 2xl:text-2xl capitalize text-black/75'>{loading ? 'Loading...' :`${products.length} Items Found.`}</p>
-                        </div>
-
-                        <div className='flex justify-center items-center flex-col gap-2 sm:flex-row'>
-                            {
-                                loading ? '' :
-                                products.length === 0 ?
-                                <button onClick={handleDeleteCategory} className="btn btn-error btn-sm sm:btn-md lg:btn-lg ">{loadingCategory ? 'Deleting...' : 'Delete'}</button>
-                                :
-                                <AddHomeCategory category={category} setCategories={setCategories} />
-                            }
-                            {
-                                loading ? '' :
-                                <AddNew category={category} refetch={fetchProducts} modalId={modalId} />
-                            }
-
-                        </div>
-
+                        </div> 
                     </div> 
-                    {/* <AddNewProduct modalId={'modal-1'} cat={category} refetch={fetchProducts} />  */}
                 </div>
                 {
                     loading ? <div className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-4 justify-center items-center gap-5 border-t border-black/20 pt-4'>
@@ -102,7 +140,7 @@ const SingleCategoryProducts = ({category, setCategories}) => {
                             No Products Found
                         </h3> 
                         <p className='text-gray-500'>
-                            There are currently no products available {category.slug}.
+                            There are currently no products available {keywords}.
                         </p>
                     </div>
                     :
@@ -190,13 +228,17 @@ const SingleCategoryProducts = ({category, setCategories}) => {
 
 
             </div>
-            <div className={products.length <= 8 ? 'hidden' : 'block'}>
+            <div className={products.length <= 20 ? 'hidden' : 'block'}>
                 <Pagination
                     pagination={pagination}
                     onPageChange={(newPage) => setPage(newPage)} />
+            </div>
+            
+            <div className='mt-10'> 
+                <Footer />
             </div>
         </div>
     );
 };
 
-export default SingleCategoryProducts;
+export default SearchPage;

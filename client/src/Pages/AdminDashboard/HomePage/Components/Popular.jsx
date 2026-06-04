@@ -25,7 +25,7 @@ export default function Popular() {
 
     const handleGetPopularSection =async () => {
         try {
-            const res = await api.get('/categories/popular/get-popular');
+            const res = await api.get('/categories/popular/get-popular?section=popular');
             setCategories(res?.data?.payload);
         } catch (error) {
             // 

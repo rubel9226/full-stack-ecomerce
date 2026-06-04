@@ -73,7 +73,6 @@ const userRoutes = [
     errorElement: <ErrorPage />,
     children: [
       { index: true, element: <AccountPage /> },
-      { path: 'dashboard', Component: CheckoutPage },
       { path: 'my-orders', element: <MyOrders /> },
     ],
   },

@@ -43,7 +43,7 @@ export default function BagsLuggage() {
   return (
     <section className="bg-[#F4F4FB] w-full my-3 md:rounded-2xl py-4">
 
-      <div className='px-4 sm:px-5 md:px-6 lg:px-8'>
+      <div className=''>
         {
           loading ? <div className=' min-h-[30vh] flex justify-self-center items-center text-[#1f5dad]'>
             <span className="loading loading-spinner  loading-xl"></span>
@@ -154,19 +154,6 @@ export default function BagsLuggage() {
               }
         </div>
         }
-
-        {/* Button */}
-        <div className='text-center flex justify-center pt-6 sm:pt-8'>
-
-          <p className='text-xs sm:text-sm font-semibold flex items-center gap-1 text-blue-800/90 cursor-pointer'>
-
-            See More
-
-            <BsArrowRight className='text-base sm:text-lg md:text-xl' />
-
-          </p>
-
-        </div>
 
       </div>
 

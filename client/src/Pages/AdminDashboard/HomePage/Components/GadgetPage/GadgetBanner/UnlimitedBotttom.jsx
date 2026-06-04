@@ -4,19 +4,19 @@ import { RiDeleteBin6Line } from 'react-icons/ri';
 import { toast } from 'react-toastify';
 import { MdOutlineImage } from 'react-icons/md';
 import { FaImages } from 'react-icons/fa';
-import { Link } from 'react-router';
 import { BsArrowRight } from 'react-icons/bs';
+import { Link } from 'react-router';
 
 
 
-export default function GadgetHero() {
+export default function UnlimitedBottom() {
   const [categories, setCategories] = useState([]);
   const [loadingId, setLoadingId] = useState(null);
 
 
   const handleGetCategories = async () => {
       try {
-          const res = await api.get('/categories/popular/get-popular?section=gadget');
+          const res = await api.get('/categories/popular/get-popular?section=unlimitedBottom');
           setCategories(res?.data?.payload);
       } catch (error) {
           console.log(error);
@@ -32,7 +32,7 @@ export default function GadgetHero() {
     const handleDeleteImage = async (id) => { 
         try {
             setLoadingId(id);
-            await api.put(`/categories/popular/delete-popular/${id}?section=gadget`);
+            await api.put(`/categories/popular/delete-popular/${id}?section=unlimitedBottom`);
             toast.success('Image deleted successfully');
             const filtered = categories.filter(item => item.slug !== id);
             setCategories(filtered);
@@ -49,7 +49,9 @@ export default function GadgetHero() {
   return (
     <div className='sm:mt-4 md:mt-5'>
         <div className='font-semibold text-xl md:text-2xl xl:text-3xl 2xl:text-[32px] capitalize mb-2 flex justify-between'>
-            <h2 className=''> Gadget Festive </h2>
+            <h2 className=''>
+                Unlimited Bottom
+            </h2>
 
             <Link to={'products'} className='flex items-center gap-1 text-blue-800/90 cursor-pointer'>
                 Add More
@@ -70,7 +72,7 @@ export default function GadgetHero() {
                                 <img
                                     src={image.image}
                                     alt="slide"
-                                    className=' w-full aspect-[2] object-cover group-hover:scale-105 duration-500 ' />
+                                    className=' w-full aspect-[1.4] object-cover group-hover:scale-105 duration-500 ' />
 
                                 <div className=' absolute inset-0 bg-linear-to-t from-black/50 via-black/10 to-transparent ' />
                             </div>

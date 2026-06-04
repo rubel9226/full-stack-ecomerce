@@ -28,9 +28,7 @@ const HeaderTop = () => {
         } catch (error) {
             console.log(error)    
         }  
-    }
-
-    console.log(user);
+    } 
         
   return (
     <div className=" bg-base-200 shadow-sm">
@@ -50,7 +48,6 @@ const HeaderTop = () => {
                     <div className="">
                         <SearchSuggestion user={user} />
                     </div>
-                    {/* <input type="text" placeholder="Search" className="input input-bordered w-64 md:w-full" /> */}
                 </div>
             
                 <div className="navbar-end hidden lg:flex items-center gap-4">

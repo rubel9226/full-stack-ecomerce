@@ -15,6 +15,8 @@ const HeaderBottom = () => {
                     <IoSearch />
                 </div>
             </div>
+
+            
         </div>
     );
 };

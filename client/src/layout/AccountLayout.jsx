@@ -8,7 +8,7 @@ const AccountLayout = () => {
     return (
         <div className='bg-black/7 min-h-screen'>
             <Header />
-            <div className='flex bg-white w-11/12 md:container  mx-auto mt-4 p-2 justify-between px-5 rounded-md'>
+            <div className='flex bg-white w-11/12 md:container  mx-auto xl:!max-w-[1350px] mt-4 p-2 justify-between px-5 rounded-md'>
 
                 <NavLink to='/dashboard' end className='flex justify-center items-center flex-col'>
                     <svg width={24} height={24} viewBox='0 0 24 24' className='h-5 w-5 fill-current' xmlns='http://www.w3.org/2000/svg'>
@@ -33,7 +33,7 @@ const AccountLayout = () => {
                 </NavLink>
             </div>
 
-            <div className=' w-11/12 md:container  mx-auto my-4'>
+            <div className=' w-11/12 md:container xl:!max-w-[1350px] mx-auto my-4'>
                 <Outlet/>
             </div>
             <Footer />

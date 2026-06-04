@@ -11,8 +11,7 @@ import { AuthContext } from './../../../Context/AuthProvider';
 
 
 const Header = () => {
-  const { user } = useContext(AuthContext);
-      const [ isOpenCategories, setIsOpenCategories ] = useState(false);
+    const { user } = useContext(AuthContext);
       const [categories, setCategories] = useState([]);
 
       const location = useLocation();

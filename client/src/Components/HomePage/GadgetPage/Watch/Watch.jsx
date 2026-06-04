@@ -41,7 +41,7 @@ export default function Watch() {
 
   return (
     <section className="bg-[#F4F4FB] w-full my-3 md:rounded-2xl py-4">
-      <div className="px-4 sm:px-5 md:px-6 lg:px-8">
+      <div className="">
         {loading ? (
           <Swiper
             freeMode={true}
@@ -128,64 +128,67 @@ export default function Watch() {
                   key={index}
                   className="rounded-md overflow-hidden bg-white relative pb-2 sm:pb-3"
                 >
-                  {/* Image */}
-                  <div className="flex items-center">
-                    
-                    {
-                        product?.discount ?
-                        <p className="absolute bg-red-600 text-white text-[10px] sm:text-[12px] px-2 top-2 sm:top-3 rounded-r-md z-10">
-                          Save
-                          <span className='text-xs sm:text-sm font-bold ml-1'>
-                            ৳
-                          </span>
-                          <span className='font-bold'>
-                            {product.discount}
-                          </span>
-                        </p>
-                        : ''
-                      }
+                  <Link to={`product/${product.slug}`}>
+                    {/* Image */}
+                    <div className="flex items-center">
+                      
+                      {
+                          product?.discount ?
+                          <p className="absolute bg-red-600 text-white text-[10px] sm:text-[12px] px-2 top-2 sm:top-3 rounded-r-md z-10">
+                            Save
+                            <span className='text-xs sm:text-sm font-bold ml-1'>
+                              ৳
+                            </span>
+                            <span className='font-bold'>
+                              {product.discount}
+                            </span>
+                          </p>
+                          : ''
+                        }
 
-                    <img
-                      className="rounded-t-md w-full aspect-square object-cover"
-                      src={product.image}
-                      alt={product.name}
-                    />
-                  </div>
+                      <img
+                        className="rounded-t-md w-full aspect-square object-cover"
+                        src={product.image}
+                        alt={product.name}
+                      />
+                    </div>
 
-                  {/* Content */}
-                  <div className="px-2 sm:px-3 text-center mt-2">
-                    
-                    
-                    {/* Price */}
-                      <div className='whitespace-nowrap flex gap-1 sm:gap-2 mt-1 justify-center items-center'>
+                    {/* Content */}
+                    <div className="px-2 sm:px-3 text-center mt-2">
+                      
+                      
+                      {/* Price */}
+                        <div className='whitespace-nowrap flex gap-1 sm:gap-2 mt-1 justify-center items-center'>
 
-                        <p className='font-bold text-sm sm:text-base whitespace-nowrap'>
-                          <span className='font-serif'>
-                            ৳
-                          </span>
-                          {product.newPrice}
-                        </p>
-
-                        {
-                          product?.discount ? <p className='font-bold old-price text-xs sm:text-sm text-black/50 line-through'>
+                          <p className='font-bold text-sm sm:text-base whitespace-nowrap'>
                             <span className='font-serif'>
                               ৳
                             </span>
-                            {product.price}
-                          </p> : ''
-                        } 
-                      </div>
+                            {product.newPrice}
+                          </p>
 
-                    { 
-                      product?.variants?.color &&
-                      <div style={{ backgroundColor: product?.variants?.color }} className={`inline-block w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-sm mt-1`} />
-                    }
+                          {
+                            product?.discount ? <p className='font-bold old-price text-xs sm:text-sm text-black/50 line-through'>
+                              <span className='font-serif'>
+                                ৳
+                              </span>
+                              {product.price}
+                            </p> : ''
+                          } 
+                        </div>
 
-                    {/* Description */}
-                    <p className="line-clamp-2 min-h-8 text-[10px] sm:text-[12px] leading-4 font-semibold text-black/60 mt-1">
-                      Description: {product.description}
-                    </p>
-                  </div>
+                      { 
+                        product?.variants?.color &&
+                        <div style={{ backgroundColor: product?.variants?.color }} className={`inline-block w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-sm mt-1`} />
+                      }
+
+                      {/* Description */}
+                      <p className="line-clamp-2 min-h-8 text-[10px] sm:text-[12px] leading-4 font-semibold text-black/60 mt-1">
+                        Description: {product.description}
+                      </p>
+                    </div>
+                  </Link>
+
                 </SwiperSlide>
               );
             })}

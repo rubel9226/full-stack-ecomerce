@@ -7,6 +7,7 @@ import ProductsPageAdmin from "../Pages/AdminDashboard/ProductsPageAdmin/Product
 import UsersPageAdmin from "../Pages/AdminDashboard/UsersPageAdmin/UsersPageAdmin";
 import OrdersPageAdmin from "../Pages/AdminDashboard/OrdersPageAdmin/OrdersPageAdmin";
 import AccountPageAdmin from "../Components/AdminPage/Account/AccountAdmin";
+import SearchPage from "../Pages/AdminDashboard/SearchPage/SearchPage";
 // import ProductsDetailsAdmin from "./../Components/AdminPage/ProductsAdmin/ProductDetailsAdmin";
 
 const adminRoutes = [
@@ -20,6 +21,7 @@ const adminRoutes = [
     children: [
       { index: true, element: <HomePage /> },
       { path: 'products', element: <ProductsPageAdmin /> },
+      { path: "search", Component: SearchPage },
       { path: 'users', element: <UsersPageAdmin /> },
       { path: 'orders', element: <OrdersPageAdmin /> },
       { path: 'account', element: <AccountPageAdmin /> },

@@ -3,8 +3,8 @@ import React, { useEffect, useState } from "react";
 import ReactDOM from 'react-dom';
 import { FaSearch } from "react-icons/fa";
 import { ImCross } from "react-icons/im";
-import api from "../../../../API/Axios/api";
 import { Link, useNavigate } from "react-router";
+import api from "../../../../../API/Axios/api";
 
 const SearchSuggestion = ({user}) => {
     const navigate = useNavigate();
@@ -52,7 +52,7 @@ const SearchSuggestion = ({user}) => {
     const handleSearch = () => {
         if(!search)return;
         setProducts([]);
-        navigate(user ? `/dashboard/search?keywords=${search}` : `/search?keywords=${search}`)
+        navigate(`/admin/search?keywords=${search}`)
     };
 
     const handleClose = () => {

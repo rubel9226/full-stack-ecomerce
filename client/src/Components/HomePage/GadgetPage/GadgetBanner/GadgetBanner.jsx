@@ -1,14 +1,41 @@
-import React from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import UnlimitedOffer from './UnlimitedOffer/UnlimitedOffer';
+import { AuthContext } from '../../../../Context/AuthProvider';
+import api from '../../../../API/Axios/api';
+import { Link } from 'react-router';
 
 const GadgetBanner = () => {
+    const [categories, setCategories] = useState([]);
+    const { user } = useContext(AuthContext);
+    
+
+
+    const handleGetCategories = async () => {
+        try {
+            const res = await api.get('/categories/popular/get-popular?section=unlimitedTop');
+            setCategories(res?.data?.payload);
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
+    useEffect(() => {
+        handleGetCategories();
+    }, []);
+
+    console.log(categories, 'unlimited top')
     return (
         <div>
             <div className='grid grid-cols-2 gap-2.5 sm:gap-4 sm:grid-cols-4'>
-                <img className='rounded-xl aspect-square' src="https://saralifestyle.com/_next/image?url=https%3A%2F%2Fprod.saralifestyle.com%2FImages%2FContent%2F0f0255d9dae748aa8a8bdcfe3e3a1e7c.png&w=640&q=75" alt="" />
-                <img className='rounded-xl aspect-square' src="https://saralifestyle.com/_next/image?url=https%3A%2F%2Fprod.saralifestyle.com%2FImages%2FContent%2F884030baade841f994462c7478497143.png&w=640&q=75" alt="" />
-                <img className='rounded-xl aspect-square ' src="https://saralifestyle.com/_next/image?url=https%3A%2F%2Fprod.saralifestyle.com%2FImages%2FContent%2F01b7b510e4384e1c8a9ef9ce20ea1c6f.png&w=640&q=75" alt="" />
-                <img className='rounded-xl aspect-square' src="https://saralifestyle.com/_next/image?url=https%3A%2F%2Fprod.saralifestyle.com%2FImages%2FContent%2F3eb724aa49594bef89597f01c35aecc1.png&w=640&q=75" alt="" />
+                {
+                    categories.map((category, index) => (
+                        <Link to={user ? `/dashboard/catalog/${category.slug}` : `/catalog/${category.slug}`} key={index}>
+                            <img 
+                                className='rounded-xl aspect-square' 
+                                src={category?.image} alt="" /> 
+                        </Link>
+                    ))
+                }
             </div>
             <div className='py-2'>
                 <UnlimitedOffer />

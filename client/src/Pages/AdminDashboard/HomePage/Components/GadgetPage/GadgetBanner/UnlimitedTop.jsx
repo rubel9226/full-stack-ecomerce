@@ -1,22 +1,44 @@
+// import React from 'react'; 
+// import UnlimitedOffer from './UnlimitedOffer';
+
+// const GadgetBanner = () => {
+//     return (
+//         <div>
+//             <div className='grid grid-cols-2 gap-2.5 sm:gap-4 sm:grid-cols-4'>
+//                 <img className='rounded-xl aspect-square' src="https://saralifestyle.com/_next/image?url=https%3A%2F%2Fprod.saralifestyle.com%2FImages%2FContent%2F0f0255d9dae748aa8a8bdcfe3e3a1e7c.png&w=640&q=75" alt="" />
+//                 <img className='rounded-xl aspect-square' src="https://saralifestyle.com/_next/image?url=https%3A%2F%2Fprod.saralifestyle.com%2FImages%2FContent%2F884030baade841f994462c7478497143.png&w=640&q=75" alt="" />
+//                 <img className='rounded-xl aspect-square ' src="https://saralifestyle.com/_next/image?url=https%3A%2F%2Fprod.saralifestyle.com%2FImages%2FContent%2F01b7b510e4384e1c8a9ef9ce20ea1c6f.png&w=640&q=75" alt="" />
+//                 <img className='rounded-xl aspect-square' src="https://saralifestyle.com/_next/image?url=https%3A%2F%2Fprod.saralifestyle.com%2FImages%2FContent%2F3eb724aa49594bef89597f01c35aecc1.png&w=640&q=75" alt="" />
+//             </div>
+//             <div className='py-2'>
+//                 <UnlimitedOffer />
+//             </div>
+
+//         </div>
+//     );
+// };
+
+// export default GadgetBanner;
+
 import React, { useEffect, useState } from 'react';
 import api from '../../../../../../API/Axios/api';
 import { RiDeleteBin6Line } from 'react-icons/ri';
 import { toast } from 'react-toastify';
 import { MdOutlineImage } from 'react-icons/md';
 import { FaImages } from 'react-icons/fa';
-import { Link } from 'react-router';
 import { BsArrowRight } from 'react-icons/bs';
+import { Link } from 'react-router';
 
 
 
-export default function GadgetHero() {
+export default function UnlimitedTop() {
   const [categories, setCategories] = useState([]);
   const [loadingId, setLoadingId] = useState(null);
 
 
   const handleGetCategories = async () => {
       try {
-          const res = await api.get('/categories/popular/get-popular?section=gadget');
+          const res = await api.get('/categories/popular/get-popular?section=unlimitedTop');
           setCategories(res?.data?.payload);
       } catch (error) {
           console.log(error);
@@ -32,7 +54,7 @@ export default function GadgetHero() {
     const handleDeleteImage = async (id) => { 
         try {
             setLoadingId(id);
-            await api.put(`/categories/popular/delete-popular/${id}?section=gadget`);
+            await api.put(`/categories/popular/delete-popular/${id}?section=unlimitedTop`);
             toast.success('Image deleted successfully');
             const filtered = categories.filter(item => item.slug !== id);
             setCategories(filtered);
@@ -49,7 +71,9 @@ export default function GadgetHero() {
   return (
     <div className='sm:mt-4 md:mt-5'>
         <div className='font-semibold text-xl md:text-2xl xl:text-3xl 2xl:text-[32px] capitalize mb-2 flex justify-between'>
-            <h2 className=''> Gadget Festive </h2>
+            <h2 className=''>
+                Unlimited Top
+            </h2>
 
             <Link to={'products'} className='flex items-center gap-1 text-blue-800/90 cursor-pointer'>
                 Add More
@@ -70,7 +94,7 @@ export default function GadgetHero() {
                                 <img
                                     src={image.image}
                                     alt="slide"
-                                    className=' w-full aspect-[2] object-cover group-hover:scale-105 duration-500 ' />
+                                    className=' w-full aspect-[1.4] object-cover group-hover:scale-105 duration-500 ' />
 
                                 <div className=' absolute inset-0 bg-linear-to-t from-black/50 via-black/10 to-transparent ' />
                             </div>

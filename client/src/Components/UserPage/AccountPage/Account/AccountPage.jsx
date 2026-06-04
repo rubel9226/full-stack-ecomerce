@@ -17,10 +17,10 @@ const AccountPage = () => {
 
     return (
 
-        <div className='mt-4 sm:mt-5'>
+        <div className=''>
 
             
-            <h3 className='font-semibold text-lg sm:text-xl md:text-2xl xl:text-3xl 2xl:text-[32px] capitalize'>
+            <h3 className='font-semibold text-lg sm:text-xl md:text-2xl xl:text-3xl 2xl:text-[32px] capitalize my-4 sm:my-5'>
                 My Account Information
             </h3>
 

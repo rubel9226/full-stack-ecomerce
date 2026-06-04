@@ -1,14 +1,14 @@
 import React from 'react';
-import Header from './../Components/Seared/Header/Header';
 import { Outlet } from 'react-router';
 import FooterNavAdmin from '../Components/AdminPage/Sheared/FooterNavVendor/FooterNavAdmin';
+import Header from '../Components/AdminPage/Seared/Header/Header';
 
 
 const DashboardLayout = () => {
     return (
         <div className='bg-[#f6f9fc]'>
             <Header />
-            <div className='px-2 md:cntainer mx-auto !max-w-[1350px] mt-1'>
+            <div className=' mx-auto !max-w-[1350px] mt-1'>
                 <Outlet />
             </div>
             <FooterNavAdmin />

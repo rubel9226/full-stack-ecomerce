@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 // Import Swiper React components
 import { Swiper, SwiperSlide } from 'swiper/react';
 
@@ -11,10 +11,25 @@ import './HeroSlideImg.css';
 
 // import required modules
 import { Autoplay, Pagination, Navigation } from 'swiper/modules';
+import api from '../../../API/Axios/api';
 
 export default function HeroSlideImg() {
+    const [images, setImages] = useState([]);
+    const [loading, setLoading] = useState(true);
+    
+    const handleGetImage = async () => {
+        try {
+            const res = await api.get('/images/get/slide');
+            setImages(res?.data?.payload);
+        } catch (error) {
+            console.log(error);
+        }
+    };
+    useEffect(() => {
+        handleGetImage();
+    }, []);
 
-
+ 
   return (
     <>
       <Swiper
@@ -30,36 +45,32 @@ export default function HeroSlideImg() {
         }}
         modules={[Autoplay, Pagination, Navigation]}
         className="mySwiper rounded-xl w-3/3 overflow-visible"
-      >
-        <SwiperSlide>
-            <img src="https://saralifestyle.com/_next/image?url=https%3A%2F%2Fprod.saralifestyle.com%2FImages%2FContent%2Ff5ee353ee2b646b8a8efa2361f37565a.jpeg&w=1080&q=75" alt="" />
-        </SwiperSlide>
-        <SwiperSlide>
-            <img src="https://saralifestyle.com/_next/image?url=https%3A%2F%2Fprod.saralifestyle.com%2FImages%2FContent%2Fa026b2c6754a4652a1964e3f6aa6a1cb.jpeg&w=1080&q=75" alt="" />
-        </SwiperSlide>
-        <SwiperSlide>
-            <img src="https://saralifestyle.com/_next/image?url=https%3A%2F%2Fprod.saralifestyle.com%2FImages%2FContent%2F37244083bb7b4899ae315707d0c8415f.png&w=1080&q=75" alt="" />
-        </SwiperSlide>
-        <SwiperSlide>
-            <img src="https://saralifestyle.com/_next/image?url=https%3A%2F%2Fprod.saralifestyle.com%2FImages%2FContent%2Ff5ee353ee2b646b8a8efa2361f37565a.jpeg&w=1080&q=75" alt="" />
-        </SwiperSlide>
-        <SwiperSlide>
-            <img src="https://saralifestyle.com/_next/image?url=https%3A%2F%2Fprod.saralifestyle.com%2FImages%2FContent%2Fa026b2c6754a4652a1964e3f6aa6a1cb.jpeg&w=1080&q=75" alt="" />
-        </SwiperSlide>
-        <SwiperSlide>
-            <img src="https://saralifestyle.com/_next/image?url=https%3A%2F%2Fprod.saralifestyle.com%2FImages%2FContent%2F37244083bb7b4899ae315707d0c8415f.png&w=1080&q=75" alt="" />
-        </SwiperSlide>
-        <SwiperSlide>
-            <img src="https://saralifestyle.com/_next/image?url=https%3A%2F%2Fprod.saralifestyle.com%2FImages%2FContent%2Ff5ee353ee2b646b8a8efa2361f37565a.jpeg&w=1080&q=75" alt="" />
-        </SwiperSlide>
-        <SwiperSlide>
-            <img src="https://saralifestyle.com/_next/image?url=https%3A%2F%2Fprod.saralifestyle.com%2FImages%2FContent%2Fa026b2c6754a4652a1964e3f6aa6a1cb.jpeg&w=1080&q=75" alt="" />
-        </SwiperSlide>
-        <SwiperSlide>
-            <img src="https://saralifestyle.com/_next/image?url=https%3A%2F%2Fprod.saralifestyle.com%2FImages%2FContent%2F37244083bb7b4899ae315707d0c8415f.png&w=1080&q=75" alt="" />
-        </SwiperSlide>
-        
-        
+      > 
+        {
+        images.length === 0
+            ? [...Array(4)].map((_, index) => (
+                <SwiperSlide key={index}>
+
+                    <div className='w-full aspect-[1.776666666666667] lg:aspect-[1.8] xl:aspect-[1.776666666666667] rounded-xl overflow-hidden bg-gray-200 animate-pulse relative'>
+
+                        {/* shimmer effect */}
+                        <div className='absolute inset-0 -translate-x-full animate-[shimmer_2s_infinite] bg-linear-to-r from-transparent via-white/40 to-transparent'></div>
+
+                    </div>
+
+                </SwiperSlide>
+            ))
+
+            : images.map((image, index) => (
+                <SwiperSlide key={index}>
+                    <img
+                        className='w-full aspect-[1.776666666666667] lg:aspect-[1.8] xl:aspect-[1.776666666666667] object-cover'
+                        src={image?.image}
+                        alt="banner"
+                    />
+                </SwiperSlide>
+            ))  
+          }     
       </Swiper>
     </>
   );

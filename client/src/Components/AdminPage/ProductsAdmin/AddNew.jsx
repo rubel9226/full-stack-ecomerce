@@ -35,20 +35,13 @@ const AddNew = ({category, refetch}) => {
                 [e.target.name]: e.target.value,
             });
         }
-    };
-
-
-    console.log(category.slug);
+    }; 
 
 
     const handleAddProduct = async ( e ) => {
         e.preventDefault();
         setLoading(true);
-        console.log(loading);
- 
-        
-
-        
+        console.log(loading); 
         
         const data = new FormData();
         data.append('name', formData.name);

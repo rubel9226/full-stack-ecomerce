@@ -1,3 +1,4 @@
+import Footer from "../../../Components/AdminPage/Seared/Footer/Footer";
 import ColumnThreeImg from "./Components/ColumnThreeImg";
 import HomeFooter from "./Components/FooterStats/HomeFooter";
 import Gadget from "./Components/GadgetPage/Gadget";
@@ -11,35 +12,35 @@ const HomePage = () => {
     return (
         <div className=''>
 
-            <div className='w-11/12 md:container  mx-auto mt-3 flex flex-col md:flex-row gap-3'>
+            <div className='px-4 md:px-0 md:container mx-auto mt-3'>
                 <HeroSlideImg />
                 <ColumnThreeImg />
             </div>
                 
-            <div className='w-11/12 md:container  mx-auto mt-3'>
+            <div className='px-4 md:px-0 md:container  mx-auto mt-3'>
                 <Popular />
             </div>
 
-            <div>
+            <div className="">
                 <Offer24 />
             </div>
             
-            <div>
+            <div className="px-4 md:px-0 md:container  mx-auto mt-3">
                 <MidAllBanner />
             </div>
 
-            <div>
+            <div className="px-4 md:px-0 md:container  mx-auto mt-3">
                 <NewCollection />
             </div>
             
-            <div>
+            <div className="px-4 md:px-0 md:container  mx-auto mt-3">
                 <Gadget />
             </div>
 
             <div>
                 <HomeFooter />
             </div>
-            
+            <Footer />
         </div>
     );
 };
