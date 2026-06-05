@@ -20,7 +20,7 @@ const findUsers = async (search, limit, page) => {
     try {
         const searchRegExp = new RegExp('.*' + search + '.*', 'i')
         const filter = {
-            isAdmin: {$ne: true},
+            role: {$ne: 'admin'},
             $or: [
                 {name: {$regex: searchRegExp}},
                 {email: {$regex: searchRegExp}},
@@ -250,7 +250,11 @@ const handleUserAction = async (userId, action) => {
     try {
         console.log(action);
         const  update = { isBanned: !action };
-        console.log(update);
+        const user = await User.findById(userId);
+
+        if (user?.role === "admin") {
+            throw createError(403, "Admin cannot be modified");
+        }
         
         const updateOptions = {
             new: true, 

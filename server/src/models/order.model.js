@@ -32,6 +32,8 @@ const orderSchema = new Schema(
                 quantity: Number,
                 description: String,
                 name: String,
+                color: String,
+                size: String,
                 image: String,
 
                 price: Number,

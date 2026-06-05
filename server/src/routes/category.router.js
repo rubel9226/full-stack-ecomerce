@@ -12,6 +12,7 @@ const {
   handleAddPopular,
   handleDeletePopular,
   handleGetPopular,
+  handleGetRandomCategories,
 } = require("../controllers/category.controller");
 const { validateCategory } = require("../validators/category");
 const { uploadProductImage } = require("../middlewares/upload");
@@ -28,7 +29,10 @@ categoryRouter.post(
 );
 
 // GET /api/categories
-categoryRouter.get("/", handleGetCategories);
+categoryRouter.get("/random-categories", handleGetCategories);
+
+// GET /api/categories get random category.
+categoryRouter.get("/", handleGetRandomCategories);
 
 // get single category
 categoryRouter.get("/:slug", handleGetCategory);

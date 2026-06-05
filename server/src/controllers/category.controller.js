@@ -72,6 +72,37 @@ const handleCreateCategory = async (req, res, next) => {
 
 const handleGetCategories = async (req, res, next) => {
   try {
+    const limit = 20;
+
+    const categories = await Category.aggregate([
+        {
+            $sample: {
+                size: limit
+            }
+        },
+        {
+            $project: {
+                name: 1,
+                slug: 1,
+                section: 1,
+                createdAt: 1
+            }
+        }
+    ]);
+
+    return successResponse(res, {
+        statusCode: 200,
+        message: 'category was fetch return successfully',
+        payload: categories
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+
+const handleGetRandomCategories = async (req, res, next) => {
+  try {
     const categories = await getCategories();
 
     return successResponse(res, {
@@ -316,7 +347,8 @@ module.exports = {
     handleGetCategories,
     handleGetCategory,
     handleUpdateCategory,
-    handleDeleteCategory, 
+    handleDeleteCategory,
+    handleGetRandomCategories,
 
     handleAddPopular, 
     handleDeletePopular, 

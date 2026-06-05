@@ -17,8 +17,7 @@ const createCategory = async (name) => {
 
 const getCategories = async () => {
   const categories = await Category
-    .find({}) 
-    .select('name slug section')
+    .find({})
     .lean();
 
     categories.sort((a, b) => {

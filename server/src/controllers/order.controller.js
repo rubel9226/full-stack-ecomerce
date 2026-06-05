@@ -11,6 +11,7 @@ const Product = require("../models/product.model");
 const Shipping = require("../models/shipping.model");
 const sendEmail = require('../helper/sendEmail');
 const { findOrders } = require('../services/order.service');
+const User = require('../models/user.model');
 
 
 
@@ -416,7 +417,11 @@ const handleCreateOrder = async (req, res, next) => {
         const userId = req.user._id;
         const addresses = await Shipping.findOne({userId, isDefault: true}).select("-createdAt -updatedAt");
 
-        console.log(addresses, 'Address');
+        const user = await User.findOne({_id: userId}); 
+        if(user.isBanned){
+            throw createError('Your are banned, Please contact admin.');
+        }
+        // console.log(products)
 
         const subtotal = products.reduce((sum, item) => {
             return sum + (item.price * item.cartQuantity);
@@ -436,21 +441,18 @@ const handleCreateOrder = async (req, res, next) => {
         const total = totalNewPrice + shippingFee;
 
         const details = products.map((item) => item.description);
-        console.log(details);
 
         const modifiedProducts = products.map((item) => ({
             product: item._id,
-
             quantity: item.cartQuantity,
-
             name: item.name,
+            color: item?.selectedColor,
+            size: item?.selectedSize,
             image: item.image,
-
             price: item.price,
             newPrice: item.newPrice,
-
             description: item.description
-        }));
+        })); 
 
         
 
@@ -465,12 +467,13 @@ const handleCreateOrder = async (req, res, next) => {
                 discount, 
                 total,
             },
-
             payment: {
                 status: 'pending'
             },
             orderStatus: 'initiated'
         });
+
+        console.log(order);
 
         
         return successResponse(res, {

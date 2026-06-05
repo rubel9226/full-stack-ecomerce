@@ -56,7 +56,7 @@ const productSchema = new Schema(
             min: [0, 'Quantity cannot be negative'],
         },
         variants:{
-                color: String,
+                colors: [String],
                 size: [String],
             },
         homeSections: {
@@ -124,7 +124,7 @@ productSchema.pre("findOneAndUpdate", async function () {
 
   const price = update.price ?? doc.price;
   const discount = update.discount ?? doc.discount;
-  if(discount > price){
+  if(Number(discount) > Number(price)){
     throw new Error("Discount cannot be grater then price")
   }
 

@@ -25,9 +25,19 @@ const handleCreateProduct = async (req, res, next) => {
             quantity,
             shipping,
             category,
-            color,
-            sizes
         } = req.body;
+
+        const colors = JSON.parse(req.body.colors || '');
+        const sizes = JSON.parse(req.body.sizes || ''); 
+
+        // variants create
+        const variants = {};
+        if(colors){
+            variants.colors = colors.map(color => color.trim()).filter(Boolean);
+        }
+        if(sizes){
+            variants.size = sizes.map(size => size.trim()).filter(Boolean);
+        } 
 
         // image
         const image = req.file?.path;
@@ -35,15 +45,9 @@ const handleCreateProduct = async (req, res, next) => {
             throw createError(400, 'image not found.')
         }
 
-        // variants create
-        const variants = {
-                color,
-                size: sizes
-                    .split(',')
-                    .map(size => size.trim())
-                    .filter(Boolean)
-            } ;
         
+
+        console.log(variants);
 
         const productData = {
             name,
@@ -53,10 +57,11 @@ const handleCreateProduct = async (req, res, next) => {
             discount,
             quantity,
             shipping,
-            category,
+            categorySlug: category,
             image,
             variants
         }; 
+        console.log(productData)
 
         const product = await createProduct(productData);
 
@@ -77,6 +82,7 @@ const handleGetProducts = async (req, res, next) => {
     try {
         const categorySlug = req.query.category || '';
         const search = req.query.search || '';
+        const sort = req.query.sort || '';
         const page = parseInt(req.query.page) || 1;
         const limit = parseInt(req.query.limit) ? parseInt(req.query.limit) : null;
 
@@ -100,10 +106,33 @@ const handleGetProducts = async (req, res, next) => {
             }
         }
 
-        const {products, count} = await getProducts(page, limit, filter);
+        // SORT OPTION 
+        let sortOption = {};
 
-        console.log(page, 'limit');
-        
+        if (sort === 'latest') {
+            sortOption = { createdAt: -1 };
+        }
+        else if (sort === 'oldest') {
+            sortOption = { createdAt: 1 };
+        }
+        else if (sort === 'high') {
+            sortOption = { newPrice: -1 };
+        }
+        else if (sort === 'low') {
+            sortOption = { newPrice: 1 };
+        }
+        else if (sort === 'az') {
+            sortOption = { name: 1 };
+        }
+        else if (sort === 'za') {
+            sortOption = { name: -1 };
+        }
+        else { 
+            sortOption = { };
+        } 
+
+        const {products, count} = await getProducts(page, limit, filter, sortOption);
+ 
         return successResponse(res, {
             statusCode: 200,
             message: 'products was return successfully',
@@ -448,8 +477,32 @@ const handleGetProductHomeSection = async (req, res, next) => {
 const handleUpdateProduct = async (req, res, next) => {
     try {
         const {slug} = req.params;
-        const {name, description, price, discount, quantity, sold, shipping, category} = req.body
+        const {
+            name, 
+            description, 
+            price, 
+            discount, 
+            quantity, 
+            sold, 
+            shipping, 
+            category
+        } = req.body;
+
+        console.log(price, discount)
+
+        const colors = JSON.parse(req.body.colors || '[]');
+        const sizes = JSON.parse(req.body.sizes || '[]'); 
+
+
+        // variants create
+        const variants = {} ;
         
+        if(colors){
+            variants.colors = colors.map(color => color.trim()).filter(Boolean);
+        }
+        if(sizes){
+            variants.size = sizes.map(size => size.trim()).filter(Boolean);
+        } 
         
         const product = await Product.findOne({slug});
         
@@ -464,11 +517,11 @@ const handleUpdateProduct = async (req, res, next) => {
         
         if(!product){
             throw createError('This Product not found.')
-        }
-        
-        console.log(product.price)
+        } 
 
-        if(price < discount){
+        console.log(Number(price) < Number(discount))
+
+        if(Number(price) < Number(discount)){ 
             throw new Error("Discount not be greater than price")
         }
         
@@ -497,11 +550,15 @@ const handleUpdateProduct = async (req, res, next) => {
                 }
                 updates[key] = req.body[key];
             }
+        };
+
+        if(variants){
+            updates.variants = variants;
         }
         
         
-        const image = req.file?.path;
-        console.log({image, name,description, price, discount, quantity, sold, shipping, category});
+        const image = req.file?.path;        
+        console.log(updates);
 
         if(image){
             if(image.size > 2097152){
@@ -540,7 +597,7 @@ const handleUpdateProduct = async (req, res, next) => {
             }
         }
 
-        console.log('product update end')
+        console.log(updatedProduct)
 
         return successResponse(res, {
             statusCode: 200,

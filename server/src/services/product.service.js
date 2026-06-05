@@ -10,9 +10,14 @@ const cloudinary = require("../config/cloudinary");
 
 
 const createProduct = async (productData) => {
-  const { description, details, price, discount, quantity, shipping, category, image, variants } = productData;
+  const { description, details, price, discount, quantity, shipping, categorySlug, image, variants } = productData;
   let { name } = productData;
   name= name.toLowerCase();
+
+  console.log(variants, 'variants');
+
+  const category = await Category.findOne({slug: categorySlug});
+  console.log(category._id);
 
 
   const productExists = await Product.exists({ name: name });
@@ -20,9 +25,8 @@ const createProduct = async (productData) => {
   if (productExists) {
     // deleteImage(image);
     throw createError(409, "Product with this name already exists.");
-  }
+  } 
 
-  console.log('image is: ', image);
   let newImage = '';
   if(image){
       const response = await cloudinary.uploader.upload(image, {
@@ -42,10 +46,12 @@ const createProduct = async (productData) => {
     discount: discount,
     quantity: quantity,
     shipping: shipping,
-    category: category,
+    category: category._id,
     image: newImage, 
     variants
   });
+
+  console.log(product)
 
   
   
@@ -55,11 +61,11 @@ const createProduct = async (productData) => {
 
 
 
-const getProducts = async (page, limit, filter ={}) => {
+const getProducts = async (page, limit, filter ={}, sortOption = {}) => {
 
   let query = Product.find(filter)
   .populate('category')
-  .sort({createdAt: -1});
+  .sort(sortOption);
    
 
   if(limit) {
