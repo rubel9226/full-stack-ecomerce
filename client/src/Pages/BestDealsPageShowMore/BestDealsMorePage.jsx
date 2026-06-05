@@ -125,6 +125,7 @@ export default function BestDealsMorePage() {
                                             hover:shadow-lg
                                             duration-300
                                             overflow-hidden
+                                            group
                                         '
                                     >
 

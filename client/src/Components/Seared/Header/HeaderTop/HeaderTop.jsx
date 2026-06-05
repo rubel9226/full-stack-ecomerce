@@ -7,6 +7,7 @@ import { FaSearch, FaShoppingCart } from "react-icons/fa";
 import { ImCross } from "react-icons/im";
 import SearchSuggestion from "./search";
 import { RiVerifiedBadgeFill } from 'react-icons/ri';
+import { IoSearch } from "react-icons/io5";
 
 const HeaderTop = () => {
     const { addToCart } = useContext(AddToCartContext);
@@ -36,9 +37,13 @@ const HeaderTop = () => {
             <input id="navbar-1-toggle" className="peer hidden" type="checkbox" />
             <label htmlFor="navbar-1-toggle" className="fixed inset-0 hidden max-lg:peer-checked:block" ></label>
             
-            <div className="collapse-title navbar min-h-9 px-5 md:px-7 md:py-4 ">
+            <div className="collapse-title navbar min-h-9 px-5 sm:px-6 sm:py-3 md:px-7 md:py-4 ">
                 <div className="navbar-start ">
                     <Link to={user ? '/dashboard': '/'} className="text-[18px] md:text-xl lg:text-2xl font-extrabold cursor-pointer transform duration-75 active:translate-y-px text-[#135194]">Trivon Fashion</Link>
+                </div>
+
+                <div className="navbar-end md:hidden">
+                    <IoSearch className="text-lg" />
                 </div>
 
                 {/* search */}

@@ -1,30 +1,30 @@
-import React, { useEffect, useRef, useState } from 'react';
-// Import Swiper React components
+import React, { useContext, useEffect, useState } from 'react'; 
 import { Swiper, SwiperSlide } from 'swiper/react';
 
 // Import Swiper styles
 import 'swiper/css';
 import 'swiper/css/pagination';
-import 'swiper/css/navigation';
-
-import './Popular.css';
+import 'swiper/css/navigation'; 
 
 // import required modules
-import { Autoplay, Pagination, Navigation } from 'swiper/modules';
-import api from '../../../API/Axios/api';
+import { Autoplay, Pagination, Navigation } from 'swiper/modules'; 
 import { Link } from 'react-router';
+import api from '../../API/Axios/api';
+import { AuthContext } from './../../Context/AuthProvider';
 
 
 
 
-export default function Popular() {
+export default function RandomCategory() {
     const [categories, setCategories] = useState([]);
     const [loading, setLoading] = useState(true); 
+    const { user } = useContext(AuthContext);
+
 
     const handleGetPopularSection =async () => {
       setLoading(true);
         try {
-            const res = await api.get('/categories/popular/get-popular?section=popular');            
+            const res = await api.get('/categories/random-categories');            
             setCategories(res?.data?.payload);
             console.log(res)
         } catch (error) {
@@ -41,8 +41,7 @@ export default function Popular() {
 
   return (
     <>
-    <div>
-        <h1 className='text-xl font-bold md:text-2xl lg:text-3xl mt-4 mb-2 md:mt-6 md:mb-4 xl:mt-8 xl:mb-6'>Popular Category</h1>
+    <div className='mt-4 mb-2 md:mt-6 md:mb-4 xl:mt-8 xl:mb-6'>
         {
             loading ? <Swiper loop={true} navigation={true} pagination={{ clickable: true }} autoplay={{ delay: 5000, disableOnInteraction: false, }} spaceBetween={5} breakpoints={{ 320: { slidesPerView: 3, slidesPerGroup: 1, }, 640: { slidesPerView: 4, slidesPerGroup: 2, }, 768: { slidesPerView: 5, slidesPerGroup: 3, }, 1024: { slidesPerView: 7, slidesPerGroup: 3, }, 1280: { slidesPerView: 9, slidesPerGroup: 3}}} modules={[ Autoplay]} className="mySwiper w-full">
                 {
@@ -97,8 +96,8 @@ export default function Popular() {
                     categories.map((category, index) => {
                         return (
                             <SwiperSlide key={index} className='text-center z-0'>
-                                <Link to={`catalog/${category?.slug}`} className='group'>
-                                    <div className='group-hover:shadow-xl sm:group-hover:shadow-2xl shadow-[#1F5DA0]/20 rounded-full h-22 w-22 sm:h-28 sm:w-28 md:h-32 md:w-32 lg:w-34 lg:h-34 inline-block bg-blue-50'>
+                                <Link to={user ? `/dashboard/catalog/${category?.slug}` : `/catalog/${category?.slug}`} className='group'>
+                                    <div className='group-hover:shadow-xl sm:group-hover:shadow-2xl shadow-indigo-600/20 rounded-full h-22 w-22 sm:h-28 sm:w-28 md:h-32 md:w-32 lg:w-34 lg:h-34 inline-block bg-blue-50'>
                                         <img className='w-full aspect-square rounded-full' src={category?.image} alt="" />
                                     </div>
                                     <p className='capitalize font-semibold group-hover:text-[#1F5DA0] whitespace-nowrap truncate'>{category?.name}</p>

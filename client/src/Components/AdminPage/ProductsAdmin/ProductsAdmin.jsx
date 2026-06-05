@@ -12,6 +12,7 @@ import DeleteProduct from './DeleteProduct';
 import Loading from '../../../Utils/UI/Loading/Loading';
 import SingleCategoryProducts from './SingleCategoryProducts';
 import { toast } from 'react-toastify';
+import LoadingProduct from '../../Loading/LoadingProduct';
 
 
 
@@ -95,7 +96,18 @@ const ProductsAdmin = () => {
             </div>
 
             <div>
-                { categories.map((category, index) => {
+
+                {
+                loading ?<div> 
+                    <div className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-4 justify-center items-center gap-5 border-t border-black/20 pt-4'>
+                            {
+                                Array(8).fill().map((_, index) => <LoadingProduct key={index} />)
+                            }
+                            
+                    </div>
+                </div>
+                     :
+                categories.map((category, index) => {
                     return(
                         <div key={index}>
                             <SingleCategoryProducts category={category} setCategories={setCategories} />

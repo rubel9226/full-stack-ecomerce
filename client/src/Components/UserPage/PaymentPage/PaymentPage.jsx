@@ -7,13 +7,14 @@ import Footer from '../../Seared/Footer/Footer';
 
 const PaymentPage = () => {
   const [paymentMethod, setPaymentMethod] = useState("");
-  const [pricing, setPricing] = useState([]);
-  // const [orderId, setOrderId] = useState('');
+  const [pricing, setPricing] = useState([]); 
 
   const [ searchParams ] = useSearchParams();
   const invoiceNo = searchParams.get("invoiceNo");
   const tranStatus = searchParams.get("tran_status");
   
+
+  const [loading, setLoading] = useState(false);
 
   const { 
     addToBuyData, 
@@ -45,21 +46,24 @@ const PaymentPage = () => {
 
 
       const handleCOD = async () => {
-        try {
-          const { data } = await api.put("/orders/payment-cash_on_delivery", { orderId });
+          setLoading(true);
+          try {
+              const { data } = await api.put("/orders/payment-cash_on_delivery", { orderId });
 
-          toast.success("Your order is confirmed");
-          navigate("/dashboard/account/my-orders");
-        } catch (error) {
-          if(error?.response?.data?.message === 'Order already confirmed'){
-            toast.error('Order already confirmed.');
-            navigate('/dashboard/account/my-orders')
+              toast.success("Your order is confirmed");
+              navigate("/dashboard/account/my-orders");
+          } catch (error) {
+              if(error?.response?.data?.message === 'Order already confirmed'){
+                  toast.error('Order already confirmed.');
+                  navigate('/dashboard/account/my-orders')
+              }
+          } finally {
+            setLoading(false);
           }
-          // console.log(error?.response?.data?.message);
-        }
       };
 
       const handleSSL = async () => {
+        setLoading(true);
         try {
           const { data } = await api.post("/orders/payment-sslcommerz", { orderId });
 
@@ -74,6 +78,8 @@ const PaymentPage = () => {
             toast.error('Order already confirmed and paid.');
             navigate('/dashboard/account/my-orders');
           }
+        } finally {
+          setLoading(false);
         }
       };
 
@@ -90,6 +96,8 @@ const PaymentPage = () => {
           return handleBkash();
         }
       };
+
+
 
 
 
@@ -339,7 +347,7 @@ const PaymentPage = () => {
                             className='btn sm:text-base sm:px-18 hover:bg-[#209C60] bg-[#2BB673] text-white disabled:bg-black/8 disabled:text-black/30' 
                             disabled={paymentMethod === ''}
                         >
-                          {/* {submitBtnClicked ? 'Continue to Payment': 'Continue to Shipping'} */} Place Order
+                          {loading ? 'Loading...' : 'Place Order'}
                         </button>
                     </div>
                 </div>

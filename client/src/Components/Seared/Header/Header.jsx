@@ -34,11 +34,7 @@ const Header = () => {
 
   return (
     <div className=" bg-base-200 shadow-sm ">
-        <HeaderTop />
-
-        <div className="md:hidden">
-          <HeaderBottom />
-        </div> 
+        <HeaderTop /> 
 
         <div className='hidden lg:text-lg xl:text-xl py-3 px-5 lg:px-7 lg:py-4 font-bold lg:flex items-center justify-between container mx-auto xl:!max-w-[1600px]'>
           <div className='group'>

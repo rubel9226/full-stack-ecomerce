@@ -51,55 +51,115 @@ const BuyCard = ({product}) => {
 
 
     return (
-        <div className='shadow-md border-2 border-black/5 rounded-md hover:border-2 hover:border-indigo-800/50 duration-200'>
-            <div className='flex py-2 gap-2 items-center'>
-                <div className='flex-2'>
-                    <img src={product.image} alt="" />
+        <div
+            className='
+                bg-white
+                rounded-lg
+                border
+                border-black/10
+                shadow-sm
+                p-3
+                sm:p-4
+                hover:border-indigo-400
+                duration-200
+            '
+        >
+        
+            <div className='flex gap-2 items-center'>
+        
+                {/* Product Image */}
+                <div className='shrink-0 flex-1 flex justify-center sm:block'>
+        
+                    <img
+                        src={product.image}
+                        alt=""
+                        className='
+                            aspect-square
+                            object-cover
+                            rounded
+                            border
+                            sm:w-24
+                            md:w-28
+                            lg:w-32
+                        '
+                    />
                 </div>
-                <div className='flex-5 text-[12px] font-semibold bg-bue-500'>
-                    <p className='leading-4 capitalize'>{product.details}</p>
-
-                    <div className='flex gap-1 mt-1 font-medium text-black/40 text-sm'>
-                        <p>Unit Price: </p>
-                        <p className='font-bold text-black'><span className='leading-0 font-serif '>৳ </span>{product.newPrice} </p>
-                        <div className={`${product.discount === 0 && 'hidden'}`}>
-                            <p className={` font-bold discount-price text-sm`}><span className='leading-0 font-serif'>৳</span> {product.price}</p>
-                        </div>
+        
+                {/* Product Info */}
+                <div className='flex-3 sm:flex-5 min-w-0 flex flex-col sm:flex-row sm:justify-between sm:items-center text-black/55'>
+                
+                    <div className='mt-2 text-xs sm:text-sm text-black/55'>
+        
+                        <h2
+                            className='capitalize text-xs sm:text-sm font-bold leading-5  line-clamp-2 text-black/65' >
+                            {product?.name}
+                        </h2>
+        
+                        {
+                            product?.selectedColor &&
+                            <p>
+                                color :
+                                <span className='ml-1 font-semibold text-black/50 capitalize'>
+                                    {product.selectedColor}
+                                </span>
+                            </p>
+                        }
+                        
+                        {
+                            product?.selectedSize &&
+                            <p>
+                                Size :
+                                <span className='ml-1 uppercase font-semibold text-black/50'>
+                                    {product.selectedSize}
+                                </span>
+                            </p>
+                        }
                     </div>
-
-                    
-                    <div className='flex items-center gap-1 mt-0.5 font-medium text-black/40'>
-                        <p>Total Price: </p>
-                        <p className='font-bold text-black text-sm'><span className='leading-0 font-serif '>৳ </span>{totalAmount} </p>
-                        {/* Discount badge */}
-                        {product.discount !== 0 && (
-                            <span className=" bg-red-700 text-white text-xs px-2 py-0.5 rounded-full">
-                                <span className='leading-0 font-serif '>save ৳</span>
-                                <span>{totalSave}</span>
-                                
+                    {/* Price */}
+                    <div className='flex flex-col '>
+                        <p className=' text-xs sm:text-sm '>
+                            Unit Price: <span className='font-bold text-black/70'> ৳ {product.newPrice}</span>
+                        </p>
+        
+                        {
+                            product.discount > 0 && (
+                            <p className=' text-xs sm:text-sm '>
+                                Discount: <span className='font-bold text-black/70'> ৳ {product?.discount}</span> 
+                                <span
+                                    className=' bg-red-600 text-white text-[11px] px-2 py-1 rounded-full font-medium ml-1 ' >
+                                    Save ৳ {totalSave}
+                                </span>
+                            </p> 
+                            )
+                        }
+                            {/* Total */}
+                        <div className=' text-sm text-black/60'>
+                            Total :
+                            <span className='font-bold text-black ml-1'>
+                                ৳ {totalAmount - totalSave}
                             </span>
-                        )}
-                    </div>
-
-                    
-
-                    <div>
-
-                        <div className='flex items-center gap-4 mt-3'>
-                            <div className='select-none px-4 py-1 rounded-full border flex items-center gap-7 text-[#1F5DA0]'>
-                                <FaMinus className={`cursor-pointer ${cartQuantity <= 1 ? 'text-black/30' : '' }`} onClick={() => handleQuantity('-')} />
-                                <span className='font-bold text-[18px]'>{cartQuantity}</span>
-                                <FaPlus className={`cursor-pointer ${cartQuantity >= product?.quantity ? 'text-black/50' : '' }`} onClick={() => handleQuantity('+')} />
-                            </div>
-                            <div>
-                                <RiDeleteBinLine onClick={handleDelete} className='text-2xl text-red-600' />
-                            </div>
                         </div>
-
+                    </div>
+                    
+        
+                    {/* Quantity + Delete */}
+                    <div className='mt-2 sm:mt-0 flex flex-row sm:flex-col items-center justify-between gap-4'>
+                        {/* Quantity */}
+                        <div className=' select-none px-3 sm:px-4 sm:py-1.5 rounded-full border sm:border-2 border-[#1F5DA0] flex items-center gap-6 text-[#1F5DA0]' >
+                            <FaMinus className={`cursor-pointer text-sm ${cartQuantity <= 1 ? 'text-black/30' : ''}`} onClick={() => handleQuantity('-')} />
+                            <span className='font-bold text-lg'>
+                                {cartQuantity}
+                            </span>
+                            <FaPlus className={`cursor-pointer text-sm ${cartQuantity >= product?.quantity ? 'text-black/50' : ''}`} onClick={() => handleQuantity('+')} />
+                        </div>
+        
+                        {/* Delete Button */}
+                        <button onClick={handleDelete} className=' text-red-600 hover:text-red-700 duration-150 flex items-center justify-center ' >
+                            <RiDeleteBinLine className='text-2xl' />
+                        </button>
                     </div>
                 </div>
             </div>
-
         </div>
         
     );

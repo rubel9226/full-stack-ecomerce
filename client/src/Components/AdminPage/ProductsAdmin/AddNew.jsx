@@ -99,7 +99,7 @@ const AddNew = ({category, refetch}) => {
                         <fieldset className='fieldset'>
                             <label htmlFor="details" className='fieldset-legend justify-start gap-1 items-center'>Product Name <FaStar className='text-red-500' /></label>
                             <input
-                                className="input input-neutral w-full sm:input-lg"
+                                className="input input-neutral w-full"
                                 type="text" 
                                 value={formData.name}
                                 onChange={handleChange}
@@ -113,7 +113,7 @@ const AddNew = ({category, refetch}) => {
                         <fieldset className='fieldset'>
                             <label htmlFor="details" className='fieldset-legend justify-start gap-1 items-center'>Product price <FaStar className='text-red-500' /></label>
                             <input
-                                className="input input-neutral w-full sm:input-lg" 
+                                className="input input-neutral w-full" 
                                 type="number"
                                 value={formData.price}
                                 onChange={handleChange}
@@ -126,7 +126,7 @@ const AddNew = ({category, refetch}) => {
                         <fieldset className='fieldset'>
                             <label htmlFor="details" className='fieldset-legend justify-start gap-1 items-center'>Product quantity <FaStar className='text-red-500' /></label>
                             <input
-                                className="input input-neutral w-full sm:input-lg"
+                                className="input input-neutral w-full"
                                 type="number" 
                                 value={formData.quantity}
                                 onChange={handleChange}
@@ -143,7 +143,7 @@ const AddNew = ({category, refetch}) => {
                                 type="file" 
                                 onChange={handleChange}
                                 name="image" 
-                                className="file-input w-full sm:input-lg" required />
+                                className="file-input w-full" required />
                             <label className="label">Max size 2MB</label>
                         </fieldset>
                             
@@ -151,7 +151,7 @@ const AddNew = ({category, refetch}) => {
                         <fieldset className='fieldset'>
                             <label htmlFor="details" className='fieldset-legend justify-start gap-1 items-center'>Product details <FaStar className='text-red-500' /> </label>
                             <input
-                                className="input input-neutral w-full sm:input-lg"
+                                className="input input-neutral w-full"
                                 type="text" 
                                 value={formData.details}
                                 onChange={handleChange}
@@ -258,7 +258,7 @@ const AddNew = ({category, refetch}) => {
                         <fieldset className='fieldset'>
                             <label htmlFor="description" className='fieldset-legend justify-start gap-1 items-center '>Product description <FaStar className='text-red-500' /> </label>
                             <input
-                                className="input input-neutral w-full sm:input-lg"
+                                className="input input-neutral w-full"
                                 type="text" 
                                 value={formData.description}
                                 onChange={handleChange}

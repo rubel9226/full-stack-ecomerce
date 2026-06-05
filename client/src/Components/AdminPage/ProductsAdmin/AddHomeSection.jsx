@@ -26,7 +26,7 @@ const AddHomeSection = ({product}) => {
     }
     return (
         <div>
-            <label onClick={()=> setOpenModal(true)} className="btn btn-sm bg-cyan-500/20 w-full flex text-green-700 transform transition-all hover:scale-105 duration-200 hover:cursor-pointer"> 
+            <label onClick={()=> setOpenModal(true)} className="btn btn-sm bg-cyan-500/20 w-full flex whitespace-nowrap text-green-700 transform transition-all hover:scale-105 duration-200 hover:cursor-pointer"> 
                 <MdOutlineAdd className="text-[18px]" />
                 <span className="font-semibold text-[12px] ">Add Home Section</span>
             </label>

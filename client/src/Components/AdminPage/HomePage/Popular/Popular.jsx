@@ -113,44 +113,10 @@ const datas = [
                         </SwiperSlide>
                     )
                 })
-            }
-
-
-        
-            {/* <SwiperSlide>
-                <img src="https://saralifestyle.com/_next/image?url=https%3A%2F%2Fprod.saralifestyle.com%2FImages%2FContent%2Fa026b2c6754a4652a1964e3f6aa6a1cb.jpeg&w=1080&q=75" alt="" />
-            </SwiperSlide>
-            <SwiperSlide>
-                <img src="https://saralifestyle.com/_next/image?url=https%3A%2F%2Fprod.saralifestyle.com%2FImages%2FContent%2F37244083bb7b4899ae315707d0c8415f.png&w=1080&q=75" alt="" />
-            </SwiperSlide>
-            <SwiperSlide>
-                <img src="https://saralifestyle.com/_next/image?url=https%3A%2F%2Fprod.saralifestyle.com%2FImages%2FContent%2Ff5ee353ee2b646b8a8efa2361f37565a.jpeg&w=1080&q=75" alt="" />
-            </SwiperSlide>
-            <SwiperSlide>
-                <img src="https://saralifestyle.com/_next/image?url=https%3A%2F%2Fprod.saralifestyle.com%2FImages%2FContent%2Fa026b2c6754a4652a1964e3f6aa6a1cb.jpeg&w=1080&q=75" alt="" />
-            </SwiperSlide>
-            <SwiperSlide>
-                <img src="https://saralifestyle.com/_next/image?url=https%3A%2F%2Fprod.saralifestyle.com%2FImages%2FContent%2F37244083bb7b4899ae315707d0c8415f.png&w=1080&q=75" alt="" />
-            </SwiperSlide>
-            <SwiperSlide>
-                <img src="https://saralifestyle.com/_next/image?url=https%3A%2F%2Fprod.saralifestyle.com%2FImages%2FContent%2Ff5ee353ee2b646b8a8efa2361f37565a.jpeg&w=1080&q=75" alt="" />
-            </SwiperSlide>
-            <SwiperSlide>
-                <img src="https://saralifestyle.com/_next/image?url=https%3A%2F%2Fprod.saralifestyle.com%2FImages%2FContent%2Fa026b2c6754a4652a1964e3f6aa6a1cb.jpeg&w=1080&q=75" alt="" />
-            </SwiperSlide>
-            <SwiperSlide>
-                <img src="https://saralifestyle.com/_next/image?url=https%3A%2F%2Fprod.saralifestyle.com%2FImages%2FContent%2F37244083bb7b4899ae315707d0c8415f.png&w=1080&q=75" alt="" />
-            </SwiperSlide> */}
+            } 
 
         </Swiper>
     </div>
     </>
   );
 }
-
-                        // <div className="shrink-0">
-                        //     <img className="mx-auto rounded-full" src={data.img} alt="" />
-                        //     <p>{data.name}</p>
-                        // </div>
-
-

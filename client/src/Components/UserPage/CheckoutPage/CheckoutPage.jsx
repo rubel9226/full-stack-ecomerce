@@ -11,6 +11,7 @@ import ShippingAddressForm from './ShippingAddressForm';
 import api from '../../../API/Axios/api';
 import UserDetails from './UserDetails';
 import UserDetailsLoading from './userDetailsLoading';
+import { toast } from 'react-toastify';
 
 const CheckoutPage = () => {
     const { addToCart, totalPriceAndDiscount } = useContext(AddToCartContext);
@@ -35,6 +36,21 @@ const CheckoutPage = () => {
     const navigate = useNavigate();
     const cartType = searchParams.get("cartType");
     const { user } = useContext(AuthContext);
+
+    console.log()
+
+    useEffect(() => {
+        if(cartType === 'cart'){
+            if(addToCart.length === 0){
+                navigate('/dashboard/cart')
+            };
+            console.log(addToCart, 'addToCart');
+        }else if(cartType === 'buy'){
+            if(addToBuyData.length === 0){
+                navigate(-1)
+            };
+        }
+    });
 
     
     const fetchAddress = async () => {
@@ -132,8 +148,11 @@ const CheckoutPage = () => {
                         orderId: order.orderId
                     }
                 });
+                localStorage.removeItem('cartData');
+                localStorage.removeItem('byeData');
             } catch (error) {
-                console.log(error?.response?.data?.message);
+                toast.error(error?.response?.data?.message);
+                navigate(user ? '/dashboard' : '/')
             } finally {
                 setLoading(false);
             }
@@ -255,7 +274,7 @@ const CheckoutPage = () => {
                                             Shipping Charge
                                         </p>
                                         <span className='font-semibold'>
-                                            ৳ 0
+                                            ৳ 150
                                         </span>
                                     </div>
                                     <div className='border-t border-black/10 pt-4 flex justify-between items-center'>

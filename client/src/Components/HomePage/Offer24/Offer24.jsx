@@ -267,7 +267,7 @@ export default function Offer24() {
                             {/* Description */}
                             <p className='line-clamp-2 text-[10px] sm:text-[12px] leading-4 font-semibold text-black/60 mt-1'>
 
-                              Description: {product.description}
+                              {product.description}
 
                             </p>
 

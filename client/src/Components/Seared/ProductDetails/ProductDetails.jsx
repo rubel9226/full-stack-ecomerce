@@ -3,7 +3,7 @@ import { Link, useParams } from 'react-router';
 import Footer from '../../Seared/Footer/Footer';
 
 // all icons
-import { FaPlus } from "react-icons/fa";
+import { FaPlus, FaTimesCircle } from "react-icons/fa";
 import { FaMinus } from "react-icons/fa";
 import { FaStar } from "react-icons/fa";
 import { FaShippingFast } from "react-icons/fa";
@@ -14,84 +14,73 @@ import { FaStore } from "react-icons/fa";
 import { AddToCartContext } from '../../../Context/AddToCartContext';
 import { AddToBuyContext } from '../../../Context/AddBuyProduct';
 import { AuthContext } from '../../../Context/AuthProvider';
+import { toast } from 'react-toastify';
 
 const ProductDetails = () => {
-
     const [product, setProduct] = useState();
-
     const { slug } = useParams();
-
     const [cartQuantity, setCartQuantity] = useState(1);
-
     const [selectedSize, setSelectedSize] = useState('');
+    const [selectedColor, setSelectedColor] = useState('');
+
 
     const handleQuantity = (p) => {
-
         if (p === '+') {
-
             if (cartQuantity === product?.quantity) return;
-
             setCartQuantity(cartQuantity + 1);
         }
-
         if (p === '-') {
-
             if (cartQuantity === 1) return;
-
             setCartQuantity(cartQuantity - 1);
         }
     };
 
+
     // add to cart data
-
     const { user } = useContext(AuthContext);
-
     const { handleLocalStorageData } = useContext(AddToCartContext);
-
     const { handleSessionStorageData } = useContext(AddToBuyContext);
-
     const url = `${import.meta.env.VITE_API_URL}/products/${slug}`;
 
     useEffect(() => {
-
         fetch(url)
             .then(res => res.json())
             .then(data => {
-
                 setProduct(data?.payload);
-
                 if (data?.payload?.variants?.size?.length > 0) {
                     setSelectedSize(data?.payload?.variants?.size[0]);
                 }
-
+                if (data?.payload?.variants?.colors?.length > 0) {
+                    setSelectedColor(data?.payload?.variants?.colors[0]);
+                }
             })
             .catch(err => console.log(err));
-
     }, [url]);
 
-    const handleSetAddToCart = () => {
+    
+    const handleSetAddToCart = () => { 
 
         const cartProduct = {
             ...product,
-            selectedSize
+            selectedSize,
+            selectedColor : selectedColor
         };
-
-        handleLocalStorageData(cartProduct, cartQuantity);
+        handleLocalStorageData(cartProduct, cartQuantity); 
     };
 
-    const handleSetAddBuyProduct = () => {
+
+    const handleSetAddBuyProduct = () => { 
 
         const buyProduct = {
             ...product,
-            selectedSize
+            selectedSize,
+            selectedColor: selectedColor
         };
-
-        handleSessionStorageData(buyProduct, cartQuantity);
-    };
-
+        handleSessionStorageData(buyProduct, cartQuantity); 
+    }; 
     return (
-
         <div className='w-11/12 md:container mx-auto mt-5'>
+            
             <div className='grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-10'>
                 {/* Left Side */}
                 <div>
@@ -117,6 +106,7 @@ const ProductDetails = () => {
                             </div>
                         </div>
 
+                        
                         <div className='border rounded-xl p-3 bg-white flex items-center gap-3 shadow-sm'>
                             <FaShieldAlt className='text-2xl text-green-600' />
                             <div>
@@ -133,11 +123,12 @@ const ProductDetails = () => {
 
                 {/* Right Side */}
                 <div className='pb-5'>
+
                     {/* Product Name */}
                     <h1 className='text-2xl sm:text-3xl lg:text-4xl font-bold text-black/90 capitalize'>
                         {product?.name}
                     </h1>
-
+                    
                     {/* Rating */}
                     <div className='flex items-center gap-2 mt-3'>
                         <div className='flex items-center gap-1 text-yellow-500 text-sm'>
@@ -150,6 +141,20 @@ const ProductDetails = () => {
                         <span className='text-sm text-black/50'>
                             (4.8 Rating)
                         </span>
+                    </div>
+
+                    <div className='inline-block -mb-10 mt-5 md:-mb-3 md:mt-5'>
+                        {
+                            product?.quantity > 0
+                            ? ''
+                            :
+                            <div className='flex items-center gap-2 text-xl bg-red-500 text-white md:px-6 md:py-2 px-3 py-1 md:rounded-full rounded'>
+                                <FaTimesCircle className='' />
+                                <p className='font-semibold'>
+                                    Out Of Stock
+                                </p>
+                            </div>
+                        }
                     </div>
 
                     {/* Price */}
@@ -187,14 +192,16 @@ const ProductDetails = () => {
                                 </span>
                             </p>
                         </div>
-                        <div className='flex items-center gap-2'>
+
+
+                        <div className='flex items-center gap-2'> 
                             <FaCheckCircle className='text-green-600' />
                             <p>
                                 In Stock :
                                 <span className='font-semibold ml-1'>
                                     {product?.quantity}
                                 </span>
-                            </p>
+                            </p> 
                         </div>
 
                         <div className='flex items-center gap-2'>
@@ -207,28 +214,40 @@ const ProductDetails = () => {
                             </p>
                         </div>
                     </div>
-
-                    {/* Color */}
+                    
                     {
-                        product?.variants?.color &&
-                        <div className='mt-6'>
-                            <h3 className='font-semibold text-lg mb-3'>
-                                Color
+                        product?.variants?.size?.length > 0 &&
+                        <div className='mt-6 lg:flex lg:gap-3 lg:items-center'>
+                            <h3 className='font-semibold text-lg mb-3 lg:mb-0'>
+                                Select Colors
                             </h3>
-                            <div
-                                className='w-10 h-10 rounded-full border-4 border-white shadow-lg'
-                                style={{
-                                    backgroundColor: product?.variants?.color
-                                }}
-                            ></div>
+                            <div className='flex flex-wrap gap-3'>
+                                {
+                                   product?.variants?.colors?.map((color, index) => (
+                                        <button
+                                            key={index}
+                                            onClick={() => setSelectedColor(color)}
+                                            className={`
+                                                px-4 py-2 rounded-xl border font-semibold duration-200 capitalize
+                                                ${selectedColor === color
+                                                    ? 'bg-indigo-600 text-white border-indigo-600'
+                                                    : 'bg-white border-black/10 hover:border-indigo-500'
+                                                }
+                                            `}
+                                        >
+                                            {color}
+                                        </button>
+                                    ))
+                                }
+                            </div>
                         </div>
                     }
 
                     {/* Sizes */}
                     {
                         product?.variants?.size?.length > 0 &&
-                        <div className='mt-6'>
-                            <h3 className='font-semibold text-lg mb-3'>
+                        <div className='mt-6 lg:flex lg:gap-3 lg:items-center'>
+                            <h3 className='font-semibold text-lg mb-3 lg:mb-0'>
                                 Select Size
                             </h3>
                             <div className='flex flex-wrap gap-3'>
@@ -254,7 +273,7 @@ const ProductDetails = () => {
                     }
 
                     {/* Quantity */}
-                    <div className='flex flex-col sm:flex-row sm:items-center gap-3 mt-7'>
+                    <div className='flex items-center gap-3 mt-7'>
                         <h3 className='text-lg font-medium'>
                             Quantity:
                         </h3>
@@ -273,22 +292,72 @@ const ProductDetails = () => {
                         </div>
                     </div>
 
-                    {/* Buttons */}
-                    <div className='flex flex-col sm:flex-row w-full gap-3 mt-7'>
-                        <button
-                            onClick={handleSetAddToCart}
-                            className="btn bg-[#7F7F7F] hover:bg-[#6c6c6c] font-bold text-[16px] text-white flex-1 h-12 rounded-xl border-none"
-                        >
-                            ADD TO CART
-                        </button>
-                        <Link
-                            onClick={handleSetAddBuyProduct}
-                            to={user ? '/dashboard/checkout?cartType=buy' : `/login`}
-                            className='btn bg-[#1F5DA0] hover:bg-[#194f88] font-bold text-[16px] text-white flex-1 h-12 rounded-xl border-none'
-                        >
-                            BUY NOW
-                        </Link>
-                    </div>
+                    {
+                      product?.quantity ? 
+                        <div className='flex flex-col sm:flex-row w-full gap-3 mt-7'>
+                            <button
+                                onClick={handleSetAddToCart}
+                                className="btn bg-[#7F7F7F] hover:bg-[#6c6c6c] font-bold text-[16px] text-white flex-1 h-12 rounded-xl border-none py-2 md:py-0"
+                            >
+                                ADD TO CART
+                            </button>
+                            <Link
+                                onClick={handleSetAddBuyProduct}
+                                to={user ? '/dashboard/checkout?cartType=buy' : `/login`}
+                                className='btn bg-[#1F5DA0] hover:bg-[#194f88] font-bold text-[16px] text-white flex-1 h-12 rounded-xl border-none py-2 md:py-0'
+                                dis
+                            >
+                                BUY NOW
+                            </Link>
+                        </div>
+                        : 
+                        <div className='flex flex-col sm:flex-row w-full gap-3 mt-7'>
+                            <button
+                                disabled
+                                className="
+                                    btn
+                                    bg-[#7F7F7F]/60
+                                    font-bold
+                                    text-[16px]
+                                    text-white/70
+                                    flex-1
+                                    h-12
+                                    rounded-xl
+                                    border-none
+                                    py-2
+                                    md:py-0
+                                    cursor-not-allowed
+                                    hover:bg-[#7F7F7F]/60
+                                "
+                            >
+                                ADD TO CART
+                            </button>
+                            <button
+                                disabled
+                                className='
+                                    btn
+                                    bg-[#1F5DA0]/60
+                                    font-bold
+                                    text-[16px]
+                                    text-white/70
+                                    flex-1
+                                    h-12
+                                    rounded-xl
+                                    border-none
+                                    py-2
+                                    md:py-0
+                                    cursor-not-allowed
+                                    hover:bg-[#1F5DA0]/60
+                                '
+                            >
+                                BUY NOW
+                            </button>
+                        </div>
+                    }
+                    
+
+
+                    
 
                     {/* Details */}
                     <div className='mt-7 border rounded-2xl p-4 bg-white shadow-sm'>
@@ -296,7 +365,7 @@ const ProductDetails = () => {
                             Product Details
                         </h3>
                         <p className='text-black/70 leading-7'>
-                            {product?.details}
+                            {product?.details ? product?.details : 'No Data Found!'}
                         </p>
                     </div>
 
@@ -306,7 +375,7 @@ const ProductDetails = () => {
                             Description
                         </h3>
                         <p className='text-black/70 leading-7'>
-                            {product?.description}
+                            {product?.description ? product?.description : 'No Data Found!'}
                         </p>
                     </div>
                 </div>

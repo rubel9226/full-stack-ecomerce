@@ -196,7 +196,7 @@ export default function Watch() {
         )}
 
         {/* Button */}
-        <div className="text-center flex justify-center pt-6 sm:pt-8">
+        <div className="text-center flex justify-center pt-6 sm:pt-8 lg:hidden">
           <div className='text-blue-800/90'>
             <Link to={'catalog/watch'} className='text-sm font-semibold md:text-base xl:text-xl flex items-center gap-0.5 md:gap-1 cursor-pointer'> 
               See More 

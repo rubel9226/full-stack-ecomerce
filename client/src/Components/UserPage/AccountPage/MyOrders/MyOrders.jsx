@@ -10,40 +10,26 @@ const MyOrders = () => {
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
-
         const getMyOrders = async () => {
-
             try {
-
                 setLoading(true);
-
                 const res = await api.get('/orders/my-orders');
-
                 setOrders(res?.data?.payload);
-
             } catch (error) {
-
                 console.log(error);
-
             } finally {
-
                 setLoading(false);
-
             }
-
         };
-
         getMyOrders();
-
     }, []);
 
-    return (
 
+    return (
         <div className='pb-5'>
 
             {/* heading */}
             <div className='mb-4'>
-
                 <h2 className='text-lg sm:text-xl font-bold text-black/80'>
                     My Orders
                 </h2>
@@ -54,12 +40,11 @@ const MyOrders = () => {
                         {orders?.length || 0}
                     </span>
                 </p>
-
             </div>
+
 
             {/* orders */}
             <div className='space-y-4'>
-
                 {
                     loading
                         ? <LoadingOrder />
@@ -73,31 +58,26 @@ const MyOrders = () => {
                             )}
                         </div>
                 }
-
             </div>
+
 
             {/* empty */}
             {
                 !loading && orders?.length === 0 &&
                 <div className='bg-white rounded-2xl border border-black/10 py-14 px-5 text-center'>
-
                     <img
                         className='w-28 sm:w-32 mx-auto'
                         src='https://cdn-icons-png.flaticon.com/512/2038/2038854.png'
                         alt=''
                     />
-
                     <h3 className='mt-4 text-lg sm:text-xl font-bold text-black/70'>
                         No Orders Found
                     </h3>
-
                     <p className='text-sm text-black/45 mt-1'>
                         Your ordered products will appear here.
                     </p>
-
                 </div>
             }
-
         </div>
     );
 };

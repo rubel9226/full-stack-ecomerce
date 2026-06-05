@@ -8,10 +8,8 @@ import { FaBoxOpen } from "react-icons/fa";
 const SingleOrder = ({ order }) => {
 
     return (
-
         <div className=' bg-white rounded-3xl border border-gray-200 shadow-sm overflow-hidden  hover:shadow-md duration-300'>
 
-            
             <div className='p-4 sm:p-5 bg-linear-to-r from-[#1F5DA0] to-[#2BB673]'>
                 <div className='flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3'>
                     <div className='space-y-2'>
@@ -44,74 +42,116 @@ const SingleOrder = ({ order }) => {
             <div className='p-4 sm:p-5'>
 
                 <div className='space-y-4'>
-                    {
-                        order.products.map((product) => (
-                            <div key={product.product} className=' flex gap-3 sm:gap-4 items-center border border-gray-100 rounded-2xl p-3 hover:border-[#1F5DA0]/30 duration-200'>
+{
+    order.products.map((product) => (
+        <div
+            key={product.product}
+            className='flex gap-3 sm:gap-4 items-center border border-gray-100 rounded-2xl p-3 hover:border-[#1F5DA0]/30 duration-200'
+        >
 
-                                
-                                <div className='w-20 sm:w-24 md:w-28 shrink-0'>
-                                    <img className=' w-full aspect-square rounded-2xl object-cover bg-gray-100 '
-                                        src={product.image}
-                                        alt={product.name}
-                                    />
-                                </div>
+            <div className='w-20 sm:w-24 md:w-28 shrink-0'>
+                <img
+                    className='w-full aspect-square rounded-2xl object-cover bg-gray-100'
+                    src={product.image}
+                    alt={product.name}
+                />
+            </div>
 
+            <div className='flex-1 min-w-0'>
+                <div className='flex flex-col h-full justify-between'>
 
-                                <div className='flex-1 min-w-0'>
-                                    <div className='flex flex-col h-full justify-between'>
-                                        <div>
+                    <div>
+                        <h3 className='text-sm sm:text-base font-bold text-black/80 line-clamp-2'>
+                            {product.name}
+                        </h3>
 
-                                            <h3 className=' text-sm sm:text-base font-bold text-black/80 line-clamp-2 ' >
-                                                {product.name}
-                                            </h3>
+                        <p className='text-[11px] sm:text-sm text-black/45 mt-1 line-clamp-2'>
+                            {product.description}
+                        </p>
 
-                                            
-                                            <p className=' text-[11px] sm:text-sm text-black/45 mt-1 line-clamp-2 ' >
-                                                {product.description}
-                                            </p>
-                                        </div>
+                        {/* Color & Size */}
+                        <div className='flex flex-wrap items-center gap-2 mt-2'>
 
+                            {
+                                product.color && (
+                                    <span
+                                        className='
+                                            px-2.5
+                                            py-1
+                                            rounded-full
+                                            bg-gray-100
+                                            text-[11px]
+                                            sm:text-xs
+                                            font-medium
+                                            text-black/70
+                                        '
+                                    >
+                                        Color : {product.color}
+                                    </span>
+                                )
+                            }
 
-                                        <div className=' flex flex-wrap items-center justify-between gap-2 mt-3 ' >
-                                            <div
-                                                className=' flex items-center gap-1 text-xs sm:text-sm text-black/70 ' >
+                            {
+                                product.size && (
+                                    <span
+                                        className='
+                                            px-2.5
+                                            py-1
+                                            rounded-full
+                                            bg-gray-100
+                                            text-[11px]
+                                            sm:text-xs
+                                            font-medium
+                                            text-black/70
+                                        '
+                                    >
+                                        Size : {product.size.toUpperCase()}
+                                    </span>
+                                )
+                            }
 
-                                                <span>
-                                                    {product.quantity}
-                                                </span>
+                        </div>
+                    </div>
 
-                                                <RxCross2 />
+                    <div className='flex flex-wrap items-center justify-between gap-2 mt-3'>
 
-                                                <span className='font-bold text-black'>
-                                                    ৳ {product.newPrice}
-                                                </span>
+                        <div className='flex items-center gap-1 text-xs sm:text-sm text-black/70'>
 
-                                            </div>
+                            <span>
+                                {product.quantity}
+                            </span>
 
-                                            <div
-                                                className='
-                                                    bg-red-50
-                                                    text-red-500
-                                                    px-3
-                                                    py-1
-                                                    rounded-full
-                                                    text-[11px]
-                                                    sm:text-xs
-                                                    font-semibold
-                                                '
-                                            >
-                                                ৳ {product.quantity * product.newPrice}
-                                            </div>
+                            <RxCross2 />
 
-                                        </div>
+                            <span className='font-bold text-black'>
+                                ৳ {product.newPrice}
+                            </span>
 
-                                    </div>
+                        </div>
 
-                                </div>
+                        <div
+                            className='
+                                bg-red-50
+                                text-red-500
+                                px-3
+                                py-1
+                                rounded-full
+                                text-[11px]
+                                sm:text-xs
+                                font-semibold
+                            '
+                        >
+                            ৳ {product.quantity * product.newPrice}
+                        </div>
 
-                            </div>
-                        ))
-                    }
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    ))
+}
 
                 </div>
 

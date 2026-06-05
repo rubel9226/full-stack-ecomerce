@@ -1,16 +1,11 @@
 import React, { useContext } from 'react';
-
 import { useNavigate } from 'react-router';
-
 import { AddToCartContext } from '../../Context/AddToCartContext';
-
 import Footer from './../../Components/Seared/Footer/Footer';
-
 import CartCard from './../../Components/CartPage/CartCard';
 
 // Asset
 import emptyImg from './../../assets/empty-cart.gif';
-
 const CartPage = () => {
 
     const {
@@ -19,7 +14,6 @@ const CartPage = () => {
     } = useContext(AddToCartContext);
 
     const navigate = useNavigate();
-
     const totalBill =
         totalPriceAndDiscount.totalPrice -
         totalPriceAndDiscount.totalDiscount;
@@ -32,36 +26,27 @@ const CartPage = () => {
 
     };
 
+    console.log(products);
+    const discount = products.map(product => product.discount)
+
     // Empty Cart
     if (products.length === 0) {
-
         return (
-
             <div>
-
                 <div className='text-center py-16 px-4'>
-
                     <img
                         className='w-28 h-28 sm:w-36 sm:h-36 inline-block'
                         src={emptyImg}
                         alt=""
                     />
-
                     <div className='mt-3'>
-
                         <h5 className='text-2xl sm:text-3xl font-bold uppercase'>
-
                             Empty
                             <span className='text-[#1F5DA0]'> Cart !</span>
-
                         </h5>
-
                         <p className='mt-2 mb-4 text-sm sm:text-base text-black/60'>
-
                             Please Add Product to View
-
                         </p>
-
                         <button
                             className='
                                 btn
@@ -74,33 +59,22 @@ const CartPage = () => {
                                 rounded-xl
                             '
                         >
-
                             Go to Shop
-
                         </button>
-
                     </div>
-
                 </div>
-
                 <Footer />
-
             </div>
         );
     }
 
     return (
-
         <div className='bg-[#F5F5F5] min-h-screen py-5 md:pt-10 mt-1'>
-
             <div className='grid grid-cols-1 lg:grid-cols-12 gap-5 w-11/12 md:container mx-auto xl:!max-w-[1350px]'>
-
                 {/* Cart Products */}
                 <div className='lg:col-span-8 space-y-4'>
-
                     {
                         products.map((product, index) => (
-
                             <CartCard
                                 key={index}
                                 product={product}
@@ -108,9 +82,8 @@ const CartPage = () => {
 
                         ))
                     }
-
                 </div>
-
+                
                 {/* Bill Section */}
                 <div className='lg:col-span-4'>
 
@@ -152,22 +125,18 @@ const CartPage = () => {
 
                             </div>
 
-                            {/* Discount */}
-                            <div className='flex justify-between items-center border-b border-black/10 pb-4'>
+                            {
+                                totalPriceAndDiscount.totalDiscount ?
+                                <div className='flex justify-between items-center border-b border-black/10 pb-4'>
+                                    <p className='text-black/60'>
+                                        Discount
+                                    </p>
+                                    <span className='font-bold text-red-600'>
+                                        - ৳ {totalPriceAndDiscount.totalDiscount}
+                                    </span>
+                                </div> : ''
+                            }
 
-                                <p className='text-black/60'>
-
-                                    Discount
-
-                                </p>
-
-                                <span className='font-bold text-red-600'>
-
-                                    - ৳ {totalPriceAndDiscount.totalDiscount}
-
-                                </span>
-
-                            </div>
 
                             {/* Total */}
                             <div className='flex justify-between items-center'>
